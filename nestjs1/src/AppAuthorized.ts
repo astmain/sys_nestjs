@@ -5,10 +5,15 @@ import { APP_GUARD } from '@nestjs/core'
 import { SetMetadata } from '@nestjs/common'
 
 export const IS_PUBLIC_KEY = 'isPublic'
-export const Dec_public = () => SetMetadata(IS_PUBLIC_KEY, true)
 
-// 视频教程      https://www.bilibili.com/video/BV1JViRYJEGH?p=33
-// 官方文档      https://docs.nestjs.cn/9/security?id=认证（authentication）
+/**
+ * @description 跳过全局身份验证
+ * @param 无
+ * @returns 无
+ * @视频教程      https://www.bilibili.com/video/BV1JViRYJEGH?p=33
+ * @官方文档      https://docs.nestjs.cn/9/security?id=认证（authentication）
+ */
+export const Dec_public = () => SetMetadata(IS_PUBLIC_KEY, true)
 
 import { CanActivate, ExecutionContext } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
