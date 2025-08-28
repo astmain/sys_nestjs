@@ -25,5 +25,5 @@ JWT_token_swagger = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjE1MTY
 
 
 # 项目描述
-PROJECT_name      =  我的项目                       # 项目名称 
-PROJECT_remark    =  nestjs项目使用自定义的包(Plugins)方便快速开发          # 项目备注
+PROJECT_name      =  我的nestjs                       # 项目名称
+PROJECT_remark    =  我的nestjs项目使用自定义的包(Plugins)方便快速开发          # 项目备注
