@@ -1,21 +1,17 @@
-# 环境文件路径____________________________________________________________
+# 🚀 环境文件路径___________________________________________________________
 ENV_path          = .env/.dev
 
-
-# url相关配置____________________________________________________________
-PORT              = 6666                           #端口号
-URL_app           = http://127.0.0.1:6666          #url本地
-URL_ip            = http://192.168.0.250           #url域名
+# 🚀 url相关配置____________________________________________________________
+PORT              = 3001                           #端口号
+URL_app           = http://127.0.0.1:3001          #url本地
+URL_ip            = http://192.168.0.250:3001           #url域名
 URL_domain        = https://server.oss.yun3d.com   #url域名
 
-
-# 数据库相关配置_________________________________________________________
+# 🚀 数据库相关配置_________________________________________________________
 # url数据库
 URL_db            = file:./sqlite.db      
 
-
-
-# JWT相关配置____________________________________________________________
+# 🚀 JWT相关配置____________________________________________________________
 # JWT密钥
 JWT_secret        = xzz2021                      
 # JWT过期时间 1d(1天), 7d(7天)
@@ -23,7 +19,6 @@ JWT_time_exp      = 1d
 # JWT方便swagger文档调试使用
 JWT_token_swagger = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjE1MTYwMzE1MTEwIiwicGhvbmUiOiIxNTE2MDMxNTExMCIsImlkIjoxLCJyb2xlSWRzIjpbXSwiZGVwYXJ0bWVudCI6W3siaWQiOjJ9XSwiaWF0IjoxNzU2MTg4NDkwLCJleHAiOjE3NTYyNzQ4OTB9.GJiORz6ZLRAgvWD0-73m-npC1Ucr2p5H6tHKBDGwkqY
 
-
-# 项目描述
+# 🚀 项目描述________________________________________________________________
 PROJECT_name      =  我的nestjs                       # 项目名称
 PROJECT_remark    =  我的nestjs项目使用自定义的包(Plugins)方便快速开发          # 项目备注
