@@ -65,6 +65,11 @@ export function check_env() {
       首页: process.env.URL_domain,
       文档: process.env.URL_domain + '/doc.html',
     },
+    linux宝塔:{
+      首页: process.env.LINUX_bt_url,
+      账号: process.env.LINUX_bt_name,
+      密码: process.env.LINUX_bt_password,
+    }
   }
 
   return { env_curr, env_curr_description }
