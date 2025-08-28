@@ -6,6 +6,7 @@ import * as bodyParser from 'body-parser'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   await Plugins.filter_cors(app) // 配置跨域
+  await Plugins.swagger_Knife4j(app) // 配置swagger
   await app.listen(Number(process.env.PORT) || 3000)
   console.log(`
     服务启动:

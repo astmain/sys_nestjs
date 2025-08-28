@@ -6,7 +6,7 @@ import { Dec_public } from '@src/AppAuthorized'
 export class index {
   @Get()
   async api() {
-    return { code: 200, msg: '首页api' }
+    return { code: 200, msg: '首页api', time: new Date().toISOString() }
   }
 
   @Get('index')
