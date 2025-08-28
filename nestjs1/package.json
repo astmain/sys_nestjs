@@ -5,9 +5,9 @@
   "scripts": {
     "pnpmi": "           pnpm i && pnpm dev:generate && pnpm dev:push",
     "开发": "__________________________________________________________________",
-    "dev": "             dotenv -e .env.dev --  nest start  --watch",
-    "dev:generate": "    dotenv -e .env.dev --        npx prisma generate --schema=./schema.prisma  ",
-    "dev:push": "        dotenv -e .env.dev --        npx prisma db push  --schema=./schema.prisma  ",
+    "dev": "             dotenv -e .env/.dev --  nest start  --watch",
+    "dev:generate": "    dotenv -e .env/.dev  --        npx prisma generate --schema=./schema.prisma  ",
+    "dev:push": "        dotenv -e .env/.dev  --        npx prisma db push  --schema=./schema.prisma  ",
     "测试": "__________________________________________________________________",
     "docker": "          dotenv -e .env.docker --        nest start  --watch",
     "docker:generate": " dotenv -e .env.docker --        npx prisma generate --schema=./schema.prisma  ",

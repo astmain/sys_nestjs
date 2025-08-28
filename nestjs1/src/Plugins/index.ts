@@ -6,6 +6,7 @@ import { filter_error_sys } from './filter_error_sys'
 import { filter_response } from './filter_response'
 import { filter_request } from './filter_request'
 import { filter_dto } from './filter_dto'
+import { check_env } from './check_env'
 
 // 配置:函数
 export const Plugins = {
@@ -17,4 +18,5 @@ export const Plugins = {
   filter_response,
   filter_request,
   filter_dto,
+  check_env,
 }
