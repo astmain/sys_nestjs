@@ -7,7 +7,6 @@ import { ApiTags } from '@nestjs/swagger'
 import { Dec_public } from '@src/AppAuthorized'
 import { AppController, ApiGet } from '@src/Plugins/AppController'
 
-
 @ApiTags('测试')
 @Dec_public()
 @Controller()
@@ -46,4 +45,4 @@ export class test extends AppController {
   controllers: [test],
   providers: [],
 })
-export class test_module {}
+export class Module_test {}

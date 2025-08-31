@@ -1,11 +1,13 @@
 import { Get, Post, Controller, Module, Res, Param, Query } from '@nestjs/common'
 import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger'
 import { ParseIntPipe } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 
 // 自定义包
 import { Dec_public } from '@src/AppAuthorized'
 import { AppController, ApiGet } from '@src/Plugins/AppController'
 
+@ApiTags('测试')
 @Dec_public()
 @Controller()
 export class test extends AppController {
@@ -43,4 +45,4 @@ export class test extends AppController {
   controllers: [test],
   providers: [],
 })
-export class test_module {}
+export class Module_test {}

@@ -26,3 +26,11 @@
 
 # css/tailwindcss 使用规范:
 - 简洁的样式,不要使用阴影,不要使用动画
+
+
+
+# nestjs项目规范
+- 生产代码时,使用nestjs的swagger文档
+- 生产代码时,帮我写好ApiOperation注解
+- 生产代码时,帮我写好ApiTags注解
+- 生产代码时,参考src/home/test.ts文件的写法

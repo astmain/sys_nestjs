@@ -12,6 +12,8 @@ import {
   ApiOkResponse as _ApiOkResponse,
   ApiBadRequestResponse as _ApiBadRequestResponse,
   ApiExtraModels as _ApiExtraModels,
+
+
 } from '@nestjs/swagger'
 import {
   applyDecorators,
@@ -22,9 +24,11 @@ import {
   Req as _Req,
   Body as _Body,
   Param as _Param,
+  Query as _Query,
   Injectable as _Injectable,
   Inject as _Inject,
   Module as _Module,
+  ParseIntPipe as _ParseIntPipe,
 } from '@nestjs/common'
 
 import * as fs from 'fs'
@@ -48,6 +52,7 @@ export class AppController {
 export const ApiTags = _ApiTags
 export const ApiParam = _ApiParam
 export const ApiQuery = _ApiQuery
+export const ParseIntPipe = _ParseIntPipe
 export const Controller = _Controller
 export const Get = _Get
 export const Post = _Post
@@ -64,6 +69,7 @@ export const ApiOkResponse = _ApiOkResponse
 export const ApiBadRequestResponse = _ApiBadRequestResponse
 export const ApiExtraModels = _ApiExtraModels
 export const ApiResponse = _ApiResponse
+export const Query = _Query
 
 export function ApiPost(path?: string, summary?: string, description?: string) {
   return applyDecorators(Post(path), ApiOperation({ summary, description }))
