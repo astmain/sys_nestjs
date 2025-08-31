@@ -23,13 +23,14 @@ import {
   Body as _Body,
   Param as _Param,
   Injectable as _Injectable,
-  Inject,
+  Inject as _Inject,
   Module as _Module,
 } from '@nestjs/common'
 
 import * as fs from 'fs'
 import * as path from 'path'
 import { JwtService } from '@nestjs/jwt'
+import { PrismaClient } from '@prisma/client'
 
 @_Injectable()
 export class AppController {
@@ -37,8 +38,11 @@ export class AppController {
   public _ = _
   public fs = fs
   public path = path
-
   public my_jwt = new JwtService()
+
+  constructor(
+    @_Inject('my_prisma') public db: PrismaClient, //注入全局数据库
+  ) {}
 }
 
 export const ApiTags = _ApiTags

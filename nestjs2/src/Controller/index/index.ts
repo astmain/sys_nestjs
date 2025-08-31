@@ -19,14 +19,18 @@ export class index {
   @Get('doc')
   @ApiOperation({ summary: '访问doc重定向到开发文档' })
   async doc(@Res() res) {
-    return res.redirect('http://127.0.0.1:6666/doc.html')
+    const url = process.env.VITE_url_app_run + '/doc.html'
+    console.log('重定向到swagger文档url', url)
+    return res.redirect(url)
   }
 
   // 重定向到swagger文档
   @Get('docs')
   @ApiOperation({ summary: '方法docs重定向到开发文档' })
   async docs(@Res() res) {
-    return res.redirect('http://127.0.0.1:6666/doc.html')
+    const url = process.env.VITE_url_app_run + '/doc.html'
+    console.log('重定向到swagger文档url', url)
+    return res.redirect(url)
   }
 
   @Get('index')

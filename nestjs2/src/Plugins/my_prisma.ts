@@ -15,6 +15,7 @@ interface Opt {
 })
 export class my_prisma {
   static make_path(opt: Opt): DynamicModule {
+    console.log('my_prisma---opt:', opt)
     let result = {
       module: my_prisma,
       providers: [{ provide: 'my_prisma', useValue: prisma_instance }],

@@ -1,0 +1,44 @@
+import { Get, Post, Controller, Module, Res } from '@nestjs/common'
+import { ApiOperation } from '@nestjs/swagger'
+
+import { AppController } from '@src/Plugins/AppController'
+// 自定义包
+import { Dec_public } from '@src/AppAuthorized'
+
+@Dec_public()
+@Controller()
+export class test  extends AppController{
+  @Get('test_create')
+  @ApiOperation({ summary: '测试创建数据' })
+  async test_create(@Res() res) {
+    const data = await this.db.tb_test.create({ data: { name: 'test', age: 18 } })
+    return { code: 200, msg: '成功:测试创建数据', result: data }
+  }
+
+  @Get('update_delete')
+  @ApiOperation({ summary: '测试更新数据' })
+  async update_delete(@Res() res) {
+    const data = await this.db.tb_test.update({ where: { id: 1 }, data: { name: 'test2', age: 20 } })
+    return { code: 200, msg: '成功:测试更新数据', result: data }
+  }
+
+  @Get('test_find')
+  @ApiOperation({ summary: '测试查询数据' })
+  async test_find(@Res() res) {
+    const data = await this.db.tb_test.findMany()
+    return { code: 200, msg: '成功:测试查询数据', result: data }
+  }
+
+  @Get('test_delete')
+  @ApiOperation({ summary: '测试删除数据' })
+  async test_delete(@Res() res) {
+    const data = await this.db.tb_test.delete({ where: { id: 1 } })
+    return { code: 200, msg: '成功:测试删除数据', result: data }
+  }
+}
+
+@Module({
+  controllers: [test],
+  providers: [],
+})
+export class test_module {}
