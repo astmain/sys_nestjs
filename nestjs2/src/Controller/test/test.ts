@@ -1,5 +1,6 @@
-import { Get, Post, Controller, Module, Res, Param } from '@nestjs/common'
+import { Get, Post, Controller, Module, Res, Param, Query } from '@nestjs/common'
 import { ApiOperation, ApiParam } from '@nestjs/swagger'
+import { ParseIntPipe } from '@nestjs/common'
 
 import { AppController, ApiGet } from '@src/Plugins/AppController'
 // 自定义包
@@ -30,10 +31,10 @@ export class test extends AppController {
   }
 
   @ApiGet('test_delete', '测试删除数据', '删除')
-  async test_delete(@Param('id') id: string) {
-    console.log('test_delete---id:', id)
-    const data = await this.db.tb_test.delete({ where: { id: 1 } })
-    return { code: 200, msg: '成功:测试删除数据', result: data }
+  async test_delete(@Query('id', ParseIntPipe) id: number) {
+    console.log('test_delete---id:', id, typeof id)
+    // const data = await this.db.tb_test.delete({ where: { id: 1 } })
+    // return { code: 200, msg: '成功:测试删除数据', result: data }
   }
 }
 
