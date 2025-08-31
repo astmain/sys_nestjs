@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PickType, PartialType } from '@nestjs/swagger'
+import { ApiProperty, PickType } from '@nestjs/swagger'
 import { IsNumber, IsString, IsNotEmpty } from 'class-validator'
 
 export class demo_dto {

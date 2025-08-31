@@ -1,5 +1,5 @@
-import { Get, Post, Controller, Module, Res, Param, Query } from '@nestjs/common'
-import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger'
+import { Get, Controller, Module, Query } from '@nestjs/common'
+import { ApiOperation, ApiQuery } from '@nestjs/swagger'
 import { ParseIntPipe } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 
