@@ -1,10 +1,11 @@
 import { Get, Post, Controller, Module, Res } from '@nestjs/common'
-import { ApiOperation } from '@nestjs/swagger'
+import { ApiOperation, ApiTags } from '@nestjs/swagger'
 
 // 自定义包
 import { Dec_public } from '@src/AppAuthorized'
 import { check_env } from '@src/Plugins/check_env'
 
+@ApiTags('首页')
 @Dec_public()
 @Controller()
 export class index {
