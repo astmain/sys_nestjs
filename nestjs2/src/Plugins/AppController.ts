@@ -68,3 +68,9 @@ export const ApiResponse = _ApiResponse
 export function ApiPost(path?: string, summary?: string, description?: string) {
   return applyDecorators(Post(path), ApiOperation({ summary, description }))
 }
+
+
+export function ApiGet(path?: string, summary?: string, description?: string) {
+  return applyDecorators(Get(path), ApiOperation({ summary, description }))
+}
+
