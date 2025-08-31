@@ -5,6 +5,10 @@ import { Plugins } from './Plugins'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   const { env_curr_back_description } = Plugins.check_env()
+  
+  // 设置全局前缀
+  app.setGlobalPrefix('v1')
+  
   await Plugins.filter_cors(app) // 配置跨域
   await Plugins.swagger_Knife4j(app) // 配置swagger
   await app.listen(Number(process.env.VITE_port))
