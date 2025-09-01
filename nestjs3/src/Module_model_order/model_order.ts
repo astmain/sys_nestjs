@@ -29,7 +29,7 @@ export class model_order extends AppController {
   async find_model_order(@Body() body: dto.find_model_order) {
     console.log('find_model_order---body:', body)
     const data = await this.db.tb_model_order.findMany({
-      where: { model_order_id: body.model_order_id || undefined, status: body.status || undefined, },
+      where: { model_order_id: body.model_order_id || undefined, status: body.status || undefined },
     })
     console.log('find_model_order---data:', data)
     return { code: 200, msg: '成功:查询订单', result: data }
@@ -38,11 +38,11 @@ export class model_order extends AppController {
   @ApiPost('find_model_order_page', '分页查询订单')
   async find_model_order_page(@Body() body: dto.find_model_order_page) {
     console.log('find_model_order_page---body:', body)
-    
+
     // 设置默认分页参数
-    const page = body.page || 1
+    const page_index = body.page_index || 1
     const page_size = body.page_size || 10
-    const skip = (page - 1) * page_size
+    const skip = (page_index - 1) * page_size
 
     // 构建查询条件
     const where_condition: any = {}
@@ -59,21 +59,21 @@ export class model_order extends AppController {
         where: where_condition,
         skip: skip,
         take: page_size,
-        orderBy: { created_at: 'desc' }
+        orderBy: { created_at: 'desc' },
       }),
       this.db.tb_model_order.count({
-        where: where_condition
-      })
+        where: where_condition,
+      }),
     ])
 
     const result = {
       list: data,
       pagination: {
-        page: page,
+        page_index: page_index,
         page_size: page_size,
-        total: total,
-        total_pages: Math.ceil(total / page_size)
-      }
+        count_total: total,
+        page_total: Math.ceil(total / page_size),
+      },
     }
 
     console.log('find_model_order_page---result:', result)

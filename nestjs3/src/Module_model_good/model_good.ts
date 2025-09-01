@@ -68,9 +68,9 @@ export class model_good extends AppController {
     console.log('find_model_good_page---body:', body)
 
     // 设置默认分页参数
-    const page = body.page_index || 1
+    const page_index = body.page_index || 1
     const page_size = body.page_size || 10
-    const skip = (page - 1) * page_size
+    const skip = (page_index - 1) * page_size
 
     // 构建查询条件
     const where_condition: any = {}
@@ -83,7 +83,7 @@ export class model_good extends AppController {
       this.db.tb_model_good.count({ where: where_condition }),
     ])
 
-    const result = { list: data, pagination: { page: page, page_size: page_size, total: total, total_pages: Math.ceil(total / page_size) } }
+    const result = { list: data, pagination: { page_index: page_index, page_size: page_size, count_total: total, page_total: Math.ceil(total / page_size) } }
     console.log('find_model_good_page---result:', result)
     return { code: 200, msg: '成功:分页查询模型商品', result: result }
   }

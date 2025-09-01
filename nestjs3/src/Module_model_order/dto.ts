@@ -52,7 +52,7 @@ export class find_model_order_page {
   @ApiProperty({ description: '页码', example: 1, required: false })
   @IsNumber()
   @IsOptional()
-  page?: number
+  page_index?: number
 
   @ApiProperty({ description: '每页数量', example: 10, required: false })
   @IsNumber()
