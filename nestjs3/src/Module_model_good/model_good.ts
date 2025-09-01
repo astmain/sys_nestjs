@@ -63,6 +63,31 @@ export class model_good extends AppController {
     return { code: 200, msg: '成功:查询模型商品', result: data }
   }
 
+  @ApiPost('find_model_good_page', '分页查询模型商品')
+  async find_model_good_page(@Body() body: dto.find_model_good_page) {
+    console.log('find_model_good_page---body:', body)
+
+    // 设置默认分页参数
+    const page = body.page_index || 1
+    const page_size = body.page_size || 10
+    const skip = (page - 1) * page_size
+
+    // 构建查询条件
+    const where_condition: any = {}
+    if (body.title) where_condition.title = { contains: body.title }
+    if (body.author_name) where_condition.author_name = { contains: body.author_name }
+
+    // 查询数据和总数
+    const [data, total] = await Promise.all([
+      this.db.tb_model_good.findMany({ where: where_condition, skip: skip, take: page_size, orderBy: { created_at: 'desc' } }),
+      this.db.tb_model_good.count({ where: where_condition }),
+    ])
+
+    const result = { list: data, pagination: { page: page, page_size: page_size, total: total, total_pages: Math.ceil(total / page_size) } }
+    console.log('find_model_good_page---result:', result)
+    return { code: 200, msg: '成功:分页查询模型商品', result: result }
+  }
+
   @ApiGet('delete_model_good', '删除模型商品')
   @ApiQuery({ name: 'id', description: '删除id', required: true, type: Number, example: 1 })
   async delete_model_good(@Query('id', ParseIntPipe) id: number) {

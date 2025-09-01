@@ -68,3 +68,26 @@ export class find_model_good {
   @IsOptional()
   author_name?: string
 }
+
+// 分页查询DTO
+export class find_model_good_page {
+  @ApiProperty({ description: '标题', example: 'AI绘画模型', required: false })
+  @IsString({ message: 'title必须为字符串' })
+  @IsOptional()
+  title?: string
+
+  @ApiProperty({ description: '作者名称', example: '张三', required: false })
+  @IsString({ message: 'author_name必须为字符串' })
+  @IsOptional()
+  author_name?: string
+
+  @ApiProperty({ description: '页码', example: 1, required: true })
+  @IsNumber()
+  @IsOptional()
+  page_index?: number
+
+  @ApiProperty({ description: '每页数量', example: 10, required: true })
+  @IsNumber()
+  @IsOptional()
+  page_size?: number
+}

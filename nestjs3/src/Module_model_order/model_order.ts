@@ -35,6 +35,51 @@ export class model_order extends AppController {
     return { code: 200, msg: '成功:查询订单', result: data }
   }
 
+  @ApiPost('find_model_order_page', '分页查询订单')
+  async find_model_order_page(@Body() body: dto.find_model_order_page) {
+    console.log('find_model_order_page---body:', body)
+    
+    // 设置默认分页参数
+    const page = body.page || 1
+    const page_size = body.page_size || 10
+    const skip = (page - 1) * page_size
+
+    // 构建查询条件
+    const where_condition: any = {}
+    if (body.model_order_id) {
+      where_condition.model_order_id = { contains: body.model_order_id }
+    }
+    if (body.status) {
+      where_condition.status = body.status
+    }
+
+    // 查询数据和总数
+    const [data, total] = await Promise.all([
+      this.db.tb_model_order.findMany({
+        where: where_condition,
+        skip: skip,
+        take: page_size,
+        orderBy: { created_at: 'desc' }
+      }),
+      this.db.tb_model_order.count({
+        where: where_condition
+      })
+    ])
+
+    const result = {
+      list: data,
+      pagination: {
+        page: page,
+        page_size: page_size,
+        total: total,
+        total_pages: Math.ceil(total / page_size)
+      }
+    }
+
+    console.log('find_model_order_page---result:', result)
+    return { code: 200, msg: '成功:分页查询订单', result: result }
+  }
+
   @ApiGet('delete_model_order', '删除订单')
   @ApiQuery({ name: 'id', description: '删除id', required: true, type: Number, example: 1 })
   async delete_model_order(@Query('id', ParseIntPipe) id: number) {
