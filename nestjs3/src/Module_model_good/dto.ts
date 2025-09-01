@@ -51,11 +51,31 @@ export class model_good_dto {
   @IsNumber()
   @IsNotEmpty({ message: 'price_all不能为空' })
   price_all: number
+
+  @ApiProperty({ description: '是否删除', example: false })
+  @IsOptional()
+  is_deleted?: boolean
+
+  @ApiProperty({ description: '是否发布', example: false })
+  @IsOptional()
+  is_published?: boolean
 }
 
 export class create_model_good extends PickType(model_good_dto, ['model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
 
 export class update_model_good extends PickType(model_good_dto, ['id', 'model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
+
+// 发布状态更新DTO
+export class update_publish_status {
+  @ApiProperty({ description: '模型商品id', example: 1 })
+  @IsNumber()
+  @IsNotEmpty({ message: 'id不能为空' })
+  id: number
+
+  @ApiProperty({ description: '是否发布', example: true })
+  @IsOptional()
+  is_published?: boolean
+}
 
 // 查询模型DTO（按收藏数排序）
 export class find_model_good {
@@ -91,4 +111,12 @@ export class find_model_good {
   @IsOptional()
   @IsIn(['asc', 'desc'], { message: 'order_type必须是asc或desc' })
   order_type?: string
+
+  @ApiProperty({ description: '是否包含已删除记录', example: false, required: false })
+  @IsOptional()
+  include_deleted?: boolean
+
+  @ApiProperty({ description: '是否只查询已发布的', example: true, required: false })
+  @IsOptional()
+  only_published?: boolean
 }
