@@ -1,4 +1,4 @@
-import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, ParseIntPipe } from '@src/Plugins/AppController'
+import { ApiGet, ApiPost, ApiQuery, ApiTags, AppController, Body, Controller, Module, ParseIntPipe, Query } from '@src/Plugins/AppController'
 
 import { Dec_public } from '@src/AppAuthorized'
 
@@ -57,10 +57,11 @@ export class model_kind extends AppController {
   async init_model_kind(@Query('password', ParseIntPipe) password: number) {
     if (password !== 123456) return { code: 400, msg: '失败:初始化数据密码', result: null }
     await this.db.tb_model_kind.deleteMany()
-    await this.db.tb_model_kind.create({ data: { id: 1, name: '汽车', children: { create: [{ name: '跑车' }, { name: '轿车' }, { name: 'SUV' }] } } })
-    await this.db.tb_model_kind.create({ data: { id: 2, name: '飞机', children: { create: [{ name: '战斗机' }, { name: '轰炸机' }, { name: '运输机' }] } } })
-    await this.db.tb_model_kind.create({ data: { id: 3, name: '人物', children: { create: [{ name: '男生' }, { name: '女生' }] } } })
-    await this.db.tb_model_kind.create({ data: { id: 4, name: '动物', children: { create: [{ name: '狗' }, { name: '猫' }, { name: '猪' }] } } })
+    await this.db.tb_model_kind.create({ data: { id: 1, name: '汽车', children: { create: [{ name: '全部' }, { name: '跑车' }, { name: '轿车' }, { name: 'SUV' }] } } })
+    await this.db.tb_model_kind.create({ data: { id: 2, name: '飞机', children: { create: [{ name: '全部' }, { name: '战斗机' }, { name: '轰炸机' }, { name: '运输机' }] } } })
+    await this.db.tb_model_kind.create({ data: { id: 3, name: '人物', children: { create: [{ name: '全部' }, { name: '男生' }, { name: '女生' }] } } })
+    await this.db.tb_model_kind.create({ data: { id: 4, name: '动物', children: { create: [{ name: '全部' }, { name: '狗' }, { name: '猫' }, { name: '猪' }] } } })
+    await this.db.tb_model_kind.create({ data: { id: 5, name: '其他', children: { create: [{ name: '全部' }] } } })
     const list = await this.db.tb_model_kind.findMany()
     return { code: 200, msg: '成功:初始-模型分类数据', result: { list } }
   }
