@@ -103,6 +103,49 @@ export class model_good extends AppController {
     const data = await this.db.tb_model_good.findUnique({ where: { id: id } })
     return { code: 200, msg: '成功:获取模型商品', result: data }
   }
+
+  @ApiPost('find_model_by_collect', '查询模型（按收藏数排序）')
+  async find_model_by_collect(@Body() body: dto.find_model_by_collect) {
+    console.log('find_model_by_collect---body:', body)
+
+    // 设置默认分页参数
+    const page_index = body.page_index || 1
+    const page_size = body.page_size || 10
+    const skip = (page_index - 1) * page_size
+
+    // 构建查询条件
+    const where_condition: any = {}
+    if (body.title) where_condition.title = { contains: body.title }
+    if (body.author_name) where_condition.author_name = { contains: body.author_name }
+
+    // 设置排序参数
+    const order_by = body.order_by || 'count_collect'
+    const order_type = body.order_type || 'desc'
+    const orderBy = { [order_by]: order_type }
+
+    // 查询数据和总数（按指定字段排序）
+    const [data, total] = await Promise.all([
+      this.db.tb_model_good.findMany({ 
+        where: where_condition, 
+        skip: skip, 
+        take: page_size, 
+        orderBy: orderBy
+      }),
+      this.db.tb_model_good.count({ where: where_condition }),
+    ])
+
+    const result = { 
+      list: data, 
+      pagination: { 
+        page_index: page_index, 
+        page_size: page_size, 
+        count_total: total, 
+        page_total: Math.ceil(total / page_size) 
+      } 
+    }
+    console.log('find_model_by_collect---result:', result)
+    return { code: 200, msg: '成功:查询模型（按收藏数排序）', result: result }
+  }
 }
 
 @Module({
