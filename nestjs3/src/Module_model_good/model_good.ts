@@ -50,44 +50,6 @@ export class model_good extends AppController {
     return { code: 200, msg: '成功:更新模型商品', result: data }
   }
 
-  @ApiPost('find_model_good', '查询模型商品')
-  async find_model_good(@Body() body: dto.find_model_good) {
-    console.log('find_model_good---body:', body)
-    const data = await this.db.tb_model_good.findMany({
-      where: {
-        title: body.title || undefined,
-        author_name: body.author_name || undefined,
-      },
-    })
-    console.log('find_model_good---data:', data)
-    return { code: 200, msg: '成功:查询模型商品', result: data }
-  }
-
-  @ApiPost('find_model_good_page', '分页查询模型商品')
-  async find_model_good_page(@Body() body: dto.find_model_good_page) {
-    console.log('find_model_good_page---body:', body)
-
-    // 设置默认分页参数
-    const page_index = body.page_index || 1
-    const page_size = body.page_size || 10
-    const skip = (page_index - 1) * page_size
-
-    // 构建查询条件
-    const where_condition: any = {}
-    if (body.title) where_condition.title = { contains: body.title }
-    if (body.author_name) where_condition.author_name = { contains: body.author_name }
-
-    // 查询数据和总数
-    const [data, total] = await Promise.all([
-      this.db.tb_model_good.findMany({ where: where_condition, skip: skip, take: page_size, orderBy: { created_at: 'desc' } }),
-      this.db.tb_model_good.count({ where: where_condition }),
-    ])
-
-    const result = { list: data, pagination: { page_index: page_index, page_size: page_size, count_total: total, page_total: Math.ceil(total / page_size) } }
-    console.log('find_model_good_page---result:', result)
-    return { code: 200, msg: '成功:分页查询模型商品', result: result }
-  }
-
   @ApiGet('delete_model_good', '删除模型商品')
   @ApiQuery({ name: 'id', description: '删除id', required: true, type: Number, example: 1 })
   async delete_model_good(@Query('id', ParseIntPipe) id: number) {
@@ -104,9 +66,9 @@ export class model_good extends AppController {
     return { code: 200, msg: '成功:获取模型商品', result: data }
   }
 
-  @ApiPost('find_model_by_collect', '查询模型（按收藏数排序）')
+  @ApiPost('find_model_good', '查询模型(分页排序)')
   async find_model_by_collect(@Body() body: dto.find_model_by_collect) {
-    console.log('find_model_by_collect---body:', body)
+    console.log('delete_model_good---body:', body)
 
     // 设置默认分页参数
     const page_index = body.page_index || 1
@@ -124,27 +86,14 @@ export class model_good extends AppController {
     const orderBy = { [order_by]: order_type }
 
     // 查询数据和总数（按指定字段排序）
-    const [data, total] = await Promise.all([
-      this.db.tb_model_good.findMany({ 
-        where: where_condition, 
-        skip: skip, 
-        take: page_size, 
-        orderBy: orderBy
-      }),
+    const [list, count_total] = await Promise.all([
+      this.db.tb_model_good.findMany({ where: where_condition, skip: skip, take: page_size, orderBy: orderBy }),
       this.db.tb_model_good.count({ where: where_condition }),
     ])
 
-    const result = { 
-      list: data, 
-      pagination: { 
-        page_index: page_index, 
-        page_size: page_size, 
-        count_total: total, 
-        page_total: Math.ceil(total / page_size) 
-      } 
-    }
+    const result = { list, pagination: { page_index, page_size, count_total, page_total: Math.ceil(count_total / page_size) } }
     console.log('find_model_by_collect---result:', result)
-    return { code: 200, msg: '成功:查询模型（按收藏数排序）', result: result }
+    return { code: 200, msg: '成功:查询模型', result: result }
   }
 }
 
