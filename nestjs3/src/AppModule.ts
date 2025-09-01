@@ -5,7 +5,7 @@ import { AppAuthorized_module } from './AppAuthorized'
 import { Module_home } from './index/Module_home/home'
 import { Module_test } from './index/Module_test/test'
 import { Module_demo } from './index/Module_demo/demo'
-import { Module_model_shop } from './Module_model_shop/model_shop'
+import { Module_model_good } from './Module_model_good/model_good'
 import { Module_model_order } from './Module_model_order/model_order'
 
 @Module({
@@ -15,7 +15,7 @@ import { Module_model_order } from './Module_model_order/model_order'
     Module_home, //首页
     Module_test, //测试
     Module_demo, //示例
-    Module_model_shop, //模型商城
+    Module_model_good, //模型商品
     Module_model_order, //模型订单
   ],
   controllers: [],

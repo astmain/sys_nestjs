@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
 import { IsNumber, IsString, IsNotEmpty, IsOptional } from 'class-validator'
 
-export class model_shop_dto {
+export class model_good_dto {
   @ApiProperty({ description: 'id', example: 1 })
   @IsNumber()
   @IsNotEmpty({ message: 'id不能为空' })
@@ -53,11 +53,11 @@ export class model_shop_dto {
   price_all: number
 }
 
-export class create_model_shop extends PickType(model_shop_dto, ['model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
+export class create_model_good extends PickType(model_good_dto, ['model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
 
-export class update_model_shop extends PickType(model_shop_dto, ['id', 'model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
+export class update_model_good extends PickType(model_good_dto, ['id', 'model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
 
-export class find_model_shop {
+export class find_model_good {
   @ApiProperty({ description: '标题', example: 'AI绘画模型', required: false })
   @IsString({ message: 'title必须为字符串' })
   @IsOptional()
@@ -67,4 +67,4 @@ export class find_model_shop {
   @IsString({ message: 'author_name必须为字符串' })
   @IsOptional()
   author_name?: string
-} 
+}

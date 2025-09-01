@@ -18,8 +18,8 @@ model tb_test {
   age  Int
 }
 
-// 模型商城表
-model tb_model_shop {
+// 模型商品表
+model tb_model_good {
   id              Int      @id @default(autoincrement())
   model_id        String
   title           String
