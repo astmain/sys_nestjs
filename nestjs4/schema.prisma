@@ -34,8 +34,12 @@ model tb_model_good {
   is_published    Boolean  @default(false)
   is_check        Boolean  @default(false)
   is_check_remark String?
+  category_id     Int?     // 关联分类ID
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
+
+  // 关联关系
+  category        tb_model_kind? @relation(fields: [category_id], references: [id])
 }
 
 // 模型订单表
@@ -45,4 +49,26 @@ model tb_model_order {
   status         String
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+}
+
+// 模型分类表
+model tb_model_kind {
+  id              Int      @id @default(autoincrement())
+  name            String
+  parent_id       Int?
+  level           Int
+  category_type   String   // free, paid
+  category_style  String?  // simple, modern, industrial
+  category_format String?  // stl, obj, igs
+  category_kind   String?  // person, car, plane, furniture
+  furniture_type  String?  // chair, bed, table, cabinet
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // 关联关系
+  parent          tb_model_kind?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
+  children        tb_model_kind[] @relation("CategoryHierarchy")
+  
+  // 与商品表的关联
+  goods           tb_model_good[]
 }

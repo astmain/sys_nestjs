@@ -7,6 +7,7 @@ import { Module_test } from './index/Module_test/test'
 import { Module_demo } from './index/Module_demo/demo'
 import { Module_model_good } from './Module_model_good/model_good'
 import { Module_model_order } from './Module_model_order/model_order'
+import { Module_model_kind } from './Module_model_kind/model_kind'
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Module_model_order } from './Module_model_order/model_order'
     Module_demo, //示例
     Module_model_good, //模型商品
     Module_model_order, //模型订单
+    Module_model_kind, //模型分类
   ],
   controllers: [],
   providers: [],
