@@ -57,7 +57,15 @@ model tb_model_good {
 
 // 模型购物车
 model tb_model_card {
-  id Int @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
+  user_id      String   @default("")
+  model_id     String   @default("")
+  model_title  String   @default("")
+  model_price  Int      @default(0)
+  model_format String   @default("")
+  is_deleted   Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }
 
 // 模型订单表
