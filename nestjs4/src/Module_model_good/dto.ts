@@ -42,15 +42,20 @@ export class model_good_dto {
   @IsNotEmpty({ message: 'count_download不能为空' })
   count_download: number = 0
 
-  @ApiProperty({ description: '授权价30天', example: 29.9 })
+  @ApiProperty({ description: '授权个人', example: 29.9 })
   @IsNumber()
-  @IsNotEmpty({ message: 'price_30不能为空' })
-  price_30: number = 0
+  @IsNotEmpty({ message: 'price_personal不能为空' })
+  price_personal: number = 0
 
-  @ApiProperty({ description: '授权永久', example: 199.9 })
+  @ApiProperty({ description: '授权公司', example: 29.9 })
   @IsNumber()
-  @IsNotEmpty({ message: 'price_all不能为空' })
-  price_all: number = 0
+  @IsNotEmpty({ message: 'price_company不能为空' })
+  price_company: number = 0
+
+  @ApiProperty({ description: '授权扩展', example: 29.9 })
+  @IsNumber()
+  @IsNotEmpty({ message: 'price_extend不能为空' })
+  price_extend: number = 0
 
   @ApiProperty({ description: '是否删除', example: false })
   @IsOptional()
@@ -119,8 +124,9 @@ export class create_model_good extends PickType(model_good_dto, [
   'count_collect',
   'count_download',
   'is_published',
-  'price_30',
-  'price_all',
+  'price_personal',
+  'price_company',
+  'price_extend',
   'is_free',
   'is_business',
   'is_skeleton',
@@ -141,8 +147,9 @@ export class update_model_good extends PickType(model_good_dto, [
   'count_collect',
   'count_download',
   'is_published',
-  'price_30',
-  'price_all',
+  'price_personal',
+  'price_company',
+  'price_extend',
   'is_free',
   'is_business',
   'is_skeleton',
@@ -215,7 +222,7 @@ export class find_list_model_good {
   @ApiProperty({ description: '排序字段', example: 'count_collect', required: false })
   @IsString({ message: 'order_by必须为字符串' })
   @IsOptional()
-  @IsIn(['count_collect', 'count_download', 'price_30', 'price_all'], { message: 'order_by必须是:count_collect,count_download,price_30,price_all' })
+  @IsIn(['count_collect', 'count_download', 'price_personal', 'price_company', 'price_extend'], { message: 'order_by必须是:count_collect,count_download,price_personal,price_company,price_extend' })
   order_by?: string
 
   @ApiProperty({ description: '排序方式[asc,desc]', example: 'desc', required: false })
@@ -226,13 +233,13 @@ export class find_list_model_good {
 
   @ApiProperty({ description: '是否包含已删除记录', example: false, required: false })
   @IsOptional()
-  include_deleted?: boolean
+  is_deleted?: boolean
 
   @ApiProperty({ description: '是否只查询已发布的', example: true, required: false })
   @IsOptional()
-  only_published?: boolean
+  is_published?: boolean
 
   @ApiProperty({ description: '是否只查询已审核通过的', example: true, required: false })
   @IsOptional()
-  only_check?: boolean
+  is_check?: boolean
 }

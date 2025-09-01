@@ -46,7 +46,23 @@ export class create_demo extends PickType(demo_dto, ['name', 'remark', 'price_pe
 export class update_demo extends PickType(demo_dto, ['id', 'name', 'remark', 'price_personal', 'price_company', 'price_extend']) {}
 
 // find_list_demo命名规范和接口的函数名统一一致性,方便阅读
-export class find_list_demo extends PickType(demo_dto, ['name']) {}
+export class find_list_demo extends PickType(demo_dto, ['name']) {
+  @ApiProperty({ description: '页码', example: 1, required: true })
+  @IsNumber()
+  page_index: number = 1
+
+  @ApiProperty({ description: '每页数量', example: 10, required: true })
+  @IsNumber()
+  page_size: number = 10
+
+  @ApiProperty({ description: '排序字段', example: 'id', required: true })
+  @IsString()
+  order_by: string = 'id'
+
+  @ApiProperty({ description: '排序方式', example: 'desc', required: true })
+  @IsString()
+  order_type: string = 'desc'
+}
 
 // find_info_demo命名规范和接口的函数名统一一致性,方便阅读
 export class find_info_demo extends PickType(demo_dto, ['id']) {}
