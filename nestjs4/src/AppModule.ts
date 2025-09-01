@@ -9,7 +9,6 @@ import { Module_model_good } from './Module_model_good/model_good'
 import { Module_model_order } from './Module_model_order/model_order'
 import { Module_model_kind } from './Module_model_kind/model_kind'
 
-
 @Module({
   imports: [
     my_prisma.make_path({ path: '/v1' }), //数据库prisma
@@ -17,10 +16,9 @@ import { Module_model_kind } from './Module_model_kind/model_kind'
     Module_home, //首页
     Module_test, //测试
     Module_demo, //示例
+    Module_model_kind, //模型分类
     Module_model_good, //模型商品
     Module_model_order, //模型订单
-    Module_model_kind, //模型分类
-
   ],
   controllers: [],
   providers: [],
