@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "pnpmi": "           pnpm i && pnpm dev:generate && pnpm dev:push",
-    "开发": "__________________________________________________________________",
+    "make": "           pnpm i && pnpm dev:generate && pnpm dev:push",
     "dev": "             dotenv -e env/dev  --     nest start  --watch",
     "dev:generate": "    dotenv -e env/dev  --     npx prisma generate --schema=./schema.prisma  ",
     "dev:push": "        dotenv -e env/dev  --     npx prisma db push  --schema=./schema.prisma  ",

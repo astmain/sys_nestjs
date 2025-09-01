@@ -1,15 +1,18 @@
-// 通用包
+// 基础包
+// 通常要使用的包(已经封装置AppController中,可以直接使用,减少import的容易引入)
 import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, ParseIntPipe } from '@src/Plugins/AppController'
 
-// 自定义包
+// 开放接口
+// 装饰器,开放接口,不需要验证
 import { Dec_public } from '@src/AppAuthorized'
 
 // 自定义dto
+// dto  * as dto 统一到处方便使用
 import * as dto from './dto'
 
 @ApiTags('示例代码')
 @Dec_public()
-@Controller()
+@Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class demo extends AppController {
   @ApiPost('create_demo', '创建数据')
   async create_demo(@Body() body: dto.create_demo) {
@@ -42,6 +45,7 @@ export class demo extends AppController {
   }
 }
 
+// 模块层直接写在当前文件中,导入控制器层,方便其他模块导入使用
 @Module({
   controllers: [demo],
   providers: [],
