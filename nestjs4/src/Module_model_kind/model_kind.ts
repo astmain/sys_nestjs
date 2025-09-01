@@ -52,7 +52,7 @@ export class model_kind extends AppController {
     return { code: 200, msg: '成功:查询-模型分类-树状结构', result: tree_data }
   }
 
-  @ApiGet('init_model_kind', '初始-模型分类数据')
+  @ApiGet('init_model_kind', '初始-模型分类')
   @ApiQuery({ name: 'password', description: '初始化数据密码', required: true, type: Number })
   async init_model_kind(@Query('password', ParseIntPipe) password: number) {
     if (password !== 123456) return { code: 400, msg: '失败:初始化数据密码', result: null }

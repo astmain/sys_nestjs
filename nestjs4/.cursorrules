@@ -30,7 +30,4 @@
 
 
 # nestjs项目规范
-- 生产代码时,使用nestjs的swagger文档
-- 生产代码时,帮我写好ApiOperation注解
-- 生产代码时,帮我写好ApiTags注解
-- 生产代码时,参考src/home/test.ts文件的写法
+- 在写代码时,参考src/index/Module_demo/demo.ts文件的写法

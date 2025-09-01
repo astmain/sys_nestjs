@@ -11,7 +11,7 @@ import * as dto from './dto'
 @Dec_public()
 @Controller()
 export class model_good extends AppController {
-  @ApiPost('create_model_good', '创建模型商品')
+  @ApiPost('create_model_good', '新增-模型商品')
   async create_model_good(@Body() body: dto.create_model_good) {
     console.log('create_model_good---body:', body)
     const data = await this.db.tb_model_good.create({
@@ -25,12 +25,20 @@ export class model_good extends AppController {
         count_download: body.count_download,
         price_30: body.price_30,
         price_all: body.price_all,
+        is_free: body.is_free,
+        is_business: body.is_business,
+        is_skeleton: body.is_skeleton,
+        is_animation: body.is_animation,
+        model_format: body.model_format,
+        model_texture: body.model_texture as any,
+        area_unit: body.area_unit,
+        wiring: body.wiring,
       },
     })
-    return { code: 200, msg: '成功:创建模型商品', result: data }
+    return { code: 200, msg: '成功:新增-模型商品', result: data }
   }
 
-  @ApiPost('update_model_good', '更新模型商品')
+  @ApiPost('update_model_good', '更新-模型商品')
   async update_model_good(@Body() body: dto.update_model_good) {
     console.log('update_model_good---body:', body)
     const data = await this.db.tb_model_good.update({
@@ -45,65 +53,30 @@ export class model_good extends AppController {
         count_download: body.count_download,
         price_30: body.price_30,
         price_all: body.price_all,
+        is_free: body.is_free,
+        is_business: body.is_business,
+        is_skeleton: body.is_skeleton,
+        is_animation: body.is_animation,
+        model_format: body.model_format,
+        model_texture: body.model_texture as any,
+        area_unit: body.area_unit,
+        wiring: body.wiring,
       },
     })
-    return { code: 200, msg: '成功:更新模型商品', result: data }
+    return { code: 200, msg: '成功:更新-模型商品', result: data }
   }
 
-  @ApiGet('delete_model_good', '删除模型商品(逻辑删除)')
+  @ApiGet('delete_model_good', '删除-模型商品')
   @ApiQuery({ name: 'id', description: '删除id', required: true, type: Number, example: 1 })
   async delete_model_good(@Query('id', ParseIntPipe) id: number) {
     console.log('delete_model_good---id:', id, typeof id)
     const data = await this.db.tb_model_good.update({ where: { id: id }, data: { is_deleted: true } })
-    return { code: 200, msg: '成功:逻辑删除模型商品', result: data }
+    return { code: 200, msg: '成功:删除-模型商品', result: data }
   }
 
-  @ApiGet('restore_model_good', '恢复模型商品')
-  @ApiQuery({ name: 'id', description: '恢复id', required: true, type: Number, example: 1 })
-  async restore_model_good(@Query('id', ParseIntPipe) id: number) {
-    console.log('restore_model_good---id:', id, typeof id)
-    const data = await this.db.tb_model_good.update({ where: { id: id }, data: { is_deleted: false } })
-    return { code: 200, msg: '成功:恢复模型商品', result: data }
-  }
-
-  @ApiGet('get_model_good_by_id', '根据ID获取模型商品')
-  @ApiQuery({ name: 'id', description: '模型商品id', required: true, type: Number, example: 1 })
-  async get_model_good_by_id(@Query('id', ParseIntPipe) id: number) {
-    console.log('get_model_good_by_id---id:', id, typeof id)
-    const data = await this.db.tb_model_good.findFirst({
-      where: { id: id, is_deleted: false, is_published: true },
-    })
-    return { code: 200, msg: '成功:获取模型商品', result: data }
-  }
-
-  @ApiPost('update_publish_status', '更新模型商品发布状态')
-  async update_publish_status(@Body() body: dto.update_publish_status) {
-    console.log('update_publish_status---body:', body)
-    const data = await this.db.tb_model_good.update({
-      where: { id: body.id },
-      data: {
-        is_published: body.is_published,
-      },
-    })
-    return { code: 200, msg: '成功:更新发布状态', result: data }
-  }
-
-  @ApiPost('update_approval_status', '更新模型商品审核状态')
-  async update_approval_status(@Body() body: dto.update_approval_status) {
-    console.log('update_approval_status---body:', body)
-    const data = await this.db.tb_model_good.update({
-      where: { id: body.id },
-      data: {
-        is_check: body.is_check,
-        is_check_remark: body.is_check_remark,
-      },
-    })
-    return { code: 200, msg: '成功:更新审核状态', result: data }
-  }
-
-  @ApiPost('find_model_good', '查询模型商品(分页排序)')
-  async find_model_good(@Body() body: dto.find_model_good) {
-    console.log('find_model_good---body:', body)
+  @ApiPost('find_list_model_good', '查询-模型商品-列表')
+  async find_list_model_good(@Body() body: dto.find_list_model_good) {
+    console.log('find_list_model_good---body:', body)
 
     // 设置默认分页参数
     const page_index = body.page_index || 1
@@ -138,26 +111,43 @@ export class model_good extends AppController {
 
     // 查询数据和总数（按指定字段排序）
     const [list, count_total] = await Promise.all([
-      this.db.tb_model_good.findMany({
-        where: where_condition,
-        skip: skip,
-        take: page_size,
-        orderBy: orderBy,
-      }),
+      this.db.tb_model_good.findMany({ where: where_condition, skip: skip, take: page_size, orderBy: orderBy }),
       this.db.tb_model_good.count({ where: where_condition }),
     ])
 
     const result = {
       list,
-      pagination: {
-        page_index,
-        page_size,
-        count_total,
-        page_total: Math.ceil(count_total / page_size),
-      },
+      pagination: { page_index, page_size, count_total, page_total: Math.ceil(count_total / page_size) },
     }
-    console.log('find_model_good---result:', result)
+    console.log('find_list_model_good---result:', result)
     return { code: 200, msg: '成功:查询模型商品', result: result }
+  }
+
+  @ApiGet('find_info_model_good', '查询-模型商品-详情')
+  @ApiQuery({ name: 'id', description: '模型商品id', required: true, type: Number, example: 1 })
+  async find_info_model_good(@Query('id', ParseIntPipe) id: number) {
+    console.log('find_info_model_good---id:', id, typeof id)
+    const data = await this.db.tb_model_good.findFirst({
+      where: { id: id, is_deleted: false, is_published: true },
+    })
+    return { code: 200, msg: '成功:获取模型商品', result: data }
+  }
+
+  @ApiPost('save_admin_model_good', '(管理员)保存-模型商品')
+  async save_admin_model_good(@Body() body: dto.save_admin_model_good) {
+    console.log('save_admin_model_good---body:', body)
+    const { id, ...createData } = body
+    const one = await this.db.tb_model_good.upsert({
+      where: { id: body.id },
+      update: body,
+      create: {
+        model_id: createData.model_id || '',
+        ...createData,
+      },
+    })
+
+    let flag = id ? '更新' : '新增'
+    return { code: 200, msg: '成功:保存-模型商品-' + flag, result: one }
   }
 }
 

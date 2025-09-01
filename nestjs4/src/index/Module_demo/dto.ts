@@ -1,6 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
-import { IsNumber, IsString, IsNotEmpty } from 'class-validator'
-
+import { IsNumber, IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator'
 
 // 基础dto,方便其他dto集成减少冗余代码
 export class demo_dto {
@@ -14,19 +13,40 @@ export class demo_dto {
   @IsNotEmpty({ message: 'name不能为空' })
   name: string
 
-  @ApiProperty({ description: 'age', example: 18 })
+  @ApiProperty({ description: 'remark', example: 'test' })
+  @IsString({ message: 'remark必须为字符串' })
+  @IsNotEmpty({ message: 'remark不能为空' })
+  remark: string
+
+  @ApiProperty({ description: 'price_personal(个人授权价)', example: 0 })
   @IsNumber()
-  @IsNotEmpty({ message: 'age不能为空' })
-  age: number
+  @IsNotEmpty({ message: 'price_personal不能为空' })
+  price_personal: number
+
+  @ApiProperty({ description: 'price_company(企业授权价)', example: 0 })
+  @IsNumber()
+  @IsNotEmpty({ message: 'price_company不能为空' })
+  price_company: number
+
+  @ApiProperty({ description: 'price_extend(企业扩展授权价)', example: 0 })
+  @IsNumber()
+  @IsOptional()
+  price_extend: number
+
+  @ApiProperty({ description: 'list_img(图片列表)', example: [{ img: 'https://www.baidu.com/img/flexible/logo/pc/result.png' }] })
+  @IsOptional()
+  @IsArray()
+  list_img: any[]
 }
 
-
 // create_demo命名规范和接口的函数名统一一致性,方便阅读
-export class create_demo extends PickType(demo_dto, ['name', 'age']) {}
-
+export class create_demo extends PickType(demo_dto, ['name', 'remark', 'price_personal', 'price_company', 'price_extend']) {}
 
 // update_demo命名规范和接口的函数名统一一致性,方便阅读
-export class update_demo extends PickType(demo_dto, ['id', 'name', 'age']) {}
+export class update_demo extends PickType(demo_dto, ['id', 'name', 'remark', 'price_personal', 'price_company', 'price_extend']) {}
 
-// find_demo命名规范和接口的函数名统一一致性,方便阅读
-export class find_demo extends PickType(demo_dto, ['name']) {}
+// find_list_demo命名规范和接口的函数名统一一致性,方便阅读
+export class find_list_demo extends PickType(demo_dto, ['name']) {}
+
+// find_info_demo命名规范和接口的函数名统一一致性,方便阅读
+export class find_info_demo extends PickType(demo_dto, ['id']) {}
