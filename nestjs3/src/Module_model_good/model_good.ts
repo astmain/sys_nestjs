@@ -92,7 +92,7 @@ export class model_good extends AppController {
     ])
 
     const result = { list, pagination: { page_index, page_size, count_total, page_total: Math.ceil(count_total / page_size) } }
-    console.log('find_model_by_collect---result:', result)
+    console.log('find_model_good---result:', result)
     return { code: 200, msg: '成功:查询模型', result: result }
   }
 }
