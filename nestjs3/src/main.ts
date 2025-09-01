@@ -7,7 +7,7 @@ async function bootstrap() {
   const { env_curr_back_description } = Plugins.check_env()
   
   // 设置全局前缀
-  app.setGlobalPrefix('v1')
+  // app.setGlobalPrefix('v1')
   
   await Plugins.filter_cors(app) // 配置跨域
   await Plugins.swagger_Knife4j(app) // 配置swagger

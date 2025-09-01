@@ -9,9 +9,10 @@ import { check_env } from '@src/Plugins/check_env'
 @Dec_public()
 @Controller()
 export class home {
-  @Get()
+  @Get("")
   @ApiOperation({ summary: '首页api' })
   async api() {
+    // console.log('api---process.env:', process.env)
     const { env_curr_web_description } = check_env()
     return { code: 200, msg: '首页api', result: { env_curr_web_description } }
   }

@@ -14,18 +14,18 @@ export class model_shop extends AppController {
   @ApiPost('create_model_shop', '创建模型')
   async create_model_shop(@Body() body: dto.create_model_shop) {
     console.log('create_model_shop---body:', body)
-    const data = await this.db.tb_model_shop.create({ 
-      data: { 
-        model_id: body.model_id, 
-        title: body.title, 
-        description: body.description, 
-        author_name: body.author_name, 
-        author_id: body.author_id, 
-        count_collect: body.count_collect, 
-        count_download: body.count_download, 
-        price_30: body.price_30, 
-        price_all: body.price_all 
-      } 
+    const data = await this.db.tb_model_shop.create({
+      data: {
+        model_id: body.model_id,
+        title: body.title,
+        description: body.description,
+        author_name: body.author_name,
+        author_id: body.author_id,
+        count_collect: body.count_collect,
+        count_download: body.count_download,
+        price_30: body.price_30,
+        price_all: body.price_all,
+      },
     })
     return { code: 200, msg: '成功:创建模型', result: data }
   }
@@ -33,19 +33,19 @@ export class model_shop extends AppController {
   @ApiPost('update_model_shop', '更新模型')
   async update_model_shop(@Body() body: dto.update_model_shop) {
     console.log('update_model_shop---body:', body)
-    const data = await this.db.tb_model_shop.update({ 
-      where: { id: body.id }, 
-      data: { 
-        model_id: body.model_id, 
-        title: body.title, 
-        description: body.description, 
-        author_name: body.author_name, 
-        author_id: body.author_id, 
-        count_collect: body.count_collect, 
-        count_download: body.count_download, 
-        price_30: body.price_30, 
-        price_all: body.price_all 
-      } 
+    const data = await this.db.tb_model_shop.update({
+      where: { id: body.id },
+      data: {
+        model_id: body.model_id,
+        title: body.title,
+        description: body.description,
+        author_name: body.author_name,
+        author_id: body.author_id,
+        count_collect: body.count_collect,
+        count_download: body.count_download,
+        price_30: body.price_30,
+        price_all: body.price_all,
+      },
     })
     return { code: 200, msg: '成功:更新模型', result: data }
   }
@@ -53,11 +53,11 @@ export class model_shop extends AppController {
   @ApiPost('find_model_shop', '查询模型')
   async find_model_shop(@Body() body: dto.find_model_shop) {
     console.log('find_model_shop---body:', body)
-    const data = await this.db.tb_model_shop.findMany({ 
-      where: { 
+    const data = await this.db.tb_model_shop.findMany({
+      where: {
         title: body.title || undefined,
-        author_name: body.author_name || undefined
-      } 
+        author_name: body.author_name || undefined,
+      },
     })
     console.log('find_model_shop---data:', data)
     return { code: 200, msg: '成功:查询模型', result: data }
@@ -84,4 +84,4 @@ export class model_shop extends AppController {
   controllers: [model_shop],
   providers: [],
 })
-export class Module_model_shop {} 
+export class Module_model_shop {}

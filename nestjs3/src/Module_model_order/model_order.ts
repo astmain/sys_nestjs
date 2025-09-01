@@ -14,36 +14,22 @@ export class model_order extends AppController {
   @ApiPost('create_model_order', '创建订单')
   async create_model_order(@Body() body: dto.create_model_order) {
     console.log('create_model_order---body:', body)
-    const data = await this.db.tb_model_order.create({ 
-      data: { 
-        model_order_id: body.model_order_id, 
-        status: body.status 
-      } 
-    })
+    const data = await this.db.tb_model_order.create({ data: { model_order_id: body.model_order_id, status: body.status } })
     return { code: 200, msg: '成功:创建订单', result: data }
   }
 
   @ApiPost('update_model_order', '更新订单')
   async update_model_order(@Body() body: dto.update_model_order) {
     console.log('update_model_order---body:', body)
-    const data = await this.db.tb_model_order.update({ 
-      where: { id: body.id }, 
-      data: { 
-        model_order_id: body.model_order_id, 
-        status: body.status 
-      } 
-    })
+    const data = await this.db.tb_model_order.update({ where: { id: body.id }, data: { model_order_id: body.model_order_id, status: body.status } })
     return { code: 200, msg: '成功:更新订单', result: data }
   }
 
   @ApiPost('find_model_order', '查询订单')
   async find_model_order(@Body() body: dto.find_model_order) {
     console.log('find_model_order---body:', body)
-    const data = await this.db.tb_model_order.findMany({ 
-      where: { 
-        model_order_id: body.model_order_id || undefined,
-        status: body.status || undefined
-      } 
+    const data = await this.db.tb_model_order.findMany({
+      where: { model_order_id: body.model_order_id || undefined, status: body.status || undefined, },
     })
     console.log('find_model_order---data:', data)
     return { code: 200, msg: '成功:查询订单', result: data }
