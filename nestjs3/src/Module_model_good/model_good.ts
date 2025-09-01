@@ -67,7 +67,7 @@ export class model_good extends AppController {
   }
 
   @ApiPost('find_model_good', '查询模型(分页排序)')
-  async find_model_by_collect(@Body() body: dto.find_model_by_collect) {
+  async find_model_by_collect(@Body() body: dto.find_model_good) {
     console.log('delete_model_good---body:', body)
 
     // 设置默认分页参数

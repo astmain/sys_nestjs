@@ -57,6 +57,7 @@ export class create_model_good extends PickType(model_good_dto, ['model_id', 'ti
 
 export class update_model_good extends PickType(model_good_dto, ['id', 'model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
 
+// 查询模型DTO（按收藏数排序）
 export class find_model_good {
   @ApiProperty({ description: '标题', example: 'AI绘画模型', required: false })
   @IsString({ message: 'title必须为字符串' })
@@ -67,51 +68,16 @@ export class find_model_good {
   @IsString({ message: 'author_name必须为字符串' })
   @IsOptional()
   author_name?: string
-}
-
-// 分页查询DTO
-export class find_model_good_page {
-  @ApiProperty({ description: '标题', example: 'AI绘画模型', required: false })
-  @IsString({ message: 'title必须为字符串' })
-  @IsOptional()
-  title?: string
-
-  @ApiProperty({ description: '作者名称', example: '张三', required: false })
-  @IsString({ message: 'author_name必须为字符串' })
-  @IsOptional()
-  author_name?: string
 
   @ApiProperty({ description: '页码', example: 1, required: true })
   @IsNumber()
   @IsOptional()
   page_index?: number
 
-  @ApiProperty({ description: '每页数量', example: 10, required: true })
+  @ApiProperty({ description: '每页数量[10,20,50,100]', example: 10, required: true })
   @IsNumber()
   @IsOptional()
-  page_size?: number
-}
-
-// 查询模型DTO（按收藏数排序）
-export class find_model_by_collect {
-  @ApiProperty({ description: '标题', example: 'AI绘画模型', required: false })
-  @IsString({ message: 'title必须为字符串' })
-  @IsOptional()
-  title?: string
-
-  @ApiProperty({ description: '作者名称', example: '张三', required: false })
-  @IsString({ message: 'author_name必须为字符串' })
-  @IsOptional()
-  author_name?: string
-
-  @ApiProperty({ description: '页码', example: 1, required: true })
-  @IsNumber()
-  @IsOptional()
-  page_index?: number
-
-  @ApiProperty({ description: '每页数量', example: 10, required: true })
-  @IsNumber()
-  @IsOptional()
+  @IsIn([10, 20, 50, 100], { message: 'page_size必须是10,20,50,100' })
   page_size?: number
 
   @ApiProperty({ description: '排序字段', example: 'count_collect', required: false })
@@ -120,7 +86,7 @@ export class find_model_by_collect {
   @IsIn(['count_collect', 'count_download', 'price_30', 'price_all'], { message: 'order_by必须是:count_collect,count_download,price_30,price_all' })
   order_by?: string
 
-  @ApiProperty({ description: '排序方式', example: 'desc', required: false })
+  @ApiProperty({ description: '排序方式[asc,desc]', example: 'desc', required: false })
   @IsString({ message: 'order_type必须为字符串' })
   @IsOptional()
   @IsIn(['asc', 'desc'], { message: 'order_type必须是asc或desc' })
