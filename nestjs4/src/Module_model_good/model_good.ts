@@ -88,6 +88,19 @@ export class model_good extends AppController {
     return { code: 200, msg: '成功:更新发布状态', result: data }
   }
 
+  @ApiPost('update_approval_status', '更新模型商品审核状态')
+  async update_approval_status(@Body() body: dto.update_approval_status) {
+    console.log('update_approval_status---body:', body)
+    const data = await this.db.tb_model_good.update({
+      where: { id: body.id },
+      data: {
+        is_check: body.is_check,
+        is_check_remark: body.is_check_remark,
+      },
+    })
+    return { code: 200, msg: '成功:更新审核状态', result: data }
+  }
+
   @ApiPost('find_model_good', '查询模型商品(分页排序)')
   async find_model_good(@Body() body: dto.find_model_good) {
     console.log('find_model_good---body:', body)
@@ -108,6 +121,11 @@ export class model_good extends AppController {
     // 根据only_published参数决定是否只查询已发布的记录
     if (body.only_published !== false) {
       where_condition.is_published = true
+    }
+
+    // 根据only_check参数决定是否只查询已审核通过的记录
+    if (body.only_check !== false) {
+      where_condition.is_check = true
     }
 
     if (body.title) where_condition.title = { contains: body.title }

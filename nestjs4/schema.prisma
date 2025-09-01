@@ -32,17 +32,17 @@ model tb_model_good {
   price_all       Float
   is_deleted      Boolean  @default(false)
   is_published    Boolean  @default(false)
+  is_check        Boolean  @default(false)
+  is_check_remark String?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 }
 
 // 模型订单表
 model tb_model_order {
-  id              Int      @id @default(autoincrement())
-  model_order_id  String
-  status          String
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  model_order_id String
+  status         String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
-
-

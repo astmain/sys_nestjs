@@ -59,6 +59,15 @@ export class model_good_dto {
   @ApiProperty({ description: '是否发布', example: false })
   @IsOptional()
   is_published?: boolean
+
+  @ApiProperty({ description: '是否审核通过', example: false })
+  @IsOptional()
+  is_check?: boolean
+
+  @ApiProperty({ description: '审核备注', example: '审核通过', required: false })
+  @IsString({ message: 'is_check_remark必须为字符串' })
+  @IsOptional()
+  is_check_remark?: string
 }
 
 export class create_model_good extends PickType(model_good_dto, ['model_id', 'title', 'description', 'author_name', 'author_id', 'count_collect', 'count_download', 'price_30', 'price_all']) {}
@@ -75,6 +84,23 @@ export class update_publish_status {
   @ApiProperty({ description: '是否发布', example: true })
   @IsOptional()
   is_published?: boolean
+}
+
+// 审核状态更新DTO
+export class update_approval_status {
+  @ApiProperty({ description: '模型商品id', example: 1 })
+  @IsNumber()
+  @IsNotEmpty({ message: 'id不能为空' })
+  id: number
+
+  @ApiProperty({ description: '是否审核通过', example: true })
+  @IsOptional()
+  is_check?: boolean
+
+  @ApiProperty({ description: '审核备注', example: '审核通过', required: false })
+  @IsString({ message: 'is_check_remark必须为字符串' })
+  @IsOptional()
+  is_check_remark?: string
 }
 
 // 查询模型DTO（按收藏数排序）
@@ -119,4 +145,8 @@ export class find_model_good {
   @ApiProperty({ description: '是否只查询已发布的', example: true, required: false })
   @IsOptional()
   only_published?: boolean
+
+  @ApiProperty({ description: '是否只查询已审核通过的', example: true, required: false })
+  @IsOptional()
+  only_check?: boolean
 }
