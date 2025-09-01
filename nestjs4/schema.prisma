@@ -49,11 +49,10 @@ model tb_model_order {
 
 // 模型分类表
 model tb_model_kind {
-  id        Int    @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   name      String
   parent_id Int?
-
-  // 关联关系
-  parent   tb_model_kind?  @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  children tb_model_kind[] @relation("re_tb_model_kind")
+  // 自关联
+  parent    tb_model_kind?  @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children  tb_model_kind[] @relation("re_tb_model_kind")
 }
