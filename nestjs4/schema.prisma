@@ -55,6 +55,11 @@ model tb_model_good {
   updated_at      DateTime @updatedAt
 }
 
+// 模型购物车
+model tb_model_card {
+  id Int @id @default(autoincrement())
+}
+
 // 模型订单表
 model tb_model_order {
   id             Int      @id @default(autoincrement())
