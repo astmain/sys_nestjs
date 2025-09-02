@@ -1,6 +1,6 @@
 // 基础包
 // 通常要使用的包(已经封装置AppController中,可以直接使用,减少import的容易引入)
-import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, ParseIntPipe } from '@src/Plugins/AppController'
+import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, Req, ParseIntPipe } from '@src/Plugins/AppController'
 
 // 开放接口
 // 装饰器,开放接口,不需要验证
@@ -11,33 +11,35 @@ import { Dec_public } from '@src/AppAuthorized'
 import * as dto from './dto'
 
 @ApiTags('模型商品')
-@Dec_public()
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class model_product extends AppController {
   @ApiPost('create_model_product', '新增-模型商品')
-  async create_model_product(@Body() body: dto.create_model_product) {
+  async create_model_product(@Body() body: dto.create_model_product , @Req() req: any) {
     console.log('create_model_product---body:', body)
+    console.log('create_model_product---req:', req.user_id)
     const data = await this.db.tb_model_product.create({
-      data: { 
-        title: body.title, 
-        remark: body.remark || '', 
-        price: body.price, 
-        is_public: body.is_public !== undefined ? body.is_public : true 
+      data: {
+        title: body.title,
+        remark: body.remark || '',
+        price: body.price,
+        user_id: req.user_id,
+        is_public: body.is_public !== undefined ? body.is_public : true,
       },
     })
     return { code: 200, msg: '成功:新增-模型商品', result: data }
   }
 
   @ApiPost('update_model_product', '更新-模型商品')
-  async update_model_product(@Body() body: dto.update_model_product) {
+  async update_model_product(@Body() body: dto.update_model_product , @Req() req: any) {
     console.log('update_model_product---body:', body)
     const data = await this.db.tb_model_product.update({
       where: { id: body.id },
-      data: { 
-        title: body.title, 
-        remark: body.remark, 
-        price: body.price, 
-        is_public: body.is_public 
+      data: {
+        title: body.title,
+        remark: body.remark,
+        price: body.price,
+        user_id: req.user_id,
+        is_public: body.is_public,
       },
     })
     return { code: 200, msg: '成功:更新-模型商品', result: data }
@@ -47,19 +49,19 @@ export class model_product extends AppController {
   async find_list_model_product(@Body() body: dto.find_list_model_product) {
     console.log('find_list_model_product---body:', body)
     const list = await this.db.tb_model_product.findMany({
-      where: { 
+      where: {
         title: { contains: body.title || '' },
-        is_public: true // 只查询公开的商品
+        is_public: true, // 只查询公开的商品
       },
       skip: (body.page_index - 1) * body.page_size,
       take: body.page_size,
       orderBy: { [body.order_by]: body.order_type } as any,
     })
-    const count = await this.db.tb_model_product.count({ 
-      where: { 
+    const count = await this.db.tb_model_product.count({
+      where: {
         title: { contains: body.title || '' },
-        is_public: true 
-      } 
+        is_public: true,
+      },
     })
     const page_total = Math.ceil(count / body.page_size)
     const pagination = { page_index: body.page_index, page_size: body.page_size, count_total: count, page_total: page_total }

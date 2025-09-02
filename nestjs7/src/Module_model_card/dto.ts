@@ -7,11 +7,11 @@ export class model_card_dto {
   @IsString({ message: 'id必须为字符串' })
   @IsNotEmpty({ message: 'id不能为空' })
   id: string
-
   @ApiProperty({ description: 'user_id(用户id)', example: 1 })
   @IsNumber()
   @IsNotEmpty({ message: 'user_id不能为空' })
   user_id: number
+
 
   @ApiProperty({ description: 'product_id(商品id)', example: 'cuid_string' })
   @IsString({ message: 'product_id必须为字符串' })
@@ -20,10 +20,10 @@ export class model_card_dto {
 }
 
 // create_model_card命名规范和接口的函数名统一一致性,方便阅读
-export class create_model_card extends PickType(model_card_dto, ['user_id', 'product_id']) {}
+export class create_model_card extends PickType(model_card_dto, ['product_id', 'user_id']) {}
 
 // update_model_card命名规范和接口的函数名统一一致性,方便阅读
-export class update_model_card extends PickType(model_card_dto, ['id', 'user_id', 'product_id']) {}
+export class update_model_card extends PickType(model_card_dto, ['id', 'product_id', 'user_id']) {}
 
 // find_list_model_card命名规范和接口的函数名统一一致性,方便阅读
 export class find_list_model_card extends PickType(model_card_dto, ['user_id']) {
@@ -42,6 +42,10 @@ export class find_list_model_card extends PickType(model_card_dto, ['user_id']) 
   @ApiProperty({ description: '排序方式', example: 'desc', required: true })
   @IsString()
   order_type: string = 'desc'
+  @ApiProperty({ description: 'user_id(用户id)', example: 1 })
+  @IsNumber()
+  @IsNotEmpty({ message: 'user_id不能为空' })
+  user_id: number
 }
 
 // find_info_model_card命名规范和接口的函数名统一一致性,方便阅读

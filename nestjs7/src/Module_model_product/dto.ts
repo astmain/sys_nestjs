@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
-import { IsNumber, IsString, IsNotEmpty, IsOptional, IsBoolean, } from 'class-validator'
+import { IsNumber, IsString, IsNotEmpty, IsOptional, IsBoolean } from 'class-validator'
 import { Type } from 'class-transformer'
 
 // 基础dto,方便其他dto集成减少冗余代码(这是基础的dto,其他dto继承自这个dto,这个dto和数据表的字段名一致)
@@ -8,6 +8,11 @@ export class model_product_dto {
   @IsString({ message: 'id必须为字符串' })
   @IsNotEmpty({ message: 'id不能为空' })
   id: string
+
+  @ApiProperty({ description: 'user_id(用户id)', example: 1 })
+  @IsNumber()
+  @IsNotEmpty({ message: 'user_id不能为空' })
+  user_id: number
 
   @ApiProperty({ description: 'title(标题)', example: '商品标题' })
   @IsString({ message: 'title必须为字符串' })
@@ -21,8 +26,8 @@ export class model_product_dto {
   @ApiProperty({ description: 'price(价格)', example: 100 })
   @IsNumber()
   @Type(() => Number) // 转换为数字
-  @IsNotEmpty({ message: 'price不能为空' })
-  price: number
+  // @IsNotEmpty({ message: 'price不能为空' })
+  price: number = 0
 
   @ApiProperty({ description: 'is_public(是否公开)', example: true })
   @IsBoolean()

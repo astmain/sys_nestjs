@@ -1,6 +1,6 @@
 // 基础包
 // 通常要使用的包(已经封装置AppController中,可以直接使用,减少import的容易引入)
-import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, ParseIntPipe } from '@src/Plugins/AppController'
+import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, ParseIntPipe, Req } from '@src/Plugins/AppController'
 
 // 开放接口
 // 装饰器,开放接口,不需要验证
@@ -11,11 +11,10 @@ import { Dec_public } from '@src/AppAuthorized'
 import * as dto from './dto'
 
 @ApiTags('模型订单')
-@Dec_public()
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class model_order extends AppController {
   @ApiPost('create_model_order', '新增-模型订单')
-  async create_model_order(@Body() body: dto.create_model_order) {
+  async create_model_order(@Body() body: dto.create_model_order , @Req() req: any) {
     console.log('create_model_order---body:', body)
 
     // 生成订单号
@@ -39,7 +38,7 @@ export class model_order extends AppController {
     const order = await this.db.tb_order_list.create({
       data: {
         order_number,
-        user_id: body.user_id,
+        user_id: req.user_id,
         price_sub: body.price_sub || 0,
         price_order,
         price_pay,
@@ -70,7 +69,7 @@ export class model_order extends AppController {
   }
 
   @ApiPost('update_model_order_status', '更新-订单状态')
-  async update_model_order_status(@Body() body: dto.update_model_order_status) {
+  async update_model_order_status(@Body() body: dto.update_model_order_status , @Req() req: any) {
     console.log('update_model_order_status---body:', body)
     const data = await this.db.tb_order_list.update({
       where: { order_number: body.order_number },
@@ -84,11 +83,11 @@ export class model_order extends AppController {
   }
 
   @ApiPost('find_list_model_order', '查询-模型订单-列表')
-  async find_list_model_order(@Body() body: dto.find_list_model_order) {
+  async find_list_model_order(@Body() body: dto.find_list_model_order , @Req() req: any) {
     console.log('find_list_model_order---body:', body)
 
     const where: any = {}
-    if (body.user_id) where.user_id = body.user_id
+    if (body.user_id) where.user_id = req.user_id
     if (body.order_number) where.order_number = { contains: body.order_number }
     if (body.status) where.status = String(body.status)
 
@@ -114,7 +113,7 @@ export class model_order extends AppController {
   }
 
   @ApiPost('find_info_model_order', '查询-模型订单-详情')
-  async find_info_model_order(@Body() body: dto.find_info_model_order) {
+  async find_info_model_order(@Body() body: dto.find_info_model_order , @Req() req: any) {
     console.log('find_info_model_order---body:', body)
     const data = await this.db.tb_order_list.findUnique({
       where: { order_number: body.order_number },
@@ -132,7 +131,7 @@ export class model_order extends AppController {
 
   @ApiGet('delete_model_order', '删除-模型订单')
   @ApiQuery({ name: 'order_number', description: '订单号', required: true, type: String, example: 'ORD20231201001' })
-  async delete_model_order(@Query('order_number') order_number: string) {
+  async delete_model_order(@Query('order_number') order_number: string , @Req() req: any) {
     console.log('delete_model_order---order_number:', order_number, typeof order_number)
 
     // 先删除订单详情
@@ -144,12 +143,12 @@ export class model_order extends AppController {
   }
 
   @ApiPost('create_order_from_cart', '从购物车创建订单')
-  async create_order_from_cart(@Body() body: { user_id: number; price_sub?: number }) {
+  async create_order_from_cart(@Body() body: { user_id: number; price_sub?: number } , @Req() req: any) {
     console.log('create_order_from_cart---body:', body)
 
     // 获取用户购物车
     const cart_items = await this.db.tb_model_cart.findMany({
-      where: { user_id: body.user_id },
+      where: { user_id: req.user_id },
       include: { product: true },
     })
 
@@ -168,7 +167,7 @@ export class model_order extends AppController {
     const order = await this.db.tb_order_list.create({
       data: {
         order_number,
-        user_id: body.user_id,
+        user_id: req.user_id,
         price_sub: body.price_sub || 0,
         price_order,
         price_pay,
@@ -191,7 +190,7 @@ export class model_order extends AppController {
     )
 
     // 清空购物车
-    await this.db.tb_model_cart.deleteMany({ where: { user_id: body.user_id } })
+        await this.db.tb_model_cart.deleteMany({ where: { user_id: req.user_id } })
 
     const result = {
       order,
