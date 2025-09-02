@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.13/dayjs.min.js"></script>
   </head>
   <!-- 这一份html的规范:
-   1:style标签已经定义 button,input,.message,.modal_overlay,.modal_content标签的样式,不要在额外添加其他样式了
+   1:style标签已经定义 button,input,.my_card,.message,.modal_overlay,.modal_content标签的样式,不要在额外添加其他样式了
    2:整体的代码是简洁的,style样式和css样式是简洁的,不要使用阴影,不要使用动画尽量用h5标签,不要使用padding,margin
    3:methods方法名称 尽量和接口是同名的
   
@@ -424,6 +424,14 @@
       padding: 4px 15px;
       border: 2px solid #e1e5e9;
       border-radius: 8px;
+    }
+
+    /* 统一卡片样式 */
+    .my_card {
+      border: 1px solid #e1e5e9;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f8f9fa;
     }
 
     /* 统一弹窗遮罩样式 */

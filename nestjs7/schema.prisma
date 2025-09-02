@@ -4,11 +4,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" //  使用sqlite时无法用JSON{},只能使用JSON[]
-  url      = "file:./sqlite.db" //  E:/AAA/dayu_sys/dayu_sys02/demo5/make_orm_prisma/sqlite.db
+  // provider = "sqlite" //  使用sqlite时无法用JSON{},只能使用JSON[]
+  // url      = "file:./sqlite.db" //  E:/AAA/dayu_sys/dayu_sys02/demo5/make_orm_prisma/sqlite.db
 
-  // provider = "postgresql"
-  // url      = env("VITE_url_db_pg")
+  provider = "postgresql"
+  url      = env("VITE_url_db_pg")
 }
 
 enum enum_order_status {

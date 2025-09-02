@@ -1,96 +1,19 @@
-#服务 postgresql 清空user表数据,并且重置id    TRUNCATE TABLE "public"."user" RESTART IDENTITY CASCADE;
+# 数据库   103.119.2.223      2001       back      root/123456
+# sudo docker-compose up -d
+# sudo docker-compose down
 services:
-  # 数据库============================== 192.168.0.250      54321       back      root/xzz...    # 数据库postgresql清空user表数据并且重置id第一个注册的用户就是超级管理员    # TRUNCATE TABLE "public"."user" RESTART IDENTITY CASCADE;
-  docker01_postgresql:
-    container_name: docker01_postgresql
+  db_pg1:
+    container_name: db_pg1
     ports:
-      - "54321:5432"
+      - "2001:5432"
     environment:
-      - "POSTGRES_DB=back"            #数据库名
-      - "POSTGRES_USER=root"          #数据库账号名
-      - "POSTGRES_PASSWORD=xzz..."    #数据库密码
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
       - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
       - "GOSU_VERSION=1.17"
       - "LANG=en_US.utf8"
       - "PG_MAJOR=17"
-      # - "PG_VERSION=17.4-1.pgdg120+2"
-    image: postgres:17
-    restart: always
-    # networks:
-    #   halo_network:
-    command:
-      - "postgres"
-    entrypoint:
-      - "docker-entrypoint.sh"
-    healthcheck:
-      test: [ "CMD", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    volumes:
-      - "../AAA_db/pgsql:/var/lib/postgresql/data"
-
-  #  数据库redis==============================
-  docker01_redisdb:
-    container_name: "docker01_redisdb"
-    ports:
-      - "63791:6379"
-    image: "redis"
-    restart: always
-    volumes:
-      - "./redis/data:/data"
-      - "./redis/logs:/logs"
-      - "./redis/redis.conf:/usr/local/etc/redis/redis.conf"
-
-
-  #  后端服务==============================
-  docker01_back1:
-    container_name: docker01_back1
-    image: node:lts-alpine3.22
-    restart: always
-    ports:
-      - "7001:7001"
-    volumes:
-      - "./back-api:/app"
-      - "./filestore:/filestore" #容器内部的filestore安装api_3d_parse_9001的规范
-    #  指定工作目录 app
-    # workdir: /app
-    # 保持容器运行
-    tty: true
-    stdin_open: true
-    #  执行命令  npm i pnpm -g  && pnpm i && pnpm start
-    command: sh -c "cd app && npm i pnpm -g && pnpm i &&  pnpm  docker01:prisma:generate && pnpm docker01:prisma:push && pnpm docker01"
-
-  #  后端oss==============================  # docker exec -it            docker01_server_oss       sh
-  docker01_server_oss:
-    container_name: docker01_server_oss
-    image: node:lts-alpine3.22
-    working_dir: /app       #指定工作目录app
-    stdin_open: true
-    restart: always
-    tty: true               #保持容器运行
-    ports:
-      - "60001:6001"
-    volumes:
-      - ./server_oss:/app   #项目文件夹名称映射容器app
-      - ./filestore_oss:/app/filestore_oss # 外部文件夹映射到容器app内部文件夹
-    command: sh -c "npm i pnpm -g && pnpm i -f &&  pnpm docker:generate && pnpm docker:push && pnpm docker"
-  #  后端oss的数据库============================== 192.168.0.250      60000       back      root/123456
-  docker01_server_oss_db:
-    container_name: docker01_server_oss_db
-    ports:
-      - "60000:5432"
-    volumes:
-      - "../AAA_db/docker01_server_oss_db:/var/lib/postgresql/data"
-    environment:
-      - "POSTGRES_DB=back"            #数据库名
-      - "POSTGRES_USER=root"          #数据库账号名
-      - "POSTGRES_PASSWORD=123456"    #数据库密码
-      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
-      - "GOSU_VERSION=1.17"
-      - "LANG=en_US.utf8"
-      - "PG_MAJOR=17"
-      # - "PG_VERSION=17.4-1.pgdg120+2"
     image: postgres:17
     restart: always
     command:
@@ -98,78 +21,217 @@ services:
     entrypoint:
       - "docker-entrypoint.sh"
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-
-
-  # 商城网页==============================
-  docker01_react:
-    container_name: docker01_react
-    image: nginx
-    restart: always
-    ports:
-      - "5577:80"
-    command: [ "nginx", "-g", "daemon off;" ]
     volumes:
-      - ./react-3d/nginx/html/dist:/usr/share/nginx/html
-      - ./react-3d/nginx/logs:/var/log/nginx
-      # 可能需要手动复制
-      - ./react-3d/nginx/config:/etc/nginx/conf.d
+      - "../db_data/db_pg1:/var/lib/postgresql/data"
 
-
-  # 管理网页==============================
-  docker01_backstage:
-    container_name: docker01_backstage
-    image: nginx
-    restart: always
+  db_pg2:
+    container_name: db_pg2
     ports:
-      - "5566:80"
-    command: ["nginx", "-g", "daemon off;"]
+      - "2002:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
-      - ./backstage/nginx/html/dist:/usr/share/nginx/html
-      - ./backstage/nginx/logs:/var/log/nginx
-      # 可能需要手动复制
-      - ./backstage/nginx/config:/etc/nginx/conf.d
+      - "../db_data/db_pg2:/var/lib/postgresql/data"
 
+  db_pg3:
+    container_name: db_pg3
+    ports:
+      - "2003:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "../db_data/db_pg3:/var/lib/postgresql/data"
 
-# 恶心docker-compose.yml  必须放在项目根目录下,不然docker01_postgresql会运行空目录用过是配置的问题
+  db_pg4:
+    container_name: db_pg4
+    ports:
+      - "2004:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "../db_data/db_pg4:/var/lib/postgresql/data"
 
-# Dayu_1688
-# sudo chmod -R 777 /home/dayu_test1       提权文件夹
-# sudo chmod -R 777 /home/dayu_test1/back-api/docker01_back1/pgsql       提权文件夹
-# 删除旧的容器一定要提权
-# sudo chmod -R 777 /home/dayu_test1
-# docker ps -a  | grep docker01
-# docker rm -f docker01_postgresql
-# docker rm -f docker01_redisdb
-# docker rm -f docker01_back1
-# rm -rf  /home/dayu_test1/back-api/pgsql
-# sudo chmod -R 777 /home/dayu_test1
+  db_pg5:
+    container_name: db_pg5
+    ports:
+      - "2005:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "../db_data/db_pg5:/var/lib/postgresql/data"
 
+  db_pg6:
+    container_name: db_pg6
+    ports:
+      - "2006:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "../db_data/db_pg6:/var/lib/postgresql/data"
 
+  db_pg7:
+    container_name: db_pg7
+    ports:
+      - "2007:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "../db_data/db_pg7:/var/lib/postgresql/data"
 
-# 启动服务 sudo docker-compose  up -d
-# 重启服务 sudo docker-compose  restart
-# 查看日志 docker logs -f --tail 100  docker01_back1
-# 查看日志 docker logs -f --tail 100  docker01_postgresql
+  db_pg8:
+    container_name: db_pg8
+    ports:
+      - "2008:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "../db_data/db_pg8:/var/lib/postgresql/data"
 
-#访问        http://192.168.0.250:7001/doc.html       back.yun3d.com/doc.html
-#数据库导入   public:sql
-
-
-
-# 其他命令
-# docker exec -it            docker01_back1       sh
-# docker exec -it            docker01_postgresql       sh
-# npm run prisma:generate
-
-
-#  注意:老陈的服务器没使用了堡垒机,   navicat连接数据库,   需要使用内网ip:192.168.0.250:54321/back/root/xzz...    容器node使用容器名字docker_postgresql1连接数据库
-#  注意:记得导入public.sql数据
-
-
-
-
+  db_pg9:
+    container_name: db_pg9
+    ports:
+      - "2009:5432"
+    environment:
+      - "POSTGRES_DB=back"
+      - "POSTGRES_USER=root"
+      - "POSTGRES_PASSWORD=123456"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/17/bin"
+      - "GOSU_VERSION=1.17"
+      - "LANG=en_US.utf8"
+      - "PG_MAJOR=17"
+    image: postgres:17
+    restart: always
+    command:
+      - "postgres"
+    entrypoint:
+      - "docker-entrypoint.sh"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - "../db_data/db_pg9:/var/lib/postgresql/data"

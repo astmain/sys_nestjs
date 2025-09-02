@@ -5,7 +5,7 @@ VITE_project_remark ="使用nestjs封装,通过jwt验证身份"
 
 
 # 🚀 数据库相关配置_________________________________________________________
-VITE_url_db_pg="postgresql://root:123456@192.168.0.250:60000/back?schema=public"   #数据库连接服务器上要使用容器名称
+VITE_url_db_pg="postgresql://root:123456@103.119.2.223:2001/back?schema=public"   #数据库连接服务器上要使用容器名称
 ; VITE_url_db_pg="postgresql://root:123456@192.168.0.250:60000/back?schema=public"   #数据库连接服务器上要使用容器名称
 
 # 🚀 url相关配置____________________________________________________________
