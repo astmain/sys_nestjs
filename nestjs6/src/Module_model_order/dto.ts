@@ -3,11 +3,12 @@ import { IsNumber, IsString, IsNotEmpty, IsOptional, IsArray, IsEnum } from 'cla
 
 // 订单状态枚举
 export enum enum_order_status {
+  Empty = '',
   PENDING = 'PENDING',
   PROCESSING = 'PROCESSING',
   SHIPPED = 'SHIPPED',
   DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 // 订单列表基础dto
