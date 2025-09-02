@@ -17,18 +17,18 @@ export class model_order extends AppController {
   @ApiPost('create_model_order', '新增-模型订单')
   async create_model_order(@Body() body: dto.create_model_order) {
     console.log('create_model_order---body:', body)
-    
+
     // 生成订单号
     const order_number = `ORD${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}${String(Date.now()).slice(-6)}`
-    
+
     // 计算订单总价
-    const price_order = body.order_items.reduce((total, item) => total + (item.price_one * item.count), 0)
+    const price_order = body.order_items.reduce((total, item) => total + item.price_one * item.count, 0)
     const price_pay = price_order - (body.price_sub || 0)
 
     // 验证商品是否存在
     for (const item of body.order_items) {
       const product = await this.db.tb_model_product.findUnique({
-        where: { id: item.product_id }
+        where: { id: item.product_id },
       })
       if (!product) {
         return { code: 400, msg: `失败:商品不存在 - ${item.product_id}`, result: null }
@@ -43,27 +43,27 @@ export class model_order extends AppController {
         price_sub: body.price_sub || 0,
         price_order,
         price_pay,
-        status: dto.enum_order_status.PENDING
-      }
+        status: dto.enum_order_status.PAYING,
+      },
     })
 
     // 创建订单详情
     const order_infos = await Promise.all(
-      body.order_items.map(item =>
+      body.order_items.map((item) =>
         this.db.tb_order_info.create({
           data: {
             order_number,
             product_id: item.product_id,
             price_one: item.price_one,
-            count: item.count
-          }
-        })
-      )
+            count: item.count,
+          },
+        }),
+      ),
     )
 
     const result = {
       order,
-      order_infos
+      order_infos,
     }
 
     return { code: 200, msg: '成功:新增-模型订单', result: result }
@@ -74,9 +74,10 @@ export class model_order extends AppController {
     console.log('update_model_order_status---body:', body)
     const data = await this.db.tb_order_list.update({
       where: { order_number: body.order_number },
-      data: { 
-        status: body.status,
-        pay_time: body.status === dto.enum_order_status.DELIVERED ? new Date() : undefined
+      data: {
+        // status: body.status as dto.enum_order_status,
+        status: body.status as any,
+        pay_time: body.status === dto.enum_order_status.PAYED ? new Date() : undefined,
       },
     })
     return { code: 200, msg: '成功:更新-订单状态', result: data }
@@ -85,20 +86,20 @@ export class model_order extends AppController {
   @ApiPost('find_list_model_order', '查询-模型订单-列表')
   async find_list_model_order(@Body() body: dto.find_list_model_order) {
     console.log('find_list_model_order---body:', body)
-    
+
     const where: any = {}
     if (body.user_id) where.user_id = body.user_id
     if (body.order_number) where.order_number = { contains: body.order_number }
-    if (body.status) where.status = body.status
+    if (body.status) where.status = String(body.status)
 
     const list = await this.db.tb_order_list.findMany({
       where,
       include: {
         tb_order_info: {
           include: {
-            tb_model_product: true
-          }
-        }
+            tb_model_product: true,
+          },
+        },
       },
       skip: (body.page_index - 1) * body.page_size,
       take: body.page_size,
@@ -115,15 +116,15 @@ export class model_order extends AppController {
   @ApiPost('find_info_model_order', '查询-模型订单-详情')
   async find_info_model_order(@Body() body: dto.find_info_model_order) {
     console.log('find_info_model_order---body:', body)
-    const data = await this.db.tb_order_list.findUnique({ 
+    const data = await this.db.tb_order_list.findUnique({
       where: { order_number: body.order_number },
       include: {
         tb_order_info: {
           include: {
-            tb_model_product: true
-          }
-        }
-      }
+            tb_model_product: true,
+          },
+        },
+      },
     })
     console.log('find_info_model_order---data:', data)
     return { code: 200, msg: '成功:查询-模型订单-详情', result: data }
@@ -133,23 +134,23 @@ export class model_order extends AppController {
   @ApiQuery({ name: 'order_number', description: '订单号', required: true, type: String, example: 'ORD20231201001' })
   async delete_model_order(@Query('order_number') order_number: string) {
     console.log('delete_model_order---order_number:', order_number, typeof order_number)
-    
+
     // 先删除订单详情
     await this.db.tb_order_info.deleteMany({ where: { order_number } })
-    
+
     // 再删除订单
     const data = await this.db.tb_order_list.delete({ where: { order_number } })
     return { code: 200, msg: '成功:删除-模型订单', result: data }
   }
 
   @ApiPost('create_order_from_cart', '从购物车创建订单')
-  async create_order_from_cart(@Body() body: { user_id: number, price_sub?: number }) {
+  async create_order_from_cart(@Body() body: { user_id: number; price_sub?: number }) {
     console.log('create_order_from_cart---body:', body)
-    
+
     // 获取用户购物车
     const cart_items = await this.db.tb_model_cart.findMany({
       where: { user_id: body.user_id },
-      include: { product: true }
+      include: { product: true },
     })
 
     if (cart_items.length === 0) {
@@ -158,7 +159,7 @@ export class model_order extends AppController {
 
     // 生成订单号
     const order_number = `ORD${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}${String(Date.now()).slice(-6)}`
-    
+
     // 计算订单总价
     const price_order = cart_items.reduce((total, item) => total + item.product.price, 0)
     const price_pay = price_order - (body.price_sub || 0)
@@ -171,22 +172,22 @@ export class model_order extends AppController {
         price_sub: body.price_sub || 0,
         price_order,
         price_pay,
-        status: dto.enum_order_status.PENDING
-      }
+        status: dto.enum_order_status.PAYING,
+      },
     })
 
     // 创建订单详情
     const order_infos = await Promise.all(
-      cart_items.map(item =>
+      cart_items.map((item) =>
         this.db.tb_order_info.create({
           data: {
             order_number,
             product_id: item.product_id,
             price_one: item.product.price,
-            count: 1
-          }
-        })
-      )
+            count: 1,
+          },
+        }),
+      ),
     )
 
     // 清空购物车
@@ -194,7 +195,7 @@ export class model_order extends AppController {
 
     const result = {
       order,
-      order_infos
+      order_infos,
     }
 
     return { code: 200, msg: '成功:从购物车创建订单', result: result }

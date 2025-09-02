@@ -12,11 +12,10 @@ datasource db {
 }
 
 enum enum_order_status {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
+  PAYING //待支付
+  PAYED //已支付
+  SHIPPED //已发货
+  CANCELLED //已取消
 }
 
 // 测试表
@@ -80,7 +79,7 @@ model tb_order_list {
   price_pay     Int //支付价格
   pay_time      DateTime? //支付时间
   tb_order_info tb_order_info[] //订单详情
-  status        enum_order_status @default(PENDING) // 订单状态
+  status        enum_order_status @default(PAYING) // 订单状态
   updated_at    DateTime          @updatedAt
   created_at    DateTime          @default(now())
 }

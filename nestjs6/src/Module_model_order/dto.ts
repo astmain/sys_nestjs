@@ -1,13 +1,12 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
-import { IsNumber, IsString, IsNotEmpty, IsOptional, IsArray, IsEnum } from 'class-validator'
+import { IsNumber, IsString, IsNotEmpty, IsOptional, IsArray, IsEnum, IsIn } from 'class-validator'
 
 // 订单状态枚举
 export enum enum_order_status {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
+  PAYING = 'PAYING',//待支付
+  PAYED = 'PAYED',//已支付
+  SHIPPED = 'SHIPPED',//已发货
+  CANCELLED = 'CANCELLED',//已取消
 }
 
 // 订单列表基础dto
@@ -42,10 +41,10 @@ export class model_order_list_dto {
   @IsNotEmpty({ message: 'price_pay不能为空' })
   price_pay: number
 
-  @ApiProperty({ description: 'status(订单状态)', example: 'PENDING', enum: enum_order_status })
-  @IsEnum(enum_order_status)
+  @ApiProperty({ description: 'status(订单状态)', example: 'PAYING', enum: [...Object.values(enum_order_status), ''] })
+  @IsIn([...Object.values(enum_order_status), ''], { message: 'status必须是有效的订单状态或空字符串' })
   @IsOptional()
-  status: enum_order_status
+  status: enum_order_status | ''
 }
 
 // 订单详情基础dto
@@ -106,9 +105,9 @@ export class update_model_order_status {
   order_number: string
 
   @ApiProperty({ description: 'status(订单状态)', example: 'PROCESSING', enum: enum_order_status })
-  @IsEnum(enum_order_status)
+  @IsIn([...Object.values(enum_order_status), ''], { message: 'status必须是有效的订单状态或空字符串' })
   @IsNotEmpty({ message: 'status不能为空' })
-  status: enum_order_status
+  status: enum_order_status | ''
 }
 
 // 查询订单列表dto
@@ -123,10 +122,10 @@ export class find_list_model_order {
   @IsOptional()
   order_number: string
 
-  @ApiProperty({ description: 'status(订单状态)', example: 'PENDING', enum: enum_order_status })
-  @IsEnum(enum_order_status)
+  @ApiProperty({ description: 'status(订单状态)', example: 'PAYING', enum: [...Object.values(enum_order_status), ''] })
+  @IsIn([...Object.values(enum_order_status), ''], { message: 'status必须是有效的订单状态或空字符串' })
   @IsOptional()
-  status: enum_order_status
+  status: enum_order_status | ''
 
   @ApiProperty({ description: '页码', example: 1, required: true })
   @IsNumber()

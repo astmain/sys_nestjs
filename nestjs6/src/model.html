@@ -100,11 +100,15 @@
       <div>
         <input v-model="order_search_form.order_number" placeholder="搜索订单号" />
         <select v-model="order_search_form.status">
-          <option value="">全部状态</option>
-          <option value="PENDING">待处理</option>
+          <!-- <option value="">全部状态</option>
+          <option value="PAYING">待处理</option>
           <option value="PROCESSING">处理中</option>
           <option value="SHIPPED">已发货</option>
           <option value="DELIVERED">已送达</option>
+          <option value="CANCELLED">已取消</option> -->
+          <option value="">全部状态</option>
+          <option value="PAYING">待支付</option>
+          <option value="PAYED">已支付</option>
           <option value="CANCELLED">已取消</option>
         </select>
         <button @click="find_list_model_order">搜索</button>
@@ -316,7 +320,7 @@
           <div style="display: flex; gap: 10px; margin-top: 10px">
             <label style="width: 150px">新状态</label>
             <select v-model="new_order_status">
-              <option value="PENDING">待处理</option>
+              <option value="PAYING">待处理</option>
               <option value="PROCESSING">处理中</option>
               <option value="SHIPPED">已发货</option>
               <option value="DELIVERED">已送达</option>
@@ -410,7 +414,7 @@
         selected_product: null,
         selected_cart_item: null,
         selected_order: null,
-        new_order_status: 'PENDING',
+        new_order_status: 'PAYING',
 
         // 消息提示
         message: '',
@@ -433,11 +437,11 @@
         // 获取订单状态文本
         get_order_status_text(status) {
           const status_map = {
-            'PENDING': '待处理',
-            'PROCESSING': '处理中',
-            'SHIPPED': '已发货',
-            'DELIVERED': '已送达',
-            'CANCELLED': '已取消'
+            PAYING: '待处理',
+            PROCESSING: '处理中',
+            SHIPPED: '已发货',
+            DELIVERED: '已送达',
+            CANCELLED: '已取消',
           }
           return status_map[status] || status
         },
@@ -582,7 +586,7 @@
           try {
             const response = await this.axios.post(`${this.VITE_url_app_run}/create_model_card`, {
               user_id: this.cart_user_id,
-              product_id: product.id
+              product_id: product.id,
             })
             if (response.data.code === 200) {
               this.show_message('已加入购物车')
@@ -690,7 +694,7 @@
           try {
             const response = await this.axios.post(`${this.VITE_url_app_run}/create_order_from_cart`, {
               user_id: this.cart_user_id,
-              price_sub: 0
+              price_sub: 0,
             })
             if (response.data.code === 200) {
               this.show_message('订单创建成功')
@@ -747,7 +751,7 @@
           try {
             const response = await this.axios.post(`${this.VITE_url_app_run}/update_model_order_status`, {
               order_number: this.selected_order.order_number,
-              status: this.new_order_status
+              status: this.new_order_status,
             })
             if (response.data.code === 200) {
               this.show_message('订单状态更新成功')
@@ -765,7 +769,7 @@
         close_update_status_modal() {
           this.show_update_status_modal = false
           this.selected_order = null
-          this.new_order_status = 'PENDING'
+          this.new_order_status = 'PAYING'
         },
 
         // 删除订单
@@ -840,7 +844,8 @@
     }
 
     /* 统一输入框样式 */
-    input, select {
+    input,
+    select {
       max-width: 120px;
       padding: 4px 15px;
       border: 2px solid #e1e5e9;
@@ -848,7 +853,9 @@
     }
 
     /* 卡片样式 */
-    .product_card, .cart_card, .order_card {
+    .product_card,
+    .cart_card,
+    .order_card {
       border: 1px solid #e1e5e9;
       border-radius: 8px;
       padding: 15px;

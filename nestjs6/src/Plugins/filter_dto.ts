@@ -24,7 +24,7 @@ export async function filter_dto(app) {
       // console.log(`333---err_arr:`, errors_info)
       let message = errors_info.map((o) => o.msg).join(';')
       // const response = { code: 422, message: `失败:参数错误>${message}`, errors_info }
-      const response = { code: 422, msg: `失败:参数错误>${message}`, errors_info }
+      const response = { code: 422, msg: `失败111:dto参数错误>${message}`, errors_info }
       return new BadRequestException(response)
     },
   })
