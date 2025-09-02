@@ -1,0 +1,103 @@
+//  prisma使用规范
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" //  使用sqlite时无法用JSON{},只能使用JSON[]
+  url      = "file:./sqlite.db" //  E:/AAA/dayu_sys/dayu_sys02/demo5/make_orm_prisma/sqlite.db
+
+  // provider = "postgresql"
+  // url      = env("VITE_url_db_pg")
+}
+
+// enum OrderStatus { PENDING PAID CANCELED }
+// 测试表
+model tb_demo {
+  id             Int      @id @default(autoincrement())
+  name           String   @default("")
+  remark         String   @default("")
+  is_deleted     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  price_personal Int      @default(0)
+  price_company  Int      @default(0)
+  price_extend   Int      @default(0)
+  list_img       Json     @default("[]")
+}
+
+model tb_user {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  cartItems CartItem[]
+  orders    Order[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// 模型分类表
+model tb_model_kind {
+  id        Int             @id @default(autoincrement())
+  name      String
+  parent_id Int?
+  // 自关联
+  parent    tb_model_kind?  @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children  tb_model_kind[] @relation("re_tb_model_kind")
+}
+
+model tb_model_good {
+  id         String      @id @default(cuid())
+  sku        String      @unique
+  name       String
+  price      Int
+  stock      Int         @default(0)
+  isActive   Boolean     @default(true)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model CartItem {
+  id        String        @id @default(cuid())
+  user      tb_user       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  product   tb_model_good @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int           @default(1)
+  unitPrice Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([userId, productId]) // 同一用户同一商品只保留一条
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  orderNo    String      @unique
+  user       tb_user     @relation(fields: [userId], references: [id])
+  userId     String
+  // status      OrderStatus  @default(PENDING)
+  status     String      @default("PENDING")
+  // 金额快照（下单时计算）
+  subtotal   Int
+  grandTotal Int
+  paidAt     DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  items      OrderItem[]
+}
+
+model OrderItem {
+  id          String        @id @default(cuid())
+  order       Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  product     tb_model_good @relation(fields: [productId], references: [id])
+  productId   String
+  // 下单快照，避免历史受商品改名/改价影响
+  productName String
+  sku         String
+  unitPrice   Int
+  quantity    Int           @default(1)
+}
