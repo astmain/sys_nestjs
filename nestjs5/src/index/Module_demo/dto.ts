@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
 import { IsNumber, IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator'
 
-// 基础dto,方便其他dto集成减少冗余代码
+// 基础dto,方便其他dto集成减少冗余代码(这是基础的dto,其他dto继承自这个dto,这个dto和数据表的字段名一致)
 export class demo_dto {
   @ApiProperty({ description: 'id', example: 1 })
   @IsNumber()
@@ -66,3 +66,16 @@ export class find_list_demo extends PickType(demo_dto, ['name']) {
 
 // find_info_demo命名规范和接口的函数名统一一致性,方便阅读
 export class find_info_demo extends PickType(demo_dto, ['id']) {}
+
+/*
+
+
+
+model tb_user {
+  id         String   @id @default(cuid())
+  phone      String   @unique
+  password   String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+*/
