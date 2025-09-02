@@ -1,5 +1,8 @@
 我的项目
 
+# emoji表情
+https://www.emojiall.com/zh-hans/search_results?keywords=搜索
+
 
 # prisma生产
 https://prisma.org.cn/ecosystem

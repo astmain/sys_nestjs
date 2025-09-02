@@ -10,6 +10,7 @@ async function bootstrap() {
   // app.setGlobalPrefix('v1')
   
   await Plugins.filter_cors(app) // 配置跨域
+  await Plugins.filter_dto(app) // 配置dto验证
   await Plugins.swagger_Knife4j(app) // 配置swagger
   await app.listen(Number(process.env.VITE_port))
   console.log('启动成功:', env_curr_back_description)

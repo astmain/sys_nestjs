@@ -1,5 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
 import { IsNumber, IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator'
+import { Type } from 'class-transformer'
 
 // 基础dto,方便其他dto集成减少冗余代码(这是基础的dto,其他dto继承自这个dto,这个dto和数据表的字段名一致)
 export class demo_dto {
@@ -10,7 +11,6 @@ export class demo_dto {
 
   @ApiProperty({ description: 'name', example: 'test' })
   @IsString({ message: 'name必须为字符串' })
-  @IsNotEmpty({ message: 'name不能为空' })
   name: string
 
   @ApiProperty({ description: 'remark', example: 'test' })
@@ -20,17 +20,17 @@ export class demo_dto {
 
   @ApiProperty({ description: 'price_personal(个人授权价)', example: 0 })
   @IsNumber()
-  @IsNotEmpty({ message: 'price_personal不能为空' })
+  @Type(() => Number)
   price_personal: number
 
   @ApiProperty({ description: 'price_company(企业授权价)', example: 0 })
   @IsNumber()
-  @IsNotEmpty({ message: 'price_company不能为空' })
+  @Type(() => Number)
   price_company: number
 
   @ApiProperty({ description: 'price_extend(企业扩展授权价)', example: 0 })
   @IsNumber()
-  @IsOptional()
+  @Type(() => Number)
   price_extend: number
 
   @ApiProperty({ description: 'list_img(图片列表)', example: [{ img: 'https://www.baidu.com/img/flexible/logo/pc/result.png' }] })
