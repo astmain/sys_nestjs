@@ -7,6 +7,9 @@ import { Module_test } from './index/Module_test/test'
 import { Module_demo } from './index/Module_demo/demo'
 
 import { Module_model_kind } from './Module_model_kind/model_kind'
+import { Module_model_product } from './Module_model_product/model_product'
+import { Module_model_card } from './Module_model_card/model_card'
+import { Module_model_order } from './Module_model_order/model_order'
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { Module_model_kind } from './Module_model_kind/model_kind'
     Module_test, //测试
     Module_demo, //示例
     Module_model_kind, //模型分类
+    Module_model_product, //模型商品
+    Module_model_card, //模型购物车
+    Module_model_order, //模型订单
 
   ],
   controllers: [],
