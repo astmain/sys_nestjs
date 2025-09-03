@@ -36,49 +36,6 @@ export class model_card extends AppController {
     }
   }
 
-  // @ApiPost('create_model_card', '新增-模型购物车')
-  // async create_model_card(@Body() body: dto.create_model_card , @Req() req: any) {
-  //   console.log('create_model_card---body:', body)
-
-  //   // 检查商品是否存在
-  //   const product = await this.db.tb_model_product.findUnique({ where: { id: body.product_id } })
-  //   if (!product) return { code: 400, msg: '失败:商品不存在', result: null }
-
-  //   // 检查是否已经在购物车中
-  //   const existingCart = await this.db.tb_model_cart.findUnique({
-  //     where: {
-  //       user_id_product_id: {
-  //         user_id: body.user_id,
-  //         product_id: body.product_id,
-  //       },
-  //     },
-  //   })
-  //   if (existingCart) {
-  //     return { code: 400, msg: '失败:商品已在购物车中', result: null }
-  //   }
-
-  //   const data = await this.db.tb_model_cart.create({
-  //     data: {
-  //       user_id: body.user_id,
-  //       product_id: body.product_id,
-  //     },
-  //   })
-  //   return { code: 200, msg: '成功:新增-模型购物车', result: data }
-  // }
-
-  // @ApiPost('update_model_card', '更新-模型购物车')
-  // async update_model_card(@Body() body: dto.update_model_card , @Req() req: any) {
-  //   console.log('update_model_card---body:', body)
-  //   const data = await this.db.tb_model_cart.update({
-  //     where: { id: body.id },
-  //     data: {
-  //       user_id: body.user_id,
-  //       product_id: body.product_id,
-  //     },
-  //   })
-  //   return { code: 200, msg: '成功:更新-模型购物车', result: data }
-  // }
-
   @ApiPost('find_list_model_card', '查询-模型购物车-列表')
   async find_list_model_card(@Body() body: dto.find_list_model_card) {
     console.log('find_list_model_card---body:', body)

@@ -77,8 +77,6 @@ export class model_order_info_dto {
 
 // 创建订单dto
 export class create_model_order {
-
-
   @ApiProperty({ description: 'price_sub(减去价格)', example: 0 })
   @IsNumber()
   @IsOptional()
