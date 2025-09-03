@@ -39,15 +39,41 @@ export class model_product extends AppController {
   async find_list_model_product(@Body() body: dto.find_list_model_product) {
     console.log('find_list_model_product---body:', body)
 
-    // 构建查询条件
+    // 模糊字段搜索条件
     const where: any = {
       title: { contains: body.title || '' },
-      is_deleted: false, // 只查询未被逻辑删除的数据
     }
-
-    // 如果指定了 is_public 状态，则添加到查询条件中
+    // 
     if (body.is_public !== undefined && body.is_public !== null) {
       where.is_public = body.is_public
+    }
+    if (body.is_deleted !== undefined && body.is_deleted !== null) {
+      where.is_deleted = body.is_deleted
+    }
+    if (body.is_check !== undefined && body.is_check !== null) {
+      where.is_check = body.is_check
+    }
+    if (body.is_business !== undefined && body.is_business !== null) {
+      where.is_business = body.is_business
+    }
+    if (body.is_skeleton !== undefined && body.is_skeleton !== null) {
+      where.is_skeleton = body.is_skeleton
+    }
+    if (body.is_animation !== undefined && body.is_animation !== null) {
+      where.is_animation = body.is_animation
+    }
+    if (body.is_print !== undefined && body.is_print !== null) {
+      where.is_print = body.is_print
+    }
+    if (body.is_no_collapse !== undefined && body.is_no_collapse !== null) {
+      where.is_no_collapse = body.is_no_collapse
+    }
+
+    if (body.area_unit) {
+      where.area_unit = body.area_unit
+    }
+    if (body.wiring) {
+      where.wiring = body.wiring
     }
 
     const list = await this.db.tb_model_product.findMany({

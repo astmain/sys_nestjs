@@ -17,9 +17,113 @@
 
   <main id="app" style="display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 1400px; padding: 20px; margin: 0 auto; background: white; border-radius: 15px">
     <!-- 搜索区域 -->
-    <div>
-      <input v-model="search_form.name" />
-      <button @click="find_list_demo">搜索</button>
+    <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; padding: 20px; border: 1px solid #e1e5e9; border-radius: 8px; background: #f8f9fa;">
+      <h3>搜索条件</h3>
+      
+      <!-- 基础搜索字段 -->
+      <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">标题:</label>
+          <input v-model="search_form.title" placeholder="搜索标题" style="width: 150px;" />
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">面片数:</label>
+          <select v-model="search_form.area_unit" style="width: 150px;">
+            <option value="">全部</option>
+            <option value="5k以下">5k以下</option>
+            <option value="5k-10k">5k-10k</option>
+            <option value="10k-50k">10k-50k</option>
+            <option value="50k以上">50k以上</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">布线:</label>
+          <select v-model="search_form.wiring" style="width: 150px;">
+            <option value="">全部</option>
+            <option value="三角形">三角形</option>
+            <option value="四边形">四边形</option>
+            <option value="混合">混合</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 状态筛选字段 -->
+      <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">公开状态:</label>
+          <select v-model="search_form.is_public" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="true">公开</option>
+            <option :value="false">私有</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">删除状态:</label>
+          <select v-model="search_form.is_deleted" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="false">未删除</option>
+            <option :value="true">已删除</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">审核状态:</label>
+          <select v-model="search_form.is_check" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="true">已审核</option>
+            <option :value="false">未审核</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">商用状态:</label>
+          <select v-model="search_form.is_business" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="true">商用</option>
+            <option :value="false">非商用</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 模型属性筛选 -->
+      <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">骨骼状态:</label>
+          <select v-model="search_form.is_skeleton" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="true">有骨骼</option>
+            <option :value="false">无骨骼</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">动画状态:</label>
+          <select v-model="search_form.is_animation" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="true">有动画</option>
+            <option :value="false">无动画</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">打印状态:</label>
+          <select v-model="search_form.is_print" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="true">可打印</option>
+            <option :value="false">不可打印</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+          <label style="min-width: 80px;">塌陷状态:</label>
+          <select v-model="search_form.is_no_collapse" style="width: 120px;">
+            <option value="">全部</option>
+            <option :value="true">未塌陷</option>
+            <option :value="false">已塌陷</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button @click="find_list_demo" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">搜索</button>
+        <button @click="reset_search_form" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">重置</button>
+      </div>
     </div>
 
     <!-- 管理区域 -->
@@ -32,17 +136,39 @@
     <!-- 列表显示 -->
     <div>
       <h2>列表 /共 {{ total_count }} 数据</h2>
-      <div v-if="product_list.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px">
-        <div v-for="product in product_list" :key="product.id">
-          <div>
-            <h4>{{ product.name }}</h4>
-            <p>{{ product.remark }}</p>
-            <div>个人授权:{{ product.price_personal }}</div>
-            <div>企业授权:{{ product.price_company }}</div>
-            <div>扩展授权:{{ product.price_extend }}</div>
+      <div v-if="product_list.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px">
+        <div v-for="product in product_list" :key="product.id" style="border: 1px solid #e1e5e9; border-radius: 8px; padding: 15px; background: #f8f9fa;">
+          <div style="margin-bottom: 15px;">
+            <h4 style="margin: 0 0 10px 0; color: #333;">{{ product.title }}</h4>
+            <p style="margin: 0 0 10px 0; color: #666; font-size: 14px;">{{ product.remark || '暂无描述' }}</p>
+            
+            <!-- 价格信息 -->
+            <div style="display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;">
+              <div style="background: #e8f5e8; color: #2d5a2d; padding: 4px 8px; border-radius: 4px; font-size: 12px;">个人: ¥{{ product.price_personal }}</div>
+              <div style="background: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 4px; font-size: 12px;">企业: ¥{{ product.price_company }}</div>
+              <div style="background: #fff3e0; color: #ef6c00; padding: 4px 8px; border-radius: 4px; font-size: 12px;">扩展: ¥{{ product.price_extend }}</div>
+            </div>
+
+            <!-- 模型属性 -->
+            <div style="display: flex; gap: 5px; margin: 10px 0; flex-wrap: wrap;">
+              <div v-if="product.is_skeleton" style="background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 10px; font-size: 11px;">有骨骼</div>
+              <div v-if="product.is_animation" style="background: #d1ecf1; color: #0c5460; padding: 2px 6px; border-radius: 10px; font-size: 11px;">有动画</div>
+              <div v-if="product.is_business" style="background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 10px; font-size: 11px;">商用</div>
+              <div v-if="product.is_print" style="background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 10px; font-size: 11px;">可打印</div>
+              <div v-if="product.is_no_collapse" style="background: #cce5ff; color: #004085; padding: 2px 6px; border-radius: 10px; font-size: 11px;">未塌陷</div>
+              <div style="background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 10px; font-size: 11px;">{{ product.area_unit }}</div>
+              <div style="background: #e9ecef; color: #495057; padding: 2px 6px; border-radius: 10px; font-size: 11px;">{{ product.wiring }}</div>
+            </div>
+
+            <!-- 统计信息 -->
+            <div style="display: flex; gap: 15px; font-size: 12px; color: #666; margin: 10px 0;">
+              <span>收藏: {{ product.count_collect }}</span>
+              <span>下载: {{ product.count_download }}</span>
+              <span>点赞: {{ product.count_like }}</span>
+            </div>
           </div>
 
-          <div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; padding-top: 15px; border-top: 1px solid #e9ecef;">
             <button @click="edit_product(product)">编辑</button>
             <button @click="view_product_detail(product)">详情</button>
             <button @click="delete_demo(product.id)">删除</button>
@@ -66,8 +192,8 @@
         <h3>添加新</h3>
         <div style="display: flex; flex-direction: column; gap: 10px">
           <div style="display: flex; gap: 10px">
-            <label style="width: 150px">名称</label>
-            <input v-model="add_form.name" />
+            <label style="width: 150px">标题</label>
+            <input v-model="add_form.title" />
           </div>
           <div style="display: flex; gap: 10px">
             <label style="width: 150px">描述</label>
@@ -75,15 +201,49 @@
           </div>
           <div style="display: flex; gap: 10px">
             <label style="width: 150px">个人授权价格</label>
-            <input v-model="add_form.price_personal" />
+            <input v-model="add_form.price_personal" type="number" />
           </div>
           <div style="display: flex; gap: 10px">
             <label style="width: 150px">企业授权价格</label>
-            <input v-model="add_form.price_company" />
+            <input v-model="add_form.price_company" type="number" />
           </div>
           <div style="display: flex; gap: 10px">
             <label style="width: 150px">企业扩展授权价格</label>
-            <input v-model="add_form.price_extend" />
+            <input v-model="add_form.price_extend" type="number" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">面片数</label>
+            <select v-model="add_form.area_unit" style="width: 150px;">
+              <option value="5k以下">5k以下</option>
+              <option value="5k-10k">5k-10k</option>
+              <option value="10k-50k">10k-50k</option>
+              <option value="50k以上">50k以上</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">布线</label>
+            <select v-model="add_form.wiring" style="width: 150px;">
+              <option value="三角形">三角形</option>
+              <option value="四边形">四边形</option>
+              <option value="混合">混合</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">是否公开</label>
+            <select v-model="add_form.is_public" style="width: 150px;">
+              <option :value="true">公开</option>
+              <option :value="false">私有</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">模型属性</label>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <label><input type="checkbox" v-model="add_form.is_skeleton" /> 有骨骼</label>
+              <label><input type="checkbox" v-model="add_form.is_animation" /> 有动画</label>
+              <label><input type="checkbox" v-model="add_form.is_business" /> 商用</label>
+              <label><input type="checkbox" v-model="add_form.is_print" /> 可打印</label>
+              <label><input type="checkbox" v-model="add_form.is_no_collapse" /> 未塌陷</label>
+            </div>
           </div>
           <div class="">
             <button @click="create_demo">添加</button>
@@ -99,8 +259,8 @@
         <h3>编辑</h3>
         <div>
           <div>
-            <label>名称</label>
-            <input v-model="edit_form.name" />
+            <label>标题</label>
+            <input v-model="edit_form.title" />
           </div>
           <div>
             <label>描述</label>
@@ -108,15 +268,49 @@
           </div>
           <div>
             <label>个人授权价格</label>
-            <input v-model="edit_form.price_personal" />
+            <input v-model="edit_form.price_personal" type="number" />
           </div>
           <div>
             <label>企业授权价格</label>
-            <input v-model="edit_form.price_company" />
+            <input v-model="edit_form.price_company" type="number" />
           </div>
           <div>
             <label>企业扩展授权价格</label>
-            <input v-model="edit_form.price_extend" />
+            <input v-model="edit_form.price_extend" type="number" />
+          </div>
+          <div>
+            <label>面片数</label>
+            <select v-model="edit_form.area_unit">
+              <option value="5k以下">5k以下</option>
+              <option value="5k-10k">5k-10k</option>
+              <option value="10k-50k">10k-50k</option>
+              <option value="50k以上">50k以上</option>
+            </select>
+          </div>
+          <div>
+            <label>布线</label>
+            <select v-model="edit_form.wiring">
+              <option value="三角形">三角形</option>
+              <option value="四边形">四边形</option>
+              <option value="混合">混合</option>
+            </select>
+          </div>
+          <div>
+            <label>是否公开</label>
+            <select v-model="edit_form.is_public">
+              <option :value="true">公开</option>
+              <option :value="false">私有</option>
+            </select>
+          </div>
+          <div>
+            <label>模型属性</label>
+            <div>
+              <label><input type="checkbox" v-model="edit_form.is_skeleton" /> 有骨骼</label>
+              <label><input type="checkbox" v-model="edit_form.is_animation" /> 有动画</label>
+              <label><input type="checkbox" v-model="edit_form.is_business" /> 商用</label>
+              <label><input type="checkbox" v-model="edit_form.is_print" /> 可打印</label>
+              <label><input type="checkbox" v-model="edit_form.is_no_collapse" /> 未塌陷</label>
+            </div>
           </div>
           <div class="modal_actions">
             <button @click="update_demo">保存</button>
@@ -136,12 +330,12 @@
             <span>{{ selected_product.id }}</span>
           </div>
           <div>
-            <span>名称:</span>
-            <span>{{ selected_product.name }}</span>
+            <span>标题:</span>
+            <span>{{ selected_product.title }}</span>
           </div>
           <div>
             <span>描述:</span>
-            <span>{{ selected_product.remark }}</span>
+            <span>{{ selected_product.remark || '暂无描述' }}</span>
           </div>
           <div>
             <span>个人授权价格:</span>
@@ -154,6 +348,54 @@
           <div>
             <span>企业扩展授权价格:</span>
             <span>¥{{ selected_product.price_extend }}</span>
+          </div>
+          <div>
+            <span>面片数:</span>
+            <span>{{ selected_product.area_unit }}</span>
+          </div>
+          <div>
+            <span>布线:</span>
+            <span>{{ selected_product.wiring }}</span>
+          </div>
+          <div>
+            <span>公开状态:</span>
+            <span>{{ selected_product.is_public ? '公开' : '私有' }}</span>
+          </div>
+          <div>
+            <span>审核状态:</span>
+            <span>{{ selected_product.is_check ? '已审核' : '未审核' }}</span>
+          </div>
+          <div>
+            <span>商用状态:</span>
+            <span>{{ selected_product.is_business ? '商用' : '非商用' }}</span>
+          </div>
+          <div>
+            <span>有骨骼:</span>
+            <span>{{ selected_product.is_skeleton ? '是' : '否' }}</span>
+          </div>
+          <div>
+            <span>有动画:</span>
+            <span>{{ selected_product.is_animation ? '是' : '否' }}</span>
+          </div>
+          <div>
+            <span>可打印:</span>
+            <span>{{ selected_product.is_print ? '是' : '否' }}</span>
+          </div>
+          <div>
+            <span>未塌陷:</span>
+            <span>{{ selected_product.is_no_collapse ? '是' : '否' }}</span>
+          </div>
+          <div>
+            <span>收藏数:</span>
+            <span>{{ selected_product.count_collect }}</span>
+          </div>
+          <div>
+            <span>下载数:</span>
+            <span>{{ selected_product.count_download }}</span>
+          </div>
+          <div>
+            <span>点赞数:</span>
+            <span>{{ selected_product.count_like }}</span>
           </div>
         </div>
         <div>
@@ -178,7 +420,17 @@
 
         // 搜索表单
         search_form: {
-          name: '',
+          title: '',
+          area_unit: '',
+          wiring: '',
+          is_public: '',
+          is_deleted: '',
+          is_check: '',
+          is_business: '',
+          is_skeleton: '',
+          is_animation: '',
+          is_print: '',
+          is_no_collapse: '',
           page_index: 1,
           page_size: 5,
           order_by: 'id',
@@ -187,21 +439,37 @@
 
         // 添加表单
         add_form: {
-          name: '',
+          title: '',
           remark: '',
           price_personal: 0,
           price_company: 0,
           price_extend: 0,
+          area_unit: '5k以下',
+          wiring: '三角形',
+          is_public: true,
+          is_skeleton: false,
+          is_animation: false,
+          is_business: false,
+          is_print: false,
+          is_no_collapse: false,
         },
 
         // 编辑表单
         edit_form: {
           id: null,
-          name: '',
+          title: '',
           remark: '',
           price_personal: 0,
           price_company: 0,
           price_extend: 0,
+          area_unit: '5k以下',
+          wiring: '三角形',
+          is_public: true,
+          is_skeleton: false,
+          is_animation: false,
+          is_business: false,
+          is_print: false,
+          is_no_collapse: false,
         },
 
         // 列表
@@ -246,18 +514,35 @@
         close_add_modal() {
           this.show_add_modal = false
           this.add_form = {
-            name: '',
+            title: '',
             remark: '',
             price_personal: 0,
             price_company: 0,
             price_extend: 0,
+            area_unit: '5k以下',
+            wiring: '三角形',
+            is_public: true,
+            is_skeleton: false,
+            is_animation: false,
+            is_business: false,
+            is_print: false,
+            is_no_collapse: false,
           }
         },
 
         // 搜索
         async find_list_demo() {
           try {
-            const response = await this.axios.post(`${this.VITE_url_app_run}/find_list_demo`, this.search_form)
+            // 构建搜索数据，过滤空值
+            const searchData = {}
+            Object.keys(this.search_form).forEach(key => {
+              const value = this.search_form[key]
+              if (value !== '' && value !== null && value !== undefined) {
+                searchData[key] = value
+              }
+            })
+            
+            const response = await this.axios.post(`${this.VITE_url_app_run}/find_list_model_product`, searchData)
             if (response.data.code === 200) {
               this.product_list = response.data.result.list
               this.pagination = response.data.result.pagination
@@ -271,15 +556,37 @@
           }
         },
 
+        // 重置搜索表单
+        reset_search_form() {
+          this.search_form = {
+            title: '',
+            area_unit: '',
+            wiring: '',
+            is_public: '',
+            is_deleted: '',
+            is_check: '',
+            is_business: '',
+            is_skeleton: '',
+            is_animation: '',
+            is_print: '',
+            is_no_collapse: '',
+            page_index: 1,
+            page_size: 5,
+            order_by: 'id',
+            order_type: 'desc',
+          }
+          this.show_message('搜索条件已重置')
+        },
+
         // 添加
         async create_demo() {
-          if (!this.add_form.name.trim()) {
-            this.show_message('请输入名称', 'error')
+          if (!this.add_form.title.trim()) {
+            this.show_message('请输入标题', 'error')
             return
           }
 
           try {
-            const response = await this.axios.post(`${this.VITE_url_app_run}/create_demo`, this.add_form)
+            const response = await this.axios.post(`${this.VITE_url_app_run}/save_model_product`, this.add_form)
             if (response.data.code === 200) {
               this.show_message('添加成功')
               this.close_add_modal()
@@ -296,11 +603,19 @@
         edit_product(product) {
           this.edit_form = {
             id: product.id,
-            name: product.name,
-            remark: product.remark,
-            price_personal: product.price_personal,
-            price_company: product.price_company,
-            price_extend: product.price_extend,
+            title: product.title,
+            remark: product.remark || '',
+            price_personal: product.price_personal || 0,
+            price_company: product.price_company || 0,
+            price_extend: product.price_extend || 0,
+            area_unit: product.area_unit || '5k以下',
+            wiring: product.wiring || '三角形',
+            is_public: product.is_public !== undefined ? product.is_public : true,
+            is_skeleton: product.is_skeleton || false,
+            is_animation: product.is_animation || false,
+            is_business: product.is_business || false,
+            is_print: product.is_print || false,
+            is_no_collapse: product.is_no_collapse || false,
           }
           this.show_edit_modal = true
         },
@@ -308,7 +623,7 @@
         // 保存编辑
         async update_demo() {
           try {
-            const response = await this.axios.post(`${this.VITE_url_app_run}/update_demo`, this.edit_form)
+            const response = await this.axios.post(`${this.VITE_url_app_run}/save_model_product`, this.edit_form)
             if (response.data.code === 200) {
               this.show_message('更新成功')
               this.close_edit_modal()
@@ -326,11 +641,19 @@
           this.show_edit_modal = false
           this.edit_form = {
             id: null,
-            name: '',
+            title: '',
             remark: '',
             price_personal: 0,
             price_company: 0,
             price_extend: 0,
+            area_unit: '5k以下',
+            wiring: '三角形',
+            is_public: true,
+            is_skeleton: false,
+            is_animation: false,
+            is_business: false,
+            is_print: false,
+            is_no_collapse: false,
           }
         },
 
@@ -353,7 +676,7 @@
           }
 
           try {
-            const response = await this.axios.get(`${this.VITE_url_app_run}/delete_demo?id=${id}`)
+            const response = await this.axios.get(`${this.VITE_url_app_run}/delete_model_product?id=${id}`)
             if (response.data.code === 200) {
               this.show_message('删除成功')
               this.find_list_demo()

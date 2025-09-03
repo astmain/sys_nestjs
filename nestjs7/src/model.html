@@ -24,20 +24,102 @@
     <!-- 商品管理页面 -->
     <div v-if="current_tab === 'product'">
       <!-- 搜索区域 -->
-      <el-form :inline="true" :model="product_search_form" style="margin-bottom: 20px">
-        <el-form-item label="模型标题">
-          <el-input v-model="product_search_form.title" placeholder="搜索模型标题" style="width: 200px"></el-input>
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="product_search_form.is_public" placeholder="全部状态" style="width: 120px">
-            <el-option label="全部状态" value=""></el-option>
-            <el-option label="公开" :value="true"></el-option>
-            <el-option label="私有" :value="false"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="find_list_model_product">搜索</el-button>
-        </el-form-item>
+      <el-form :model="product_search_form" style="margin-bottom: 20px">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-form-item label="模型标题">
+              <el-input v-model="product_search_form.title" placeholder="搜索模型标题"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="备注" required>
+              <el-input v-model="product_search_form.remark" placeholder="请输入备注"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="公开状态" required>
+              <el-select v-model="product_search_form.is_public" placeholder="请选择状态" style="width: 100%">
+                <el-option label="公开" :value="true"></el-option>
+                <el-option label="私有" :value="false"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="删除状态" required>
+              <el-select v-model="product_search_form.is_deleted" placeholder="请选择状态" style="width: 100%">
+                <el-option label="未删除" :value="false"></el-option>
+                <el-option label="已删除" :value="true"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="审核状态" required>
+              <el-select v-model="product_search_form.is_check" placeholder="请选择状态" style="width: 100%">
+                <el-option label="已审核" :value="true"></el-option>
+                <el-option label="未审核" :value="false"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-form-item label="商用状态" required>
+              <el-select v-model="product_search_form.is_business" placeholder="请选择状态" style="width: 100%">
+                <el-option label="商用" :value="true"></el-option>
+                <el-option label="非商用" :value="false"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="骨骼状态" required>
+              <el-select v-model="product_search_form.is_skeleton" placeholder="请选择状态" style="width: 100%">
+                <el-option label="有骨骼" :value="true"></el-option>
+                <el-option label="无骨骼" :value="false"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="动画状态" required>
+              <el-select v-model="product_search_form.is_animation" placeholder="请选择状态" style="width: 100%">
+                <el-option label="有动画" :value="true"></el-option>
+                <el-option label="无动画" :value="false"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="打印状态" required>
+              <el-select v-model="product_search_form.is_print" placeholder="请选择状态" style="width: 100%">
+                <el-option label="可打印" :value="true"></el-option>
+                <el-option label="不可打印" :value="false"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-form-item label="塌陷状态" required>
+              <el-select v-model="product_search_form.is_no_collapse" placeholder="请选择状态" style="width: 100%">
+                <el-option label="未塌陷" :value="true"></el-option>
+                <el-option label="已塌陷" :value="false"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="布线方式" required>
+              <el-select v-model="product_search_form.wiring" placeholder="请选择布线" style="width: 100%">
+                <el-option label="三角形" value="三角形"></el-option>
+                <el-option label="四边形" value="四边形"></el-option>
+                <el-option label="混合" value="混合"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item>
+              <el-button type="primary" @click="find_list_model_product">搜索</el-button>
+              <el-button @click="reset_search_form">重置</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
 
       <!-- 管理区域 -->
@@ -81,6 +163,8 @@
                     <div v-if="product.is_skeleton" class="attribute_tag skeleton">有骨骼</div>
                     <div v-if="product.is_animation" class="attribute_tag animation">有动画</div>
                     <div v-if="product.is_business" class="attribute_tag business">商用</div>
+                    <div v-if="product.is_print" class="attribute_tag print">可打印</div>
+                    <div v-if="product.is_no_collapse" class="attribute_tag no_collapse">未塌陷</div>
                     <div class="attribute_tag">{{ product.area_unit }}</div>
                     <div class="attribute_tag">{{ product.wiring }}</div>
                   </div>
@@ -160,6 +244,8 @@
                 <div v-if="cart_item.product.is_skeleton" class="attribute_tag skeleton">有骨骼</div>
                 <div v-if="cart_item.product.is_animation" class="attribute_tag animation">有动画</div>
                 <div v-if="cart_item.product.is_business" class="attribute_tag business">商用</div>
+                <div v-if="cart_item.product.is_print" class="attribute_tag print">可打印</div>
+                <div v-if="cart_item.product.is_no_collapse" class="attribute_tag no_collapse">未塌陷</div>
               </div>
             </div>
 
@@ -278,6 +364,8 @@
             <el-checkbox label="is_skeleton">有骨骼</el-checkbox>
             <el-checkbox label="is_animation">有动画</el-checkbox>
             <el-checkbox label="is_business">商用</el-checkbox>
+            <el-checkbox label="is_print">可打印</el-checkbox>
+            <el-checkbox label="is_no_collapse">未塌陷</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="面片数">
@@ -394,6 +482,8 @@
             <el-checkbox label="is_skeleton">有骨骼</el-checkbox>
             <el-checkbox label="is_animation">有动画</el-checkbox>
             <el-checkbox label="is_business">商用</el-checkbox>
+            <el-checkbox label="is_print">可打印</el-checkbox>
+            <el-checkbox label="is_no_collapse">未塌陷</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="面片数">
@@ -560,11 +650,27 @@
                   </el-tag>
                 </span>
               </li>
-              <li style="display: flex; padding: 12px 15px; align-items: center">
+              <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">商用</span>
                 <span style="flex: 1">
                   <el-tag :type="selected_product.is_business ? 'success' : 'info'">
                     {{ selected_product.is_business ? '是' : '否' }}
+                  </el-tag>
+                </span>
+              </li>
+              <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
+                <span style="width: 100px; color: #909399; font-weight: 500">可打印</span>
+                <span style="flex: 1">
+                  <el-tag :type="selected_product.is_print ? 'success' : 'info'">
+                    {{ selected_product.is_print ? '是' : '否' }}
+                  </el-tag>
+                </span>
+              </li>
+              <li style="display: flex; padding: 12px 15px; align-items: center">
+                <span style="width: 100px; color: #909399; font-weight: 500">未塌陷</span>
+                <span style="flex: 1">
+                  <el-tag :type="selected_product.is_no_collapse ? 'success' : 'info'">
+                    {{ selected_product.is_no_collapse ? '是' : '否' }}
                   </el-tag>
                 </span>
               </li>
@@ -717,6 +823,8 @@
                       <el-tag v-if="item.tb_model_product.is_skeleton" type="warning" size="small">有骨骼</el-tag>
                       <el-tag v-if="item.tb_model_product.is_animation" type="info" size="small">有动画</el-tag>
                       <el-tag v-if="item.tb_model_product.is_business" type="danger" size="small">商用</el-tag>
+                      <el-tag v-if="item.tb_model_product.is_print" type="success" size="small">可打印</el-tag>
+                      <el-tag v-if="item.tb_model_product.is_no_collapse" type="primary" size="small">未塌陷</el-tag>
                     </div>
                   </div>
                   <div style="text-align: right; min-width: 120px">
@@ -788,7 +896,16 @@
         // 商品相关数据
         product_search_form: {
           title: '',
-          is_public: '',
+          remark: '', // 备注字段，必填
+          is_public: true, // 默认选择公开状态
+          is_deleted: false, // 默认选择未删除
+          is_check: true, // 默认选择已审核
+          is_business: false, // 默认选择非商用
+          is_skeleton: false, // 默认选择无骨骼
+          is_animation: false, // 默认选择无动画
+          is_print: false, // 默认选择不可打印
+          is_no_collapse: true, // 默认选择未塌陷
+          wiring: '三角形', // 默认选择三角形
           page_index: 1,
           page_size: 10,
           order_by: 'created_at',
@@ -804,6 +921,8 @@
           is_skeleton: false,
           is_animation: false,
           is_business: false,
+          is_print: false,
+          is_no_collapse: false,
           area_unit: '5k以下',
           wiring: '三角形',
           list_img: [],
@@ -822,6 +941,8 @@
           is_skeleton: false,
           is_animation: false,
           is_business: false,
+          is_print: false,
+          is_no_collapse: false,
           area_unit: '5k以下',
           wiring: '三角形',
           list_img: [],
@@ -1069,10 +1190,9 @@
         // 搜索商品
         async find_list_model_product() {
           try {
+   
+
             const searchData = { ...this.product_search_form }
-            if (searchData.is_public === '') {
-              delete searchData.is_public
-            }
 
             const response = await this.axios.post('/find_list_model_product', searchData)
             if (response.data.code === 200) {
@@ -1086,6 +1206,28 @@
           } catch (error) {
             this.show_message('搜索出错: ' + error.message, 'error')
           }
+        },
+
+        // 重置搜索表单
+        reset_search_form() {
+          this.product_search_form = {
+            title: '',
+            remark: '搜索备注',
+            is_public: true,
+            is_deleted: false,
+            is_check: true,
+            is_business: false,
+            is_skeleton: false,
+            is_animation: false,
+            is_print: false,
+            is_no_collapse: true,
+            wiring: '三角形',
+            page_index: 1,
+            page_size: 10,
+            order_by: 'created_at',
+            order_type: 'desc',
+          }
+          this.show_message('搜索条件已重置')
         },
 
         // 打开添加商品弹窗
@@ -1111,6 +1253,8 @@
             is_skeleton: false,
             is_animation: false,
             is_business: false,
+            is_print: false,
+            is_no_collapse: false,
             area_unit: '5k以下',
             wiring: '三角形',
             list_img: [],
@@ -1141,6 +1285,8 @@
             this.add_product_form.is_skeleton = this.model_attributes.includes('is_skeleton')
             this.add_product_form.is_animation = this.model_attributes.includes('is_animation')
             this.add_product_form.is_business = this.model_attributes.includes('is_business')
+            this.add_product_form.is_print = this.model_attributes.includes('is_print')
+            this.add_product_form.is_no_collapse = this.model_attributes.includes('is_no_collapse')
 
             // 准备提交数据，保持文件对象格式 {url: "", name: "文件名"}
             const submit_data = {
@@ -1177,6 +1323,8 @@
             is_skeleton: product.is_skeleton || false,
             is_animation: product.is_animation || false,
             is_business: product.is_business || false,
+            is_print: product.is_print || false,
+            is_no_collapse: product.is_no_collapse || false,
             area_unit: product.area_unit || '5k以下',
             wiring: product.wiring || '三角形',
             list_img: this.normalize_file_array(product.list_img),
@@ -1190,6 +1338,8 @@
           if (product.is_skeleton) this.edit_model_attributes.push('is_skeleton')
           if (product.is_animation) this.edit_model_attributes.push('is_animation')
           if (product.is_business) this.edit_model_attributes.push('is_business')
+          if (product.is_print) this.edit_model_attributes.push('is_print')
+          if (product.is_no_collapse) this.edit_model_attributes.push('is_no_collapse')
           
           this.show_edit_product_modal = true
         },
@@ -1201,6 +1351,8 @@
             this.edit_product_form.is_skeleton = this.edit_model_attributes.includes('is_skeleton')
             this.edit_product_form.is_animation = this.edit_model_attributes.includes('is_animation')
             this.edit_product_form.is_business = this.edit_model_attributes.includes('is_business')
+            this.edit_product_form.is_print = this.edit_model_attributes.includes('is_print')
+            this.edit_product_form.is_no_collapse = this.edit_model_attributes.includes('is_no_collapse')
 
             // 准备提交数据，保持文件对象格式 {url: "", name: "文件名"}
             const submit_data = {
@@ -1238,6 +1390,8 @@
             is_skeleton: false,
             is_animation: false,
             is_business: false,
+            is_print: false,
+            is_no_collapse: false,
             area_unit: '5k以下',
             wiring: '三角形',
             list_img: [],
@@ -1658,6 +1812,18 @@
       background: #f8d7da;
       color: #721c24;
       border-color: #f5c6cb;
+    }
+
+    .attribute_tag.print {
+      background: #d4edda;
+      color: #155724;
+      border-color: #c3e6cb;
+    }
+
+    .attribute_tag.no_collapse {
+      background: #cce5ff;
+      color: #004085;
+      border-color: #b3d7ff;
     }
 
     /* 统计信息 */
