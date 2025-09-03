@@ -60,9 +60,9 @@ export class find_list_model_card extends PickType(model_card_dto, ['user_id']) 
 export class find_info_model_card extends PickType(model_card_dto, ['id']) {}
 
 
-export class save_model_card extends PickType(model_card_dto, ['id', 'product_id', 'user_id', 'price', 'price_type']) {
-  @ApiProperty({ description: 'id(id)', example: 'cuid_string' })
+export class save_model_card extends PickType(model_card_dto, ['product_id', 'user_id', 'price', 'price_type']) {
+  @ApiProperty({ description: 'id(id)', example: 'cuid_string', required: false })
   @IsString({ message: 'id必须为字符串' })
   @IsOptional()
-  id: string
+  id?: string
 }

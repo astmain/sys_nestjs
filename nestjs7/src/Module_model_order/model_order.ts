@@ -86,7 +86,7 @@ export class model_order extends AppController {
   async find_list_model_order(@Body() body: dto.find_list_model_order , @Req() req: any) {
     console.log('find_list_model_order---body:', body)
 
-    const where: any = {}
+    const where: any = { is_deleted: false } // 只查询未被逻辑删除的数据
     if (body.user_id) where.user_id = req.user_id
     if (body.order_number) where.order_number = { contains: body.order_number }
     if (body.status) where.status = String(body.status)
@@ -115,8 +115,8 @@ export class model_order extends AppController {
   @ApiPost('find_info_model_order', '查询-模型订单-详情')
   async find_info_model_order(@Body() body: dto.find_info_model_order , @Req() req: any) {
     console.log('find_info_model_order---body:', body)
-    const data = await this.db.tb_order_list.findUnique({
-      where: { order_number: body.order_number },
+    const data = await this.db.tb_order_list.findFirst({
+      where: { order_number: body.order_number, is_deleted: false },
       include: {
         tb_order_info: {
           include: {
@@ -134,12 +134,24 @@ export class model_order extends AppController {
   async delete_model_order(@Query('order_number') order_number: string , @Req() req: any) {
     console.log('delete_model_order---order_number:', order_number, typeof order_number)
 
-    // 先删除订单详情
-    await this.db.tb_order_info.deleteMany({ where: { order_number } })
+    // 使用事务进行逻辑删除
+    const result = await this.db.$transaction(async (tx) => {
+      // 先逻辑删除订单详情
+      await tx.tb_order_info.updateMany({ 
+        where: { order_number },
+        data: { is_deleted: true }
+      })
 
-    // 再删除订单
-    const data = await this.db.tb_order_list.delete({ where: { order_number } })
-    return { code: 200, msg: '成功:删除-模型订单', result: data }
+      // 再逻辑删除订单
+      const data = await tx.tb_order_list.update({ 
+        where: { order_number },
+        data: { is_deleted: true }
+      })
+      
+      return data
+    })
+    
+    return { code: 200, msg: '成功:删除-模型订单', result }
   }
 
   @ApiPost('create_order_from_cart', '从购物车创建订单')
@@ -160,7 +172,7 @@ export class model_order extends AppController {
     const order_number = `ORD${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}${String(Date.now()).slice(-6)}`
 
     // 计算订单总价
-    const price_order = cart_items.reduce((total, item) => total + item.product.price, 0)
+    const price_order = cart_items.reduce((total, item) => total + item.price, 0)
     const price_pay = price_order - (body.price_sub || 0)
 
     // 创建订单
@@ -182,7 +194,7 @@ export class model_order extends AppController {
           data: {
             order_number,
             product_id: item.product_id,
-            price_one: item.product.price,
+            price_one: item.price,
             count: 1,
           },
         }),

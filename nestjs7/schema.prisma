@@ -21,11 +21,15 @@ enum enum_order_status {
 
 // 模型商品表
 model tb_model_product {
-  id              String  @id @default(cuid())
-  title           String //标题
-  remark          String  @default("") //备注
-  price           Int //价格
-  user_id         Int //用户id
+  id      String @id @default(cuid())
+  user_id Int //用户id
+  title   String //标题
+  remark  String @default("") //备注
+
+  price_personal Int @default(0) //个人价格
+  price_company  Int @default(0) //企业价格
+  price_extend   Int @default(0) //企业扩展价格
+
   list_img        Json    @default("[]") //图片
   list_file       Json    @default("[]") //文件
   list_video      Json    @default("[]") //视频
@@ -40,6 +44,7 @@ model tb_model_product {
   is_business     Boolean @default(false) //是否商用
   is_skeleton     Boolean @default(false) //是否有骨骼
   is_animation    Boolean @default(false) //是否有动画
+  is_deleted      Boolean @default(false) //逻辑删除
 
   area_unit String @default("5k以下") //面片数
   wiring    String @default("三角形") //布线
@@ -53,17 +58,18 @@ model tb_model_product {
 
 // 模型购物车表
 model tb_model_cart {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   user_id    Int //用户id
   product_id String //商品id
   price      Int //价格
   price_type String //价格类型
+  is_deleted Boolean @default(false) //逻辑删除
 
   product    tb_model_product @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Cascade) //商品
   updated_at DateTime         @updatedAt
   created_at DateTime         @default(now())
 
-  @@unique([user_id, product_id])
+  // @@unique([user_id, product_id])
 }
 
 // 模型订单列表
@@ -76,6 +82,7 @@ model tb_order_list {
   price_pay     Int //支付价格
   pay_time      DateTime? //支付时间
   tb_order_info tb_order_info[] //订单详情
+  is_deleted    Boolean           @default(false) //逻辑删除
   status        enum_order_status @default(PAYING) // 订单状态
   updated_at    DateTime          @updatedAt
   created_at    DateTime          @default(now())
@@ -87,6 +94,7 @@ model tb_order_info {
   order_number     String //订单id
   product_id       String //商品id
   price_one        Int //单价
+  is_deleted       Boolean          @default(false) //逻辑删除
   count            Int              @default(1) //数量
   tb_order_list    tb_order_list    @relation(fields: [order_number], references: [order_number], onDelete: NoAction, onUpdate: Cascade) //订单
   tb_model_product tb_model_product @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: Cascade) //商品
@@ -107,9 +115,10 @@ model tb_demo {
 }
 
 model tb_model_kind {
-  id        Int             @id @default(autoincrement())
-  name      String //名称
-  parent_id Int? //父级id//  // 自关联
-  parent    tb_model_kind?  @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  children  tb_model_kind[] @relation("re_tb_model_kind")
+  id         Int             @id @default(autoincrement())
+  name       String //名称
+  is_deleted Boolean         @default(false) //逻辑删除
+  parent_id  Int? //父级id//  // 自关联
+  parent     tb_model_kind?  @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children   tb_model_kind[] @relation("re_tb_model_kind")
 }

@@ -16,14 +16,25 @@ export class model_product extends AppController {
   @ApiPost('save_model_product', '保存-模型商品')
   async save_model_product(@Body() body: dto.save_model_product, @Req() req: any) {
     console.log('save_model_product---body:', body)
-    console.log('save_model_product---req:', req.user_id)
+    console.log('save_model_product---user_id:', req.user_id)
+    
     const { id, ...createData } = body
-    const data = await this.db.tb_model_product.upsert({
-      where: { id: body.id },
-      update: { ...createData, user_id: req.user_id },
-      create: { ...createData, user_id: req.user_id },
-    })
-    return { code: 200, msg: '成功:保存-模型商品', result: data }
+    
+    // 如果有id且不为空，则更新；否则创建新记录
+    if (id && id.trim() !== '') {
+      // 更新现有记录
+      const data = await this.db.tb_model_product.update({
+        where: { id },
+        data: { ...createData, user_id: req.user_id },
+      })
+      return { code: 200, msg: '成功:更新-模型商品', result: data }
+    } else {
+      // 创建新记录
+      const data = await this.db.tb_model_product.create({
+        data: { ...createData, user_id: req.user_id },
+      })
+      return { code: 200, msg: '成功:创建-模型商品', result: data }
+    }
   }
 
   // @ApiPost('create_model_product', '新增-模型商品')
@@ -34,7 +45,9 @@ export class model_product extends AppController {
   //     data: {
   //       title: body.title,
   //       remark: body.remark || '',
-  //       price: body.price,
+  //       price_personal: body.price_personal,
+  //       price_company: body.price_company,
+  //       price_extend: body.price_extend,
   //       user_id: req.user_id,
   //       is_public: body.is_public !== undefined ? body.is_public : true,
   //     },
@@ -50,7 +63,9 @@ export class model_product extends AppController {
   //     data: {
   //       title: body.title,
   //       remark: body.remark,
-  //       price: body.price,
+  //       price_personal: body.price_personal,
+  //       price_company: body.price_company,
+  //       price_extend: body.price_extend,
   //       user_id: req.user_id,
   //       is_public: body.is_public,
   //     },
@@ -61,15 +76,25 @@ export class model_product extends AppController {
   @ApiPost('find_list_model_product', '查询-模型商品-列表')
   async find_list_model_product(@Body() body: dto.find_list_model_product) {
     console.log('find_list_model_product---body:', body)
+    
+    // 构建查询条件
+    const where: any = {
+      title: { contains: body.title || '' },
+      is_deleted: false // 只查询未被逻辑删除的数据
+    }
+    
+    // 如果指定了 is_public 状态，则添加到查询条件中
+    if (body.is_public !== undefined && body.is_public !== null) {
+      where.is_public = body.is_public
+    }
+    
     const list = await this.db.tb_model_product.findMany({
-      where: { title: { contains: body.title || '' }, is_public: true },
+      where,
       skip: (body.page_index - 1) * body.page_size,
       take: body.page_size,
       orderBy: { [body.order_by]: body.order_type } as any,
     })
-    const count = await this.db.tb_model_product.count({
-      where: { title: { contains: body.title || '' }, is_public: true },
-    })
+    const count = await this.db.tb_model_product.count({ where })
     const page_total = Math.ceil(count / body.page_size)
     const pagination = { page_index: body.page_index, page_size: body.page_size, count_total: count, page_total: page_total }
     const result = { list, pagination }
@@ -80,7 +105,9 @@ export class model_product extends AppController {
   @ApiPost('find_info_model_product', '查询-模型商品-详情')
   async find_info_model_product(@Body() body: dto.find_info_model_product) {
     console.log('find_info_model_product---body:', body)
-    const data = await this.db.tb_model_product.findUnique({ where: { id: body.id } })
+    const data = await this.db.tb_model_product.findFirst({ 
+      where: { id: body.id, is_deleted: false } 
+    })
     console.log('find_info_model_product---data:', data)
     return { code: 200, msg: '成功:查询-模型商品-详情', result: data }
   }
@@ -89,7 +116,10 @@ export class model_product extends AppController {
   @ApiQuery({ name: 'id', description: '删除-id', required: true, type: String, example: 'cuid_string' })
   async delete_model_product(@Query('id') id: string) {
     console.log('delete_model_product---id:', id, typeof id)
-    const data = await this.db.tb_model_product.delete({ where: { id } })
+    const data = await this.db.tb_model_product.update({
+      where: { id },
+      data: { is_deleted: true }
+    })
     return { code: 200, msg: '成功:删除-模型商品-id', result: data }
   }
 }

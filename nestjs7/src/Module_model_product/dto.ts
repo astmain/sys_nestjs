@@ -23,11 +23,20 @@ export class model_product_dto {
   @IsOptional()
   remark: string
 
-  @ApiProperty({ description: 'price(价格)', example: 100 })
+  @ApiProperty({ description: 'price_personal(个人价格)', example: 100 })
   @IsNumber()
   @Type(() => Number) // 转换为数字
-  // @IsNotEmpty({ message: 'price不能为空' })
-  price: number = 0
+  price_personal: number = 0
+
+  @ApiProperty({ description: 'price_company(企业价格)', example: 200 })
+  @IsNumber()
+  @Type(() => Number) // 转换为数字
+  price_company: number = 0
+
+  @ApiProperty({ description: 'price_extend(企业扩展价格)', example: 300 })
+  @IsNumber()
+  @Type(() => Number) // 转换为数字
+  price_extend: number = 0
 
   @ApiProperty({ description: 'is_public(是否公开)', example: true })
   @IsBoolean()
@@ -93,13 +102,54 @@ export class model_product_dto {
   @IsString()
   @IsOptional()
   wiring: string = '三角形'
+
+  @ApiProperty({ description: 'count_collect(收藏数)', example: 0 })
+  @IsNumber()
+  @IsOptional()
+  count_collect: number = 0
+
+  @ApiProperty({ description: 'count_download(下载数)', example: 0 })
+  @IsNumber()
+  @IsOptional()
+  count_download: number = 0
+
+  @ApiProperty({ description: 'count_like(点赞数)', example: 0 })
+  @IsNumber()
+  @IsOptional()
+  count_like: number = 0
+
+  //   {
+  //     "field": "is_skeleton",
+  //     "value": false,
+  //     "msg": "property is_skeleton should not exist"
+  // },
+  // {
+  //     "field": "is_animation",
+  //     "value": false,
+  //     "msg": "property is_animation should not exist"
+  // },
+  // {
+  //     "field": "is_business",
+  //     "value": false,
+  //     "msg": "property is_business should not exist"
+  // },
+  // {
+  //     "field": "area_unit",
+  //     "value": "5k以下",
+  //     "msg": "property area_unit should not exist"
+  // },
+  // {
+  //     "field": "wiring",
+  //     "value": "三角形",
+  //     "msg": "property wiring should not exist"
+  // }
 }
 
-export class create_model_product extends PickType(model_product_dto, ['title', 'remark', 'price', 'is_public', 'list_img', 'list_file', 'list_video', 'list_extend']) {}
+export class create_model_product extends PickType(model_product_dto, ['title', 'remark', 'price_personal', 'price_company', 'price_extend', 'is_public', 'list_img', 'list_file', 'list_video', 'list_extend']) {}
 
-export class update_model_product extends PickType(model_product_dto, ['id', 'title', 'remark', 'price', 'is_public', 'list_img', 'list_file', 'list_video', 'list_extend']) {}
+export class update_model_product extends PickType(model_product_dto, ['id', 'title', 'remark', 'price_personal', 'price_company', 'price_extend', 'is_public', 'list_img', 'list_file', 'list_video', 'list_extend']) {}
 
-export class find_list_model_product extends PickType(model_product_dto, ['title']) {
+export class find_list_model_product extends PickType(model_product_dto, ['title', 'is_public']) {
   @ApiProperty({ description: '页码', example: 1, required: true })
   @IsNumber()
   page_index: number = 1
@@ -119,10 +169,25 @@ export class find_list_model_product extends PickType(model_product_dto, ['title
 
 export class find_info_model_product extends PickType(model_product_dto, ['id']) {}
 
-export class save_model_product extends PickType(model_product_dto, ['title', 'remark', 'price', 'is_public', 'list_img', 'list_file', 'list_video', 'list_extend']) {
-  @ApiProperty({ description: 'id(id)', example: 'cuid_string' })
+export class save_model_product extends PickType(model_product_dto, [
+  'title', //
+  'remark',
+  'price_personal',
+  'price_company',
+  'price_extend',
+  'is_public',
+  'list_img',
+  'list_file',
+  'list_video',
+  'list_extend',
+  'is_skeleton',
+  'is_animation',
+  'is_business',
+  'area_unit',
+  'wiring',
+]) {
+  @ApiProperty({ description: 'id(id)', example: 'cuid_string', required: false })
   @IsString({ message: 'id必须为字符串' })
-  @IsNotEmpty({ message: 'id不能为空' })
   @IsOptional()
-  id: string
+  id?: string
 }

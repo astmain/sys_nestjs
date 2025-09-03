@@ -11,7 +11,7 @@ export class model_kind extends AppController {
   @ApiPost('create_model_kind', '新增-模型分类')
   async create_model_kind(@Body() body: dto.create_model_kind) {
     // 判断是否存在
-    const is_exist = await this.db.tb_model_kind.findFirst({ where: { name: body.name, parent_id: body.parent_id } })
+    const is_exist = await this.db.tb_model_kind.findFirst({ where: { name: body.name, parent_id: body.parent_id, is_deleted: false } })
     if (is_exist) return { code: 400, msg: '失败:数据已存在', result: null }
     const data = await this.db.tb_model_kind.create({ data: { name: body.name, parent_id: body.parent_id } })
     return { code: 200, msg: '成功:新增-模型分类', result: data }
@@ -21,18 +21,23 @@ export class model_kind extends AppController {
   @ApiQuery({ name: 'id', description: '删除id', required: true, type: Number, example: 1 })
   async delete_model_kind(@Query('id', ParseIntPipe) id: number) {
     console.log('delete_model_kind---id:', id, typeof id)
-    // 判断是否存在
-    const is_exist = await this.db.tb_model_kind.findFirst({ where: { id } })
+    // 判断是否存在且未被删除
+    const is_exist = await this.db.tb_model_kind.findFirst({ 
+      where: { id, is_deleted: false } 
+    })
     if (!is_exist) return { code: 400, msg: '失败:数据不存在', result: null }
-    // 删除当前id的数据(级联删除)
-    await this.db.tb_model_kind.delete({ where: { id } })
-    return { code: 200, msg: '成功:删除-模型分类', result: {} }
+    // 逻辑删除当前id的数据
+    const data = await this.db.tb_model_kind.update({ 
+      where: { id },
+      data: { is_deleted: true }
+    })
+    return { code: 200, msg: '成功:删除-模型分类', result: data }
   }
 
   @ApiPost('update_model_kind', '更新-模型分类')
   async update_model_kind(@Body() body: dto.update_model_kind) {
     // 判断是否存在
-    const is_exist = await this.db.tb_model_kind.findFirst({ where: { id: body.id } })
+    const is_exist = await this.db.tb_model_kind.findFirst({ where: { id: body.id, is_deleted: false } })
     if (!is_exist) return { code: 400, msg: '失败:数据不存在', result: null }
     const data = await this.db.tb_model_kind.update({ where: { id: body.id }, data: { name: body.name, parent_id: body.parent_id } })
     return { code: 200, msg: '成功:更新-模型分类', result: data }
@@ -41,7 +46,10 @@ export class model_kind extends AppController {
   @ApiGet('get_tree_model_kind', '查询-模型分类-树状结构')
   async get_tree_model_kind() {
     // 获取所有分类数据
-    const all_kinds = await this.db.tb_model_kind.findMany({ orderBy: { id: 'asc' } })
+    const all_kinds = await this.db.tb_model_kind.findMany({ 
+      where: { is_deleted: false },
+      orderBy: { id: 'asc' } 
+    })
     // 构建树状结构
     const build_tree = (items: any[], parent_id: number | null = null): any[] => {
       return items.filter((item) => item.parent_id === parent_id).map((item) => ({ ...item, children: build_tree(items, item.id) }))
