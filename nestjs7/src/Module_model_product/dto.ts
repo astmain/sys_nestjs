@@ -88,6 +88,16 @@ export class model_product_dto {
   @IsOptional()
   is_animation: boolean = false
 
+  @ApiProperty({ description: 'is_print(是否可打印)', example: true })
+  @IsBoolean()
+  @IsOptional()
+  is_print: boolean = false
+
+  @ApiProperty({ description: 'is_no_collapse(未塌陷)', example: true })
+  @IsBoolean()
+  @IsOptional()
+  is_no_collapse: boolean = false
+
   @ApiProperty({ description: 'model_format(模型格式)', example: '.stl' })
   @IsString()
   @IsOptional()
@@ -117,37 +127,7 @@ export class model_product_dto {
   @IsNumber()
   @IsOptional()
   count_like: number = 0
-
-  //   {
-  //     "field": "is_skeleton",
-  //     "value": false,
-  //     "msg": "property is_skeleton should not exist"
-  // },
-  // {
-  //     "field": "is_animation",
-  //     "value": false,
-  //     "msg": "property is_animation should not exist"
-  // },
-  // {
-  //     "field": "is_business",
-  //     "value": false,
-  //     "msg": "property is_business should not exist"
-  // },
-  // {
-  //     "field": "area_unit",
-  //     "value": "5k以下",
-  //     "msg": "property area_unit should not exist"
-  // },
-  // {
-  //     "field": "wiring",
-  //     "value": "三角形",
-  //     "msg": "property wiring should not exist"
-  // }
 }
-
-export class create_model_product extends PickType(model_product_dto, ['title', 'remark', 'price_personal', 'price_company', 'price_extend', 'is_public', 'list_img', 'list_file', 'list_video', 'list_extend']) {}
-
-export class update_model_product extends PickType(model_product_dto, ['id', 'title', 'remark', 'price_personal', 'price_company', 'price_extend', 'is_public', 'list_img', 'list_file', 'list_video', 'list_extend']) {}
 
 export class find_list_model_product extends PickType(model_product_dto, ['title', 'is_public']) {
   @ApiProperty({ description: '页码', example: 1, required: true })
@@ -183,6 +163,8 @@ export class save_model_product extends PickType(model_product_dto, [
   'is_skeleton',
   'is_animation',
   'is_business',
+  'is_print',
+  'is_no_collapse',
   'area_unit',
   'wiring',
 ]) {

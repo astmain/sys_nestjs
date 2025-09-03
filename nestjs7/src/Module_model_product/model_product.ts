@@ -17,9 +17,7 @@ export class model_product extends AppController {
   async save_model_product(@Body() body: dto.save_model_product, @Req() req: any) {
     console.log('save_model_product---body:', body)
     console.log('save_model_product---user_id:', req.user_id)
-    
     const { id, ...createData } = body
-    
     // 如果有id且不为空，则更新；否则创建新记录
     if (id && id.trim() !== '') {
       // 更新现有记录
@@ -37,57 +35,21 @@ export class model_product extends AppController {
     }
   }
 
-  // @ApiPost('create_model_product', '新增-模型商品')
-  // async create_model_product(@Body() body: dto.create_model_product, @Req() req: any) {
-  //   console.log('create_model_product---body:', body)
-  //   console.log('create_model_product---req:', req.user_id)
-  //   const data = await this.db.tb_model_product.create({
-  //     data: {
-  //       title: body.title,
-  //       remark: body.remark || '',
-  //       price_personal: body.price_personal,
-  //       price_company: body.price_company,
-  //       price_extend: body.price_extend,
-  //       user_id: req.user_id,
-  //       is_public: body.is_public !== undefined ? body.is_public : true,
-  //     },
-  //   })
-  //   return { code: 200, msg: '成功:新增-模型商品', result: data }
-  // }
-
-  // @ApiPost('update_model_product', '更新-模型商品')
-  // async update_model_product(@Body() body: dto.update_model_product, @Req() req: any) {
-  //   console.log('update_model_product---body:', body)
-  //   const data = await this.db.tb_model_product.update({
-  //     where: { id: body.id },
-  //     data: {
-  //       title: body.title,
-  //       remark: body.remark,
-  //       price_personal: body.price_personal,
-  //       price_company: body.price_company,
-  //       price_extend: body.price_extend,
-  //       user_id: req.user_id,
-  //       is_public: body.is_public,
-  //     },
-  //   })
-  //   return { code: 200, msg: '成功:更新-模型商品', result: data }
-  // }
-
   @ApiPost('find_list_model_product', '查询-模型商品-列表')
   async find_list_model_product(@Body() body: dto.find_list_model_product) {
     console.log('find_list_model_product---body:', body)
-    
+
     // 构建查询条件
     const where: any = {
       title: { contains: body.title || '' },
-      is_deleted: false // 只查询未被逻辑删除的数据
+      is_deleted: false, // 只查询未被逻辑删除的数据
     }
-    
+
     // 如果指定了 is_public 状态，则添加到查询条件中
     if (body.is_public !== undefined && body.is_public !== null) {
       where.is_public = body.is_public
     }
-    
+
     const list = await this.db.tb_model_product.findMany({
       where,
       skip: (body.page_index - 1) * body.page_size,
@@ -105,8 +67,8 @@ export class model_product extends AppController {
   @ApiPost('find_info_model_product', '查询-模型商品-详情')
   async find_info_model_product(@Body() body: dto.find_info_model_product) {
     console.log('find_info_model_product---body:', body)
-    const data = await this.db.tb_model_product.findFirst({ 
-      where: { id: body.id, is_deleted: false } 
+    const data = await this.db.tb_model_product.findFirst({
+      where: { id: body.id, is_deleted: false },
     })
     console.log('find_info_model_product---data:', data)
     return { code: 200, msg: '成功:查询-模型商品-详情', result: data }
@@ -118,13 +80,12 @@ export class model_product extends AppController {
     console.log('delete_model_product---id:', id, typeof id)
     const data = await this.db.tb_model_product.update({
       where: { id },
-      data: { is_deleted: true }
+      data: { is_deleted: true },
     })
     return { code: 200, msg: '成功:删除-模型商品-id', result: data }
   }
 }
 
-// 模块层直接写在当前文件中,导入控制器层,方便其他模块导入使用
 @Module({
   controllers: [model_product],
   providers: [],

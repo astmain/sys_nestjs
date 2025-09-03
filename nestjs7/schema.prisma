@@ -39,12 +39,16 @@ model tb_model_product {
   count_download  Int     @default(0) //下载数
   count_like      Int     @default(0) //点赞数
   is_check_remark String  @default("") //审核备注
-  is_public       Boolean @default(true) //是否公开
   is_check        Boolean @default(false) //是否审核
-  is_business     Boolean @default(false) //是否商用
-  is_skeleton     Boolean @default(false) //是否有骨骼
-  is_animation    Boolean @default(false) //是否有动画
+  is_public       Boolean @default(true) //是否公开
   is_deleted      Boolean @default(false) //逻辑删除
+
+  is_business Boolean @default(false) //是否商用
+
+  is_skeleton    Boolean @default(false) //是否有骨骼
+  is_animation   Boolean @default(false) //是否有动画
+  is_print       Boolean @default(false) //是否可打印
+  is_no_collapse Boolean @default(false) //未塌陷
 
   area_unit String @default("5k以下") //面片数
   wiring    String @default("三角形") //布线
