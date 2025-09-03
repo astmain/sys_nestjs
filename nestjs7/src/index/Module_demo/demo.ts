@@ -14,25 +14,6 @@ import * as dto from './dto'
 @Dec_public()
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class demo extends AppController {
-  @ApiPost('create_demo', '新增-数据')
-  async create_demo(@Body() body: dto.create_demo) {
-    console.log('create_demo---body:', body)
-    const data = await this.db.tb_demo.create({
-      data: { name: body.name, remark: body.remark, price_personal: body.price_personal, price_company: body.price_company, price_extend: body.price_extend },
-    })
-    return { code: 200, msg: '成功:新增-数据', result: data }
-  }
-
-  @ApiPost('update_demo', '更新-数据')
-  async update_demo(@Body() body: dto.update_demo) {
-    console.log('update_demo---body:', body)
-    const data = await this.db.tb_demo.update({
-      where: { id: body.id },
-      data: { name: body.name, remark: body.remark, price_personal: body.price_personal, price_company: body.price_company, price_extend: body.price_extend },
-    })
-    return { code: 200, msg: '成功:更新-数据', result: data }
-  }
-
   @ApiPost('find_list_demo', '查询-数据-列表')
   async find_list_demo(@Body() body: dto.find_list_demo) {
     console.log('find_list_demo---body:', body)
@@ -56,6 +37,25 @@ export class demo extends AppController {
     const data = await this.db.tb_demo.findUnique({ where: { id: body.id } })
     console.log('find_info_demo---data:', data)
     return { code: 200, msg: '成功:查询-数据-详情', result: data }
+  }
+
+  @ApiPost('create_demo', '新增-数据')
+  async create_demo(@Body() body: dto.create_demo) {
+    console.log('create_demo---body:', body)
+    const data = await this.db.tb_demo.create({
+      data: { name: body.name, remark: body.remark, price_personal: body.price_personal, price_company: body.price_company, price_extend: body.price_extend },
+    })
+    return { code: 200, msg: '成功:新增-数据', result: data }
+  }
+
+  @ApiPost('update_demo', '更新-数据')
+  async update_demo(@Body() body: dto.update_demo) {
+    console.log('update_demo---body:', body)
+    const data = await this.db.tb_demo.update({
+      where: { id: body.id },
+      data: { name: body.name, remark: body.remark, price_personal: body.price_personal, price_company: body.price_company, price_extend: body.price_extend },
+    })
+    return { code: 200, msg: '成功:更新-数据', result: data }
   }
 
   @ApiGet('delete_demo', '删除-id')
