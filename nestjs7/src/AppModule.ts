@@ -22,7 +22,6 @@ import { Module_model_order } from './Module_model_order/model_order'
     Module_model_product, //模型商品
     Module_model_card, //模型购物车
     Module_model_order, //模型订单
-
   ],
   controllers: [],
   providers: [],
