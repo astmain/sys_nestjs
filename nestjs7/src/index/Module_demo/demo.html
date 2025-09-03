@@ -29,7 +29,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">面片数:</label>
           <select v-model="search_form.area_unit" style="width: 150px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option value="5k以下">5k以下</option>
             <option value="5k-10k">5k-10k</option>
             <option value="10k-50k">10k-50k</option>
@@ -39,7 +39,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">布线:</label>
           <select v-model="search_form.wiring" style="width: 150px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option value="三角形">三角形</option>
             <option value="四边形">四边形</option>
             <option value="混合">混合</option>
@@ -52,7 +52,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">公开状态:</label>
           <select v-model="search_form.is_public" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="true">公开</option>
             <option :value="false">私有</option>
           </select>
@@ -60,7 +60,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">删除状态:</label>
           <select v-model="search_form.is_deleted" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="false">未删除</option>
             <option :value="true">已删除</option>
           </select>
@@ -68,7 +68,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">审核状态:</label>
           <select v-model="search_form.is_check" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="true">已审核</option>
             <option :value="false">未审核</option>
           </select>
@@ -76,7 +76,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">商用状态:</label>
           <select v-model="search_form.is_business" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="true">商用</option>
             <option :value="false">非商用</option>
           </select>
@@ -88,7 +88,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">骨骼状态:</label>
           <select v-model="search_form.is_skeleton" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="true">有骨骼</option>
             <option :value="false">无骨骼</option>
           </select>
@@ -96,7 +96,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">动画状态:</label>
           <select v-model="search_form.is_animation" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="true">有动画</option>
             <option :value="false">无动画</option>
           </select>
@@ -104,7 +104,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">打印状态:</label>
           <select v-model="search_form.is_print" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="true">可打印</option>
             <option :value="false">不可打印</option>
           </select>
@@ -112,7 +112,7 @@
         <div style="display: flex; gap: 5px; align-items: center;">
           <label style="min-width: 80px;">塌陷状态:</label>
           <select v-model="search_form.is_no_collapse" style="width: 120px;">
-            <option value="">全部</option>
+            <option :value="null">全部</option>
             <option :value="true">未塌陷</option>
             <option :value="false">已塌陷</option>
           </select>
@@ -421,16 +421,16 @@
         // 搜索表单
         search_form: {
           title: '',
-          area_unit: '',
-          wiring: '',
-          is_public: '',
-          is_deleted: '',
-          is_check: '',
-          is_business: '',
-          is_skeleton: '',
-          is_animation: '',
-          is_print: '',
-          is_no_collapse: '',
+          area_unit: null,
+          wiring: null,
+          is_public: null,
+          is_deleted: null,
+          is_check: null,
+          is_business: null,
+          is_skeleton: null,
+          is_animation: null,
+          is_print: null,
+          is_no_collapse: null,
           page_index: 1,
           page_size: 5,
           order_by: 'id',
@@ -533,14 +533,7 @@
         // 搜索
         async find_list_demo() {
           try {
-            // 构建搜索数据，过滤空值
-            const searchData = {}
-            Object.keys(this.search_form).forEach(key => {
-              const value = this.search_form[key]
-              if (value !== '' && value !== null && value !== undefined) {
-                searchData[key] = value
-              }
-            })
+            const searchData = { ...this.search_form }
             
             const response = await this.axios.post(`${this.VITE_url_app_run}/find_list_model_product`, searchData)
             if (response.data.code === 200) {
@@ -560,16 +553,16 @@
         reset_search_form() {
           this.search_form = {
             title: '',
-            area_unit: '',
-            wiring: '',
-            is_public: '',
-            is_deleted: '',
-            is_check: '',
-            is_business: '',
-            is_skeleton: '',
-            is_animation: '',
-            is_print: '',
-            is_no_collapse: '',
+            area_unit: null,
+            wiring: null,
+            is_public: null,
+            is_deleted: null,
+            is_check: null,
+            is_business: null,
+            is_skeleton: null,
+            is_animation: null,
+            is_print: null,
+            is_no_collapse: null,
             page_index: 1,
             page_size: 5,
             order_by: 'id',

@@ -25,17 +25,17 @@ export class tb_model_product {
   @ApiProperty({ description: 'price_personal(个人价格)', example: 100 })
   @IsNumber()
   @Type(() => Number) // 转换为数字
-  price_personal: number = 0
+  price_personal: number 
 
   @ApiProperty({ description: 'price_company(企业价格)', example: 200 })
   @IsNumber()
   @Type(() => Number) // 转换为数字
-  price_company: number = 0
+  price_company: number 
 
   @ApiProperty({ description: 'price_extend(企业扩展价格)', example: 300 })
   @IsNumber()
   @Type(() => Number) // 转换为数字
-  price_extend: number = 0
+  price_extend: number 
 
   @ApiProperty({ description: 'is_public(是否公开)', example: true })
   @IsBoolean()
@@ -63,7 +63,7 @@ export class tb_model_product {
 
   @ApiProperty({ description: 'is_check(是否审核)', example: true })
   @IsBoolean()
-  is_check: boolean = false
+  is_check: boolean 
 
   @ApiProperty({ description: 'is_check_remark(审核备注)', example: '审核通过' })
   @IsString()
@@ -71,57 +71,58 @@ export class tb_model_product {
 
   @ApiProperty({ description: 'is_business(是否商用)', example: true })
   @IsBoolean()
-  is_business: boolean = false
+  is_business: boolean 
 
   @ApiProperty({ description: 'is_skeleton(是否有骨骼)', example: true })
   @IsBoolean()
-  is_skeleton: boolean = false
+  is_skeleton: boolean 
 
   @ApiProperty({ description: 'is_animation(是否有动画)', example: true })
   @IsBoolean()
-  is_animation: boolean = false
+  is_animation: boolean 
 
   @ApiProperty({ description: 'is_print(是否可打印)', example: true })
   @IsBoolean()
-  is_print: boolean = false
+  is_print: boolean 
 
   @ApiProperty({ description: 'is_deleted(是否删除)', example: true })
   @IsBoolean()
-  is_deleted: boolean = false
+  is_deleted: boolean 
 
   @ApiProperty({ description: 'is_no_collapse(未塌陷)', example: true })
   @IsBoolean()
-  is_no_collapse: boolean = false
+  is_no_collapse: boolean 
 
   @ApiProperty({ description: 'model_format(模型格式)', example: '.stl' })
   @IsString()
-  model_format: string = '.stl'
+  model_format: string 
 
   @ApiProperty({ description: 'area_unit(面片数)', example: '5k以下' })
   @IsString()
-  area_unit: string = '5k以下'
+  area_unit: string
 
   @ApiProperty({ description: 'wiring(布线)', example: '三角形' })
   @IsString()
-  wiring: string = '三角形'
+  wiring: string 
 
   @ApiProperty({ description: 'count_collect(收藏数)', example: 0 })
   @IsNumber()
-  count_collect: number = 0
+  count_collect
 
   @ApiProperty({ description: 'count_download(下载数)', example: 0 })
   @IsNumber()
   @IsOptional()
-  count_download: number = 0
+  count_download
 
   @ApiProperty({ description: 'count_like(点赞数)', example: 0 })
   @IsNumber()
   @IsOptional()
-  count_like: number = 0
+  count_like
 }
 
 // 搜索list的dto  is_deleted is_check is_business is_skeleton is_animation is_print is_no_collapse  wiring
-export class find_list_model_product extends OmitType(tb_model_product, ['id']) {
+// export class find_list_model_product extends OmitType(tb_model_product, ['id']) {
+export class find_list_model_product  {
   @ApiProperty({ description: '页码', example: 1 })
   @IsNumber()
   page_index: number = 1
@@ -149,6 +150,17 @@ export class find_list_model_product extends OmitType(tb_model_product, ['id']) 
   // where.is_animation = body.is_animation
   // where.is_print = body.is_print
   // where.is_no_collapse = body.is_no_collapse
+
+
+  @ApiProperty({ description: 'title(标题)', example: '商品标题' })
+  @IsString()
+  @IsOptional()
+  title: string
+
+  @ApiProperty({ description: 'remark(备注)', example: '商品备注' })
+  @IsString()
+  @IsOptional()
+  remark: string
 
 
   @ApiProperty({ description: 'is_public(是否公开)', example: true })
@@ -183,6 +195,7 @@ export class find_list_model_product extends OmitType(tb_model_product, ['id']) 
 
   @ApiProperty({ description: 'is_print(是否可打印)', example: true })
   @IsBoolean()
+  @IsOptional()
   is_print: boolean
 
   @ApiProperty({ description: 'is_no_collapse(未塌陷)', example: true })

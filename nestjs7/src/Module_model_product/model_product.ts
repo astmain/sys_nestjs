@@ -43,7 +43,7 @@ export class model_product extends AppController {
     const where: any = {
       title: { contains: body.title || '' },
     }
-    // 
+    //
     if (body.is_public !== undefined && body.is_public !== null) {
       where.is_public = body.is_public
     }
@@ -76,6 +76,8 @@ export class model_product extends AppController {
       where.wiring = body.wiring
     }
 
+    console.log('find_list_model_product---where:', where)
+
     const list = await this.db.tb_model_product.findMany({
       where,
       skip: (body.page_index - 1) * body.page_size,
@@ -93,9 +95,7 @@ export class model_product extends AppController {
   @ApiPost('find_info_model_product', '查询-模型商品-详情')
   async find_info_model_product(@Body() body: dto.find_info_model_product) {
     console.log('find_info_model_product---body:', body)
-    const data = await this.db.tb_model_product.findFirst({
-      where: { id: body.id, is_deleted: false },
-    })
+    const data = await this.db.tb_model_product.findFirst({ where: { id: body.id, is_deleted: false } })
     console.log('find_info_model_product---data:', data)
     return { code: 200, msg: '成功:查询-模型商品-详情', result: data }
   }

@@ -4,7 +4,7 @@
 https://www.emojiall.com/zh-hans/search_results?keywords=搜索
 
 
-# prisma生产
+# prisma生态
 https://prisma.org.cn/ecosystem
 
 

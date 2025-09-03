@@ -65,6 +65,7 @@
           <el-col :span="6">
             <el-form-item label="商用状态" required>
               <el-select v-model="product_search_form.is_business" placeholder="请选择状态" style="width: 100%">
+                <el-option label="全部" :value="null"></el-option>
                 <el-option label="商用" :value="true"></el-option>
                 <el-option label="非商用" :value="false"></el-option>
               </el-select>
@@ -73,6 +74,7 @@
           <el-col :span="6">
             <el-form-item label="骨骼状态" required>
               <el-select v-model="product_search_form.is_skeleton" placeholder="请选择状态" style="width: 100%">
+                <el-option label="全部" :value="null"></el-option>
                 <el-option label="有骨骼" :value="true"></el-option>
                 <el-option label="无骨骼" :value="false"></el-option>
               </el-select>
@@ -81,6 +83,7 @@
           <el-col :span="6">
             <el-form-item label="动画状态" required>
               <el-select v-model="product_search_form.is_animation" placeholder="请选择状态" style="width: 100%">
+                <el-option label="全部" :value="null"></el-option>
                 <el-option label="有动画" :value="true"></el-option>
                 <el-option label="无动画" :value="false"></el-option>
               </el-select>
@@ -89,7 +92,9 @@
           <el-col :span="6">
             <el-form-item label="打印状态" required>
               <el-select v-model="product_search_form.is_print" placeholder="请选择状态" style="width: 100%">
+                <el-option label="全部" :value="null"></el-option>
                 <el-option label="可打印" :value="true"></el-option>
+
                 <el-option label="不可打印" :value="false"></el-option>
               </el-select>
             </el-form-item>
@@ -99,6 +104,7 @@
           <el-col :span="6">
             <el-form-item label="塌陷状态" required>
               <el-select v-model="product_search_form.is_no_collapse" placeholder="请选择状态" style="width: 100%">
+                <el-option label="全部" :value="null"></el-option>
                 <el-option label="未塌陷" :value="true"></el-option>
                 <el-option label="已塌陷" :value="false"></el-option>
               </el-select>
@@ -107,6 +113,7 @@
           <el-col :span="6">
             <el-form-item label="布线方式" required>
               <el-select v-model="product_search_form.wiring" placeholder="请选择布线" style="width: 100%">
+                <el-option label="全部" :value="null"></el-option>
                 <el-option label="三角形" value="三角形"></el-option>
                 <el-option label="四边形" value="四边形"></el-option>
                 <el-option label="混合" value="混合"></el-option>
@@ -197,14 +204,7 @@
       </div>
 
       <!-- 商品分页 -->
-      <el-pagination
-        @current-change="go_to_product_page"
-        :current-page="product_pagination.page_index"
-        :page-size="product_pagination.page_size"
-        :total="product_pagination.count_total"
-        layout="total, prev, pager, next, jumper"
-        style="text-align: center; margin-top: 20px">
-      </el-pagination>
+      <el-pagination @current-change="go_to_product_page" :current-page="product_pagination.page_index" :page-size="product_pagination.page_size" :total="product_pagination.count_total" layout="total, prev, pager, next, jumper" style="text-align: center; margin-top: 20px"> </el-pagination>
     </div>
 
     <!-- 购物车页面 -->
@@ -325,14 +325,7 @@
       </div>
 
       <!-- 订单分页 -->
-      <el-pagination
-        @current-change="go_to_order_page"
-        :current-page="order_pagination.page_index"
-        :page-size="order_pagination.page_size"
-        :total="order_pagination.count_total"
-        layout="total, prev, pager, next, jumper"
-        style="text-align: center; margin-top: 20px">
-      </el-pagination>
+      <el-pagination @current-change="go_to_order_page" :current-page="order_pagination.page_index" :page-size="order_pagination.page_size" :total="order_pagination.count_total" layout="total, prev, pager, next, jumper" style="text-align: center; margin-top: 20px"> </el-pagination>
     </div>
 
     <!-- 添加商品弹窗 -->
@@ -445,7 +438,7 @@
           </div>
         </el-form-item>
       </el-form>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="close_add_product_modal">取消</el-button>
         <el-button type="primary" @click="create_model_product">保存</el-button>
@@ -456,115 +449,115 @@
     <el-dialog title="编辑3D模型" :visible.sync="show_edit_product_modal" width="600px" :close-on-click-modal="false">
       <div style="max-height: 500px; overflow-y: auto; padding-right: 10px">
         <el-form :model="edit_product_form" label-width="120px">
-        <el-form-item label="模型标题">
-          <el-input v-model="edit_product_form.title" placeholder="请输入模型标题"></el-input>
-        </el-form-item>
-        <el-form-item label="模型描述">
-          <el-input type="textarea" v-model="edit_product_form.remark" placeholder="请输入模型描述" :rows="3"></el-input>
-        </el-form-item>
-        <el-form-item label="个人价格">
-          <el-input-number v-model="edit_product_form.price_personal" :min="0" placeholder="请输入个人价格"></el-input-number>
-        </el-form-item>
-        <el-form-item label="企业价格">
-          <el-input-number v-model="edit_product_form.price_company" :min="0" placeholder="请输入企业价格"></el-input-number>
-        </el-form-item>
-        <el-form-item label="企业扩展价格">
-          <el-input-number v-model="edit_product_form.price_extend" :min="0" placeholder="请输入企业扩展价格"></el-input-number>
-        </el-form-item>
-        <el-form-item label="是否公开">
-          <el-radio-group v-model="edit_product_form.is_public">
-            <el-radio :label="true">公开</el-radio>
-            <el-radio :label="false">私有</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="模型属性">
-          <el-checkbox-group v-model="edit_model_attributes">
-            <el-checkbox label="is_skeleton">有骨骼</el-checkbox>
-            <el-checkbox label="is_animation">有动画</el-checkbox>
-            <el-checkbox label="is_business">商用</el-checkbox>
-            <el-checkbox label="is_print">可打印</el-checkbox>
-            <el-checkbox label="is_no_collapse">未塌陷</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="面片数">
-          <el-select v-model="edit_product_form.area_unit" placeholder="请选择面片数">
-            <el-option label="5k以下" value="5k以下"></el-option>
-            <el-option label="5k-10k" value="5k-10k"></el-option>
-            <el-option label="10k-50k" value="10k-50k"></el-option>
-            <el-option label="50k以上" value="50k以上"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="布线方式">
-          <el-select v-model="edit_product_form.wiring" placeholder="请选择布线方式">
-            <el-option label="三角形" value="三角形"></el-option>
-            <el-option label="四边形" value="四边形"></el-option>
-            <el-option label="混合" value="混合"></el-option>
-          </el-select>
-        </el-form-item>
+          <el-form-item label="模型标题">
+            <el-input v-model="edit_product_form.title" placeholder="请输入模型标题"></el-input>
+          </el-form-item>
+          <el-form-item label="模型描述">
+            <el-input type="textarea" v-model="edit_product_form.remark" placeholder="请输入模型描述" :rows="3"></el-input>
+          </el-form-item>
+          <el-form-item label="个人价格">
+            <el-input-number v-model="edit_product_form.price_personal" :min="0" placeholder="请输入个人价格"></el-input-number>
+          </el-form-item>
+          <el-form-item label="企业价格">
+            <el-input-number v-model="edit_product_form.price_company" :min="0" placeholder="请输入企业价格"></el-input-number>
+          </el-form-item>
+          <el-form-item label="企业扩展价格">
+            <el-input-number v-model="edit_product_form.price_extend" :min="0" placeholder="请输入企业扩展价格"></el-input-number>
+          </el-form-item>
+          <el-form-item label="是否公开">
+            <el-radio-group v-model="edit_product_form.is_public">
+              <el-radio :label="true">公开</el-radio>
+              <el-radio :label="false">私有</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="模型属性">
+            <el-checkbox-group v-model="edit_model_attributes">
+              <el-checkbox label="is_skeleton">有骨骼</el-checkbox>
+              <el-checkbox label="is_animation">有动画</el-checkbox>
+              <el-checkbox label="is_business">商用</el-checkbox>
+              <el-checkbox label="is_print">可打印</el-checkbox>
+              <el-checkbox label="is_no_collapse">未塌陷</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="面片数">
+            <el-select v-model="edit_product_form.area_unit" placeholder="请选择面片数">
+              <el-option label="5k以下" value="5k以下"></el-option>
+              <el-option label="5k-10k" value="5k-10k"></el-option>
+              <el-option label="10k-50k" value="10k-50k"></el-option>
+              <el-option label="50k以上" value="50k以上"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="布线方式">
+            <el-select v-model="edit_product_form.wiring" placeholder="请选择布线方式">
+              <el-option label="三角形" value="三角形"></el-option>
+              <el-option label="四边形" value="四边形"></el-option>
+              <el-option label="混合" value="混合"></el-option>
+            </el-select>
+          </el-form-item>
 
-        <!-- 文件信息输入字段 -->
-        <el-form-item label="模型图片">
-          <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
-            <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
-              <el-input v-model="new_file_inputs.list_img.url" placeholder="输入文件URL" style="flex: 2"></el-input>
-              <el-input v-model="new_file_inputs.list_img.name" placeholder="输入文件名" style="flex: 1"></el-input>
-              <el-button type="success" size="small" @click="add_file_item('list_img', 'edit')">添加</el-button>
+          <!-- 文件信息输入字段 -->
+          <el-form-item label="模型图片">
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
+              <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
+                <el-input v-model="new_file_inputs.list_img.url" placeholder="输入文件URL" style="flex: 2"></el-input>
+                <el-input v-model="new_file_inputs.list_img.name" placeholder="输入文件名" style="flex: 1"></el-input>
+                <el-button type="success" size="small" @click="add_file_item('list_img', 'edit')">添加</el-button>
+              </div>
+              <div v-for="(file, index) in edit_product_form.list_img" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
+                <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
+                <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
+                <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_img', index, 'edit')"></el-button>
+              </div>
             </div>
-            <div v-for="(file, index) in edit_product_form.list_img" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
-              <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
-              <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
-              <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_img', index, 'edit')"></el-button>
-            </div>
-          </div>
-        </el-form-item>
+          </el-form-item>
 
-        <el-form-item label="模型文件">
-          <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
-            <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
-              <el-input v-model="new_file_inputs.list_file.url" placeholder="输入文件URL" style="flex: 2"></el-input>
-              <el-input v-model="new_file_inputs.list_file.name" placeholder="输入文件名" style="flex: 1"></el-input>
-              <el-button type="success" size="small" @click="add_file_item('list_file', 'edit')">添加</el-button>
+          <el-form-item label="模型文件">
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
+              <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
+                <el-input v-model="new_file_inputs.list_file.url" placeholder="输入文件URL" style="flex: 2"></el-input>
+                <el-input v-model="new_file_inputs.list_file.name" placeholder="输入文件名" style="flex: 1"></el-input>
+                <el-button type="success" size="small" @click="add_file_item('list_file', 'edit')">添加</el-button>
+              </div>
+              <div v-for="(file, index) in edit_product_form.list_file" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
+                <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
+                <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
+                <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_file', index, 'edit')"></el-button>
+              </div>
             </div>
-            <div v-for="(file, index) in edit_product_form.list_file" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
-              <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
-              <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
-              <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_file', index, 'edit')"></el-button>
-            </div>
-          </div>
-        </el-form-item>
+          </el-form-item>
 
-        <el-form-item label="模型视频">
-          <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
-            <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
-              <el-input v-model="new_file_inputs.list_video.url" placeholder="输入文件URL" style="flex: 2"></el-input>
-              <el-input v-model="new_file_inputs.list_video.name" placeholder="输入文件名" style="flex: 1"></el-input>
-              <el-button type="success" size="small" @click="add_file_item('list_video', 'edit')">添加</el-button>
+          <el-form-item label="模型视频">
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
+              <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
+                <el-input v-model="new_file_inputs.list_video.url" placeholder="输入文件URL" style="flex: 2"></el-input>
+                <el-input v-model="new_file_inputs.list_video.name" placeholder="输入文件名" style="flex: 1"></el-input>
+                <el-button type="success" size="small" @click="add_file_item('list_video', 'edit')">添加</el-button>
+              </div>
+              <div v-for="(file, index) in edit_product_form.list_video" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
+                <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
+                <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
+                <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_video', index, 'edit')"></el-button>
+              </div>
             </div>
-            <div v-for="(file, index) in edit_product_form.list_video" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
-              <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
-              <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
-              <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_video', index, 'edit')"></el-button>
-            </div>
-          </div>
-        </el-form-item>
+          </el-form-item>
 
-        <el-form-item label="扩展附件">
-          <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
-            <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
-              <el-input v-model="new_file_inputs.list_extend.url" placeholder="输入文件URL" style="flex: 2"></el-input>
-              <el-input v-model="new_file_inputs.list_extend.name" placeholder="输入文件名" style="flex: 1"></el-input>
-              <el-button type="success" size="small" @click="add_file_item('list_extend', 'edit')">添加</el-button>
+          <el-form-item label="扩展附件">
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
+              <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
+                <el-input v-model="new_file_inputs.list_extend.url" placeholder="输入文件URL" style="flex: 2"></el-input>
+                <el-input v-model="new_file_inputs.list_extend.name" placeholder="输入文件名" style="flex: 1"></el-input>
+                <el-button type="success" size="small" @click="add_file_item('list_extend', 'edit')">添加</el-button>
+              </div>
+              <div v-for="(file, index) in edit_product_form.list_extend" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
+                <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
+                <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
+                <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_extend', index, 'edit')"></el-button>
+              </div>
             </div>
-            <div v-for="(file, index) in edit_product_form.list_extend" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
-              <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
-              <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
-              <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_extend', index, 'edit')"></el-button>
-            </div>
-          </div>
-        </el-form-item>
+          </el-form-item>
         </el-form>
       </div>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="close_edit_product_modal">取消</el-button>
         <el-button type="primary" @click="update_model_product">保存</el-button>
@@ -577,7 +570,7 @@
         <ul style="list-style: none; padding: 0; margin: 0">
           <!-- 基本信息 -->
           <li style="margin-bottom: 20px">
-            <h4 style="color: #409EFF; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #409EFF">基本信息</h4>
+            <h4 style="color: #409eff; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #409eff">基本信息</h4>
             <ul style="list-style: none; padding: 0; margin: 0; border: 1px solid #e4e7ed; border-radius: 4px; background: #fff">
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">ID</span>
@@ -606,25 +599,21 @@
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">状态</span>
                 <span style="flex: 1">
-                  <el-tag :type="selected_product.is_public ? 'success' : 'info'">
-                    {{ selected_product.is_public ? '公开' : '私有' }}
-                  </el-tag>
+                  <el-tag :type="selected_product.is_public ? 'success' : 'info'"> {{ selected_product.is_public ? '公开' : '私有' }} </el-tag>
                 </span>
               </li>
               <li style="display: flex; padding: 12px 15px; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">审核状态</span>
                 <span style="flex: 1">
-                  <el-tag :type="selected_product.is_check ? 'success' : 'warning'">
-                    {{ selected_product.is_check ? '已审核' : '未审核' }}
-                  </el-tag>
+                  <el-tag :type="selected_product.is_check ? 'success' : 'warning'"> {{ selected_product.is_check ? '已审核' : '未审核' }} </el-tag>
                 </span>
               </li>
             </ul>
           </li>
-          
+
           <!-- 模型属性 -->
           <li style="margin-bottom: 20px">
-            <h4 style="color: #67C23A; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #67C23A">模型属性</h4>
+            <h4 style="color: #67c23a; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #67c23a">模型属性</h4>
             <ul style="list-style: none; padding: 0; margin: 0; border: 1px solid #e4e7ed; border-radius: 4px; background: #fff">
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">面片数</span>
@@ -637,68 +626,58 @@
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">有骨骼</span>
                 <span style="flex: 1">
-                  <el-tag :type="selected_product.is_skeleton ? 'success' : 'info'">
-                    {{ selected_product.is_skeleton ? '是' : '否' }}
-                  </el-tag>
+                  <el-tag :type="selected_product.is_skeleton ? 'success' : 'info'"> {{ selected_product.is_skeleton ? '是' : '否' }} </el-tag>
                 </span>
               </li>
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">有动画</span>
                 <span style="flex: 1">
-                  <el-tag :type="selected_product.is_animation ? 'success' : 'info'">
-                    {{ selected_product.is_animation ? '是' : '否' }}
-                  </el-tag>
+                  <el-tag :type="selected_product.is_animation ? 'success' : 'info'"> {{ selected_product.is_animation ? '是' : '否' }} </el-tag>
                 </span>
               </li>
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">商用</span>
                 <span style="flex: 1">
-                  <el-tag :type="selected_product.is_business ? 'success' : 'info'">
-                    {{ selected_product.is_business ? '是' : '否' }}
-                  </el-tag>
+                  <el-tag :type="selected_product.is_business ? 'success' : 'info'"> {{ selected_product.is_business ? '是' : '否' }} </el-tag>
                 </span>
               </li>
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">可打印</span>
                 <span style="flex: 1">
-                  <el-tag :type="selected_product.is_print ? 'success' : 'info'">
-                    {{ selected_product.is_print ? '是' : '否' }}
-                  </el-tag>
+                  <el-tag :type="selected_product.is_print ? 'success' : 'info'"> {{ selected_product.is_print ? '是' : '否' }} </el-tag>
                 </span>
               </li>
               <li style="display: flex; padding: 12px 15px; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">未塌陷</span>
                 <span style="flex: 1">
-                  <el-tag :type="selected_product.is_no_collapse ? 'success' : 'info'">
-                    {{ selected_product.is_no_collapse ? '是' : '否' }}
-                  </el-tag>
+                  <el-tag :type="selected_product.is_no_collapse ? 'success' : 'info'"> {{ selected_product.is_no_collapse ? '是' : '否' }} </el-tag>
                 </span>
               </li>
             </ul>
           </li>
-          
+
           <!-- 统计信息 -->
           <li style="margin-bottom: 20px">
-            <h4 style="color: #E6A23C; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #E6A23C">统计信息</h4>
+            <h4 style="color: #e6a23c; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e6a23c">统计信息</h4>
             <ul style="list-style: none; padding: 0; margin: 0; border: 1px solid #e4e7ed; border-radius: 4px; background: #fff">
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">收藏数</span>
-                <span style="flex: 1; color: #409EFF; font-size: 18px; font-weight: bold">{{ selected_product.count_collect }}</span>
+                <span style="flex: 1; color: #409eff; font-size: 18px; font-weight: bold">{{ selected_product.count_collect }}</span>
               </li>
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">下载数</span>
-                <span style="flex: 1; color: #67C23A; font-size: 18px; font-weight: bold">{{ selected_product.count_download }}</span>
+                <span style="flex: 1; color: #67c23a; font-size: 18px; font-weight: bold">{{ selected_product.count_download }}</span>
               </li>
               <li style="display: flex; padding: 12px 15px; align-items: center">
                 <span style="width: 100px; color: #909399; font-weight: 500">点赞数</span>
-                <span style="flex: 1; color: #E6A23C; font-size: 18px; font-weight: bold">{{ selected_product.count_like }}</span>
+                <span style="flex: 1; color: #e6a23c; font-size: 18px; font-weight: bold">{{ selected_product.count_like }}</span>
               </li>
             </ul>
           </li>
-          
+
           <!-- 文件信息 -->
           <li style="margin-bottom: 20px">
-            <h4 style="color: #F56C6C; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #F56C6C">文件信息</h4>
+            <h4 style="color: #f56c6c; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #f56c6c">文件信息</h4>
             <ul style="list-style: none; padding: 0; margin: 0; border: 1px solid #e4e7ed; border-radius: 4px; background: #fff">
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: flex-start">
                 <span style="width: 100px; color: #909399; font-weight: 500; margin-top: 5px">模型图片</span>
@@ -712,7 +691,7 @@
                   <el-empty v-else description="暂无图片"></el-empty>
                 </div>
               </li>
-              
+
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: flex-start">
                 <span style="width: 100px; color: #909399; font-weight: 500; margin-top: 5px">模型文件</span>
                 <div style="flex: 1">
@@ -725,7 +704,7 @@
                   <el-empty v-else description="暂无文件"></el-empty>
                 </div>
               </li>
-              
+
               <li style="display: flex; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; align-items: flex-start">
                 <span style="width: 100px; color: #909399; font-weight: 500; margin-top: 5px">模型视频</span>
                 <div style="flex: 1">
@@ -738,7 +717,7 @@
                   <el-empty v-else description="暂无视频"></el-empty>
                 </div>
               </li>
-              
+
               <li style="display: flex; padding: 12px 15px; align-items: flex-start">
                 <span style="width: 100px; color: #909399; font-weight: 500; margin-top: 5px">扩展附件</span>
                 <div style="flex: 1">
@@ -755,7 +734,7 @@
           </li>
         </ul>
       </div>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="close_product_detail_modal">关闭</el-button>
       </div>
@@ -785,7 +764,7 @@
           </el-form-item>
         </el-form>
       </div>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="close_cart_detail_modal">关闭</el-button>
       </div>
@@ -803,15 +782,13 @@
               <el-descriptions-item label="支付价格">¥{{ selected_order.price_pay }}</el-descriptions-item>
               <el-descriptions-item v-if="selected_order.price_sub > 0" label="优惠金额">-¥{{ selected_order.price_sub }}</el-descriptions-item>
               <el-descriptions-item label="状态">
-                <el-tag :type="get_order_status_type(selected_order.status)">
-                  {{ get_order_status_text(selected_order.status) }}
-                </el-tag>
+                <el-tag :type="get_order_status_type(selected_order.status)"> {{ get_order_status_text(selected_order.status) }} </el-tag>
               </el-descriptions-item>
               <el-descriptions-item label="创建时间">{{ format_date(selected_order.created_at) }}</el-descriptions-item>
               <el-descriptions-item v-if="selected_order.pay_time" label="支付时间">{{ format_date(selected_order.pay_time) }}</el-descriptions-item>
             </el-descriptions>
           </el-tab-pane>
-          
+
           <el-tab-pane label="订单商品">
             <div v-if="selected_order.tb_order_info && selected_order.tb_order_info.length > 0">
               <el-card v-for="item in selected_order.tb_order_info" :key="item.id" shadow="hover" style="margin-bottom: 15px">
@@ -830,7 +807,7 @@
                   <div style="text-align: right; min-width: 120px">
                     <div style="margin: 5px 0; font-size: 14px; color: #666">单价: ¥{{ item.price_one }}</div>
                     <div style="margin: 5px 0; font-size: 14px; color: #666">数量: {{ item.count }}</div>
-                    <div style="margin: 10px 0 0 0; padding-top: 10px; border-top: 1px solid #eee; font-weight: bold; color: #E6A23C; font-size: 16px">小计: ¥{{ item.price_one * item.count }}</div>
+                    <div style="margin: 10px 0 0 0; padding-top: 10px; border-top: 1px solid #eee; font-weight: bold; color: #e6a23c; font-size: 16px">小计: ¥{{ item.price_one * item.count }}</div>
                   </div>
                 </div>
               </el-card>
@@ -839,7 +816,7 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="close_order_detail_modal">关闭</el-button>
       </div>
@@ -851,12 +828,10 @@
         <el-descriptions :column="1" border style="margin-bottom: 20px">
           <el-descriptions-item label="订单号">{{ selected_order.order_number }}</el-descriptions-item>
           <el-descriptions-item label="当前状态">
-            <el-tag :type="get_order_status_type(selected_order.status)">
-              {{ get_order_status_text(selected_order.status) }}
-            </el-tag>
+            <el-tag :type="get_order_status_type(selected_order.status)"> {{ get_order_status_text(selected_order.status) }} </el-tag>
           </el-descriptions-item>
         </el-descriptions>
-        
+
         <el-form :model="{ status: new_order_status }" label-width="80px">
           <el-form-item label="新状态">
             <el-select v-model="new_order_status" placeholder="请选择新状态" style="width: 100%">
@@ -868,14 +843,12 @@
           </el-form-item>
         </el-form>
       </div>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="close_update_status_modal">取消</el-button>
         <el-button type="primary" @click="confirm_update_order_status">确认更新</el-button>
       </div>
     </el-dialog>
-
-
   </main>
 
   <script>
@@ -900,12 +873,13 @@
           is_public: true, // 默认选择公开状态
           is_deleted: false, // 默认选择未删除
           is_check: true, // 默认选择已审核
-          is_business: false, // 默认选择非商用
-          is_skeleton: false, // 默认选择无骨骼
-          is_animation: false, // 默认选择无动画
-          is_print: false, // 默认选择不可打印
-          is_no_collapse: true, // 默认选择未塌陷
-          wiring: '三角形', // 默认选择三角形
+          // 模糊字段
+          is_business: null, // 默认选择非商用
+          is_skeleton: null, // 默认选择无骨骼
+          is_animation: null, // 默认选择无动画
+          is_print: null, // 默认选择不可打印
+          is_no_collapse: null, // 默认选择未塌陷
+          wiring: null, // 默认选择三角形
           page_index: 1,
           page_size: 10,
           order_by: 'created_at',
@@ -995,8 +969,6 @@
         selected_order: null,
         new_order_status: 'PAYING',
 
-
-
         // 价格类型选择
         cart_price_types: {},
 
@@ -1023,7 +995,7 @@
         show_message(text, type = 'success') {
           this.$message({
             message: text,
-            type: type
+            type: type,
           })
         },
 
@@ -1190,9 +1162,9 @@
         // 搜索商品
         async find_list_model_product() {
           try {
-   
-
             const searchData = { ...this.product_search_form }
+
+            console.log(`111---searchData:`, searchData)
 
             const response = await this.axios.post('/find_list_model_product', searchData)
             if (response.data.code === 200) {
@@ -1216,6 +1188,7 @@
             is_public: true,
             is_deleted: false,
             is_check: true,
+            // 
             is_business: false,
             is_skeleton: false,
             is_animation: false,
@@ -1332,7 +1305,7 @@
             list_video: this.normalize_file_array(product.list_video),
             list_extend: this.normalize_file_array(product.list_extend),
           }
-          
+
           // 设置编辑模型属性选择
           this.edit_model_attributes = []
           if (product.is_skeleton) this.edit_model_attributes.push('is_skeleton')
@@ -1340,7 +1313,7 @@
           if (product.is_business) this.edit_model_attributes.push('is_business')
           if (product.is_print) this.edit_model_attributes.push('is_print')
           if (product.is_no_collapse) this.edit_model_attributes.push('is_no_collapse')
-          
+
           this.show_edit_product_modal = true
         },
 
@@ -1387,13 +1360,13 @@
             price_company: 0,
             price_extend: 0,
             is_public: true,
-            is_skeleton: false,
-            is_animation: false,
-            is_business: false,
-            is_print: false,
-            is_no_collapse: false,
-            area_unit: '5k以下',
-            wiring: '三角形',
+            is_skeleton: null,
+            is_animation: null,
+            is_business: null,
+            is_print: null,
+            is_no_collapse: null,
+            area_unit: '',
+            wiring: '',
             list_img: [],
             list_file: [],
             list_video: [],
