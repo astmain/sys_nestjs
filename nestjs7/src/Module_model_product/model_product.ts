@@ -17,19 +17,40 @@ export class model_product extends AppController {
   async save_model_product(@Body() body: dto.save_model_product, @Req() req: any) {
     console.log('save_model_product---body:', body)
     console.log('save_model_product---user_id:', req.user_id)
-    const { id, ...createData } = body
+    const { id, kind_ids, ...createData } = body
+
     // 如果有id且不为空，则更新；否则创建新记录
     if (id && id.trim() !== '') {
       // 更新现有记录
       const data = await this.db.tb_model_product.update({
         where: { id },
-        data: { ...createData, user_id: req.user_id },
+        data: { 
+          ...createData, 
+          user_id: req.user_id,
+          // 更新分类关联
+          tb_model_kind: kind_ids ? {
+            set: kind_ids.map(kindId => ({ id: kindId }))
+          } : undefined
+        },
+        include: {
+          tb_model_kind: true
+        }
       })
       return { code: 200, msg: '成功:更新-模型商品', result: data }
     } else {
       // 创建新记录
       const data = await this.db.tb_model_product.create({
-        data: { ...createData, user_id: req.user_id },
+        data: { 
+          ...createData, 
+          user_id: req.user_id,
+          // 创建分类关联
+          tb_model_kind: kind_ids ? {
+            connect: kind_ids.map(kindId => ({ id: kindId }))
+          } : undefined
+        },
+        include: {
+          tb_model_kind: true
+        }
       })
       return { code: 200, msg: '成功:创建-模型商品', result: data }
     }
@@ -76,6 +97,15 @@ export class model_product extends AppController {
       where.wiring = body.wiring
     }
 
+    // 添加分类筛选条件
+    if (body.kind_ids && body.kind_ids.length > 0) {
+      where.tb_model_kind = {
+        some: {
+          id: { in: body.kind_ids }
+        }
+      }
+    }
+
     console.log('find_list_model_product---where:', where)
 
     const list = await this.db.tb_model_product.findMany({
@@ -83,6 +113,9 @@ export class model_product extends AppController {
       skip: (body.page_index - 1) * body.page_size,
       take: body.page_size,
       orderBy: { [body.order_by]: body.order_type } as any,
+      include: {
+        tb_model_kind: true
+      }
     })
     const count = await this.db.tb_model_product.count({ where })
     const page_total = Math.ceil(count / body.page_size)
@@ -95,7 +128,12 @@ export class model_product extends AppController {
   @ApiPost('find_info_model_product', '查询-模型商品-详情')
   async find_info_model_product(@Body() body: dto.find_info_model_product) {
     console.log('find_info_model_product---body:', body)
-    const data = await this.db.tb_model_product.findFirst({ where: { id: body.id, is_deleted: false } })
+    const data = await this.db.tb_model_product.findFirst({ 
+      where: { id: body.id, is_deleted: false },
+      include: {
+        tb_model_kind: true
+      }
+    })
     console.log('find_info_model_product---data:', data)
     return { code: 200, msg: '成功:查询-模型商品-详情', result: data }
   }
@@ -109,6 +147,23 @@ export class model_product extends AppController {
       data: { is_deleted: true },
     })
     return { code: 200, msg: '成功:删除-模型商品-id', result: data }
+  }
+
+  @ApiGet('get_kind_tree', '获取分类树')
+  async get_kind_tree() {
+    // 获取所有分类数据
+    const all_kinds = await this.db.tb_model_kind.findMany({ 
+      where: { is_deleted: false },
+      orderBy: { id: 'asc' } 
+    })
+    // 构建树状结构
+    const build_tree = (items: any[], parent_id: number | null = null): any[] => {
+      return items.filter((item) => item.parent_id === parent_id).map((item) => ({ ...item, children: build_tree(items, item.id) }))
+    }
+
+    const tree_data = build_tree(all_kinds)
+    console.log('get_kind_tree---tree_data:', JSON.stringify(tree_data, null, 2))
+    return { code: 200, msg: '成功:获取分类树', result: tree_data }
   }
 }
 

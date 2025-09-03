@@ -120,6 +120,21 @@
               </el-select>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-form-item label="分类筛选">
+              <el-cascader
+                v-model="product_search_form.kind_ids"
+                :options="kind_tree_options"
+                :props="cascader_props"
+                placeholder="请选择分类"
+                clearable
+                multiple
+                style="width: 100%"
+              ></el-cascader>
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item>
               <el-button type="primary" @click="find_list_model_product">搜索</el-button>
@@ -174,6 +189,16 @@
                     <div v-if="product.is_no_collapse" class="attribute_tag no_collapse">未塌陷</div>
                     <div class="attribute_tag">{{ product.area_unit }}</div>
                     <div class="attribute_tag">{{ product.wiring }}</div>
+                  </div>
+
+                  <!-- 分类信息 -->
+                  <div v-if="product.tb_model_kind && product.tb_model_kind.length > 0" class="product_categories">
+                    <div class="category_label">分类:</div>
+                    <div class="category_tags">
+                      <el-tag v-for="kind in product.tb_model_kind" :key="kind.id" size="small" type="info" style="margin: 2px">
+                        {{ kind.name }}
+                      </el-tag>
+                    </div>
                   </div>
 
                   <!-- 统计信息 -->
@@ -376,6 +401,17 @@
             <el-option label="混合" value="混合"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="商品分类">
+          <el-cascader
+            v-model="add_product_form.kind_ids"
+            :options="kind_tree_options"
+            :props="cascader_props"
+            placeholder="请选择分类"
+            clearable
+            multiple
+            style="width: 100%"
+          ></el-cascader>
+        </el-form-item>
 
         <!-- 文件信息输入字段 -->
         <el-form-item label="模型图片">
@@ -437,6 +473,53 @@
             </div>
           </div>
         </el-form-item>
+
+        <el-form-item label="贴图列表">
+          <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
+            <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
+              <el-input v-model="new_file_inputs.list_texture.url" placeholder="输入贴图URL" style="flex: 2"></el-input>
+              <el-input v-model="new_file_inputs.list_texture.name" placeholder="输入贴图名称" style="flex: 1"></el-input>
+              <el-button type="success" size="small" @click="add_file_item('list_texture', 'add')">添加</el-button>
+            </div>
+            <div v-for="(file, index) in add_product_form.list_texture" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
+              <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
+              <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
+              <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_texture', index, 'add')"></el-button>
+            </div>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="模型格式">
+          <el-select v-model="add_product_form.model_format" placeholder="请选择模型格式">
+            <el-option label=".stl" value=".stl"></el-option>
+            <el-option label=".obj" value=".obj"></el-option>
+            <el-option label=".fbx" value=".fbx"></el-option>
+            <el-option label=".3ds" value=".3ds"></el-option>
+            <el-option label=".dae" value=".dae"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="审核状态">
+          <el-radio-group v-model="add_product_form.is_check">
+            <el-radio :label="true">已审核</el-radio>
+            <el-radio :label="false">未审核</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="审核备注">
+          <el-input v-model="add_product_form.is_check_remark" placeholder="请输入审核备注"></el-input>
+        </el-form-item>
+
+        <el-form-item label="删除状态">
+          <el-radio-group v-model="add_product_form.is_deleted">
+            <el-radio :label="false">未删除</el-radio>
+            <el-radio :label="true">已删除</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="收藏数">
+          <el-input-number v-model="add_product_form.count_collect" :min="0" placeholder="请输入收藏数"></el-input-number>
+        </el-form-item>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -493,6 +576,17 @@
               <el-option label="四边形" value="四边形"></el-option>
               <el-option label="混合" value="混合"></el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="商品分类">
+            <el-cascader
+              v-model="edit_product_form.kind_ids"
+              :options="kind_tree_options"
+              :props="cascader_props"
+              placeholder="请选择分类"
+              clearable
+              multiple
+              style="width: 100%"
+            ></el-cascader>
           </el-form-item>
 
           <!-- 文件信息输入字段 -->
@@ -554,6 +648,53 @@
                 <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_extend', index, 'edit')"></el-button>
               </div>
             </div>
+          </el-form-item>
+
+          <el-form-item label="贴图列表">
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #f9f9f9">
+              <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center">
+                <el-input v-model="new_file_inputs.list_texture.url" placeholder="输入贴图URL" style="flex: 2"></el-input>
+                <el-input v-model="new_file_inputs.list_texture.name" placeholder="输入贴图名称" style="flex: 1"></el-input>
+                <el-button type="success" size="small" @click="add_file_item('list_texture', 'edit')">添加</el-button>
+              </div>
+              <div v-for="(file, index) in edit_product_form.list_texture" :key="index" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 5px">
+                <span style="flex: 1; color: #333; font-weight: 500">{{ file.name }}</span>
+                <span v-if="file.url" style="color: #666; font-size: 11px; margin-left: 8px; font-style: italic">({{ file.url }})</span>
+                <el-button type="danger" size="mini" icon="el-icon-close" circle @click="remove_file('list_texture', index, 'edit')"></el-button>
+              </div>
+            </div>
+          </el-form-item>
+
+          <el-form-item label="模型格式">
+            <el-select v-model="edit_product_form.model_format" placeholder="请选择模型格式">
+              <el-option label=".stl" value=".stl"></el-option>
+              <el-option label=".obj" value=".obj"></el-option>
+              <el-option label=".fbx" value=".fbx"></el-option>
+              <el-option label=".3ds" value=".3ds"></el-option>
+              <el-option label=".dae" value=".dae"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="审核状态">
+            <el-radio-group v-model="edit_product_form.is_check">
+              <el-radio :label="true">已审核</el-radio>
+              <el-radio :label="false">未审核</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="审核备注">
+            <el-input v-model="edit_product_form.is_check_remark" placeholder="请输入审核备注"></el-input>
+          </el-form-item>
+
+          <el-form-item label="删除状态">
+            <el-radio-group v-model="edit_product_form.is_deleted">
+              <el-radio :label="false">未删除</el-radio>
+              <el-radio :label="true">已删除</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="收藏数">
+            <el-input-number v-model="edit_product_form.count_collect" :min="0" placeholder="请输入收藏数"></el-input-number>
           </el-form-item>
         </el-form>
       </div>
@@ -652,6 +793,21 @@
                 <span style="flex: 1">
                   <el-tag :type="selected_product.is_no_collapse ? 'success' : 'info'"> {{ selected_product.is_no_collapse ? '是' : '否' }} </el-tag>
                 </span>
+              </li>
+            </ul>
+          </li>
+
+          <!-- 分类信息 -->
+          <li v-if="selected_product.tb_model_kind && selected_product.tb_model_kind.length > 0" style="margin-bottom: 20px">
+            <h4 style="color: #9c27b0; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #9c27b0">分类信息</h4>
+            <ul style="list-style: none; padding: 0; margin: 0; border: 1px solid #e4e7ed; border-radius: 4px; background: #fff">
+              <li style="display: flex; padding: 12px 15px; align-items: flex-start">
+                <span style="width: 100px; color: #909399; font-weight: 500; margin-top: 5px">商品分类</span>
+                <div style="flex: 1">
+                  <el-tag v-for="kind in selected_product.tb_model_kind" :key="kind.id" type="info" style="margin: 3px">
+                    {{ kind.name }}
+                  </el-tag>
+                </div>
               </li>
             </ul>
           </li>
@@ -880,6 +1036,7 @@
           is_print: null, // 默认选择不可打印
           is_no_collapse: null, // 默认选择未塌陷
           wiring: null, // 默认选择三角形
+          kind_ids: [], // 分类筛选
           page_index: 1,
           page_size: 10,
           order_by: 'created_at',
@@ -899,10 +1056,17 @@
           is_no_collapse: false,
           area_unit: '5k以下',
           wiring: '三角形',
+          kind_ids: [], // 分类选择
           list_img: [],
           list_file: [],
           list_video: [],
           list_extend: [],
+          list_texture: [],
+          model_format: '.stl',
+          is_check: false,
+          is_check_remark: '',
+          is_deleted: false,
+          count_collect: 0,
         },
         edit_product_form: {
           id: null,
@@ -919,10 +1083,17 @@
           is_no_collapse: false,
           area_unit: '5k以下',
           wiring: '三角形',
+          kind_ids: [], // 分类选择
           list_img: [],
           list_file: [],
           list_video: [],
           list_extend: [],
+          list_texture: [],
+          model_format: '.stl',
+          is_check: false,
+          is_check_remark: '',
+          is_deleted: false,
+          count_collect: 0,
         },
         product_list: [],
         product_pagination: {
@@ -978,6 +1149,7 @@
           list_file: { url: '', name: '' },
           list_video: { url: '', name: '' },
           list_extend: { url: '', name: '' },
+          list_texture: { url: '', name: '' },
         },
 
         // 模型属性选择
@@ -988,6 +1160,16 @@
 
         // 编辑模型属性选择
         edit_model_attributes: [],
+
+        // 分类相关数据
+        kind_tree_options: [],
+        cascader_props: {
+          value: 'id',
+          label: 'name',
+          children: 'children',
+          multiple: true,
+          checkStrictly: true
+        },
       },
 
       methods: {
@@ -997,6 +1179,20 @@
             message: text,
             type: type,
           })
+        },
+
+        // 获取分类树
+        async get_kind_tree() {
+          try {
+            const response = await this.axios.get('/get_kind_tree')
+            if (response.data.code === 200) {
+              this.kind_tree_options = response.data.result
+            } else {
+              this.show_message('获取分类树失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('获取分类树出错: ' + error.message, 'error')
+          }
         },
 
         // 格式化日期
@@ -1195,6 +1391,7 @@
             is_print: false,
             is_no_collapse: true,
             wiring: '三角形',
+            kind_ids: [], // 重置分类筛选
             page_index: 1,
             page_size: 10,
             order_by: 'created_at',
@@ -1230,10 +1427,17 @@
             is_no_collapse: false,
             area_unit: '5k以下',
             wiring: '三角形',
+            kind_ids: [], // 重置分类选择
             list_img: [],
             list_file: [],
             list_video: [],
             list_extend: [],
+            list_texture: [],
+            model_format: '.stl',
+            is_check: false,
+            is_check_remark: '',
+            is_deleted: false,
+            count_collect: 0,
           }
           // 清空所有文件类型的输入变量
           this.new_file_inputs = {
@@ -1241,6 +1445,7 @@
             list_file: { url: '', name: '' },
             list_video: { url: '', name: '' },
             list_extend: { url: '', name: '' },
+            list_texture: { url: '', name: '' },
           }
           // 清空模型属性选择
           this.model_attributes = []
@@ -1268,6 +1473,7 @@
               list_file: this.add_product_form.list_file,
               list_video: this.add_product_form.list_video,
               list_extend: this.add_product_form.list_extend,
+              list_texture: this.add_product_form.list_texture,
             }
 
             const response = await this.axios.post('/save_model_product', submit_data)
@@ -1300,10 +1506,17 @@
             is_no_collapse: product.is_no_collapse || false,
             area_unit: product.area_unit || '5k以下',
             wiring: product.wiring || '三角形',
+            kind_ids: product.tb_model_kind ? product.tb_model_kind.map(kind => kind.id) : [], // 设置分类
             list_img: this.normalize_file_array(product.list_img),
             list_file: this.normalize_file_array(product.list_file),
             list_video: this.normalize_file_array(product.list_video),
             list_extend: this.normalize_file_array(product.list_extend),
+            list_texture: this.normalize_file_array(product.list_texture),
+            model_format: product.model_format || '.stl',
+            is_check: product.is_check || false,
+            is_check_remark: product.is_check_remark || '',
+            is_deleted: product.is_deleted || false,
+            count_collect: product.count_collect || 0,
           }
 
           // 设置编辑模型属性选择
@@ -1334,6 +1547,7 @@
               list_file: this.edit_product_form.list_file,
               list_video: this.edit_product_form.list_video,
               list_extend: this.edit_product_form.list_extend,
+              list_texture: this.edit_product_form.list_texture,
             }
 
             const response = await this.axios.post('/save_model_product', submit_data)
@@ -1367,10 +1581,17 @@
             is_no_collapse: null,
             area_unit: '',
             wiring: '',
+            kind_ids: [], // 重置分类选择
             list_img: [],
             list_file: [],
             list_video: [],
             list_extend: [],
+            list_texture: [],
+            model_format: '.stl',
+            is_check: false,
+            is_check_remark: '',
+            is_deleted: false,
+            count_collect: 0,
           }
           // 清空所有文件类型的输入变量
           this.new_file_inputs = {
@@ -1378,6 +1599,7 @@
             list_file: { url: '', name: '' },
             list_video: { url: '', name: '' },
             list_extend: { url: '', name: '' },
+            list_texture: { url: '', name: '' },
           }
           // 清空编辑模型属性选择
           this.edit_model_attributes = []
@@ -1635,8 +1857,9 @@
       },
 
       mounted() {
-        // 页面加载时自动加载商品列表
+        // 页面加载时自动加载商品列表和分类树
         this.find_list_model_product()
+        this.get_kind_tree()
       },
     })
   </script>
@@ -1922,6 +2145,28 @@
       color: #999;
       font-style: italic;
       margin-top: 5px;
+    }
+
+    /* 分类相关样式 */
+    .product_categories {
+      margin: 10px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .category_label {
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+      min-width: 40px;
+      margin-top: 2px;
+    }
+
+    .category_tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
     }
   </style>
 </html>

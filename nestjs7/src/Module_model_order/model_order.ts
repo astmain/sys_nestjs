@@ -14,7 +14,7 @@ import * as dto from './dto'
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class model_order extends AppController {
   @ApiPost('create_model_order', '新增-模型订单')
-  async create_model_order(@Body() body: dto.create_model_order , @Req() req: any) {
+  async create_model_order(@Body() body: dto.create_model_order, @Req() req: any) {
     console.log('create_model_order---body:', body)
 
     // 生成订单号
@@ -69,7 +69,7 @@ export class model_order extends AppController {
   }
 
   @ApiPost('update_model_order_status', '更新-订单状态')
-  async update_model_order_status(@Body() body: dto.update_model_order_status , @Req() req: any) {
+  async update_model_order_status(@Body() body: dto.update_model_order_status, @Req() req: any) {
     console.log('update_model_order_status---body:', body)
     const data = await this.db.tb_order_list.update({
       where: { order_number: body.order_number },
@@ -83,7 +83,7 @@ export class model_order extends AppController {
   }
 
   @ApiPost('find_list_model_order', '查询-模型订单-列表')
-  async find_list_model_order(@Body() body: dto.find_list_model_order , @Req() req: any) {
+  async find_list_model_order(@Body() body: dto.find_list_model_order, @Req() req: any) {
     console.log('find_list_model_order---body:', body)
 
     const where: any = { is_deleted: false } // 只查询未被逻辑删除的数据
@@ -113,7 +113,7 @@ export class model_order extends AppController {
   }
 
   @ApiPost('find_info_model_order', '查询-模型订单-详情')
-  async find_info_model_order(@Body() body: dto.find_info_model_order , @Req() req: any) {
+  async find_info_model_order(@Body() body: dto.find_info_model_order, @Req() req: any) {
     console.log('find_info_model_order---body:', body)
     const data = await this.db.tb_order_list.findFirst({
       where: { order_number: body.order_number, is_deleted: false },
@@ -131,31 +131,31 @@ export class model_order extends AppController {
 
   @ApiGet('delete_model_order', '删除-模型订单')
   @ApiQuery({ name: 'order_number', description: '订单号', required: true, type: String, example: 'ORD20231201001' })
-  async delete_model_order(@Query('order_number') order_number: string , @Req() req: any) {
+  async delete_model_order(@Query('order_number') order_number: string, @Req() req: any) {
     console.log('delete_model_order---order_number:', order_number, typeof order_number)
 
     // 使用事务进行逻辑删除
     const result = await this.db.$transaction(async (tx) => {
       // 先逻辑删除订单详情
-      await tx.tb_order_info.updateMany({ 
+      await tx.tb_order_info.updateMany({
         where: { order_number },
-        data: { is_deleted: true }
+        data: { is_deleted: true },
       })
 
       // 再逻辑删除订单
-      const data = await tx.tb_order_list.update({ 
+      const data = await tx.tb_order_list.update({
         where: { order_number },
-        data: { is_deleted: true }
+        data: { is_deleted: true },
       })
-      
+
       return data
     })
-    
+
     return { code: 200, msg: '成功:删除-模型订单', result }
   }
 
   @ApiPost('create_order_from_cart', '从购物车创建订单')
-  async create_order_from_cart(@Body() body: { user_id: number; price_sub?: number } , @Req() req: any) {
+  async create_order_from_cart(@Body() body: { user_id: number; price_sub?: number }, @Req() req: any) {
     console.log('create_order_from_cart---body:', body)
 
     // 获取用户购物车
@@ -202,7 +202,7 @@ export class model_order extends AppController {
     )
 
     // 清空购物车
-        await this.db.tb_model_cart.deleteMany({ where: { user_id: req.user_id } })
+    await this.db.tb_model_cart.deleteMany({ where: { user_id: req.user_id } })
 
     const result = {
       order,

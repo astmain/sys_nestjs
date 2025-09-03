@@ -189,51 +189,40 @@
     <!-- 添加弹窗 -->
     <div v-if="show_add_modal" class="modal_overlay">
       <div class="modal_content" @click.stop>
-        <h3>添加新</h3>
-        <div style="display: flex; flex-direction: column; gap: 10px">
+        <h3>添加3D模型</h3>
+        <div class="modal_form_content">
           <div style="display: flex; gap: 10px">
-            <label style="width: 150px">标题</label>
-            <input v-model="add_form.title" />
+            <label style="width: 150px">模型标题</label>
+            <input v-model="add_form.title" placeholder="请输入模型标题" />
           </div>
           <div style="display: flex; gap: 10px">
-            <label style="width: 150px">描述</label>
-            <input v-model="add_form.remark" />
+            <label style="width: 150px">模型描述</label>
+            <textarea v-model="add_form.remark" placeholder="请输入模型描述" style="width: 200px; height: 60px; resize: vertical;"></textarea>
           </div>
           <div style="display: flex; gap: 10px">
-            <label style="width: 150px">个人授权价格</label>
-            <input v-model="add_form.price_personal" type="number" />
+            <label style="width: 150px">个人价格</label>
+            <input v-model="add_form.price_personal" type="number" style="width: 100px;" />
+            <button type="button" @click="add_form.price_personal = Math.max(0, add_form.price_personal - 1)" style="width: 30px; height: 30px; padding: 0;">-</button>
+            <button type="button" @click="add_form.price_personal = add_form.price_personal + 1" style="width: 30px; height: 30px; padding: 0;">+</button>
           </div>
           <div style="display: flex; gap: 10px">
-            <label style="width: 150px">企业授权价格</label>
-            <input v-model="add_form.price_company" type="number" />
+            <label style="width: 150px">企业价格</label>
+            <input v-model="add_form.price_company" type="number" style="width: 100px;" />
+            <button type="button" @click="add_form.price_company = Math.max(0, add_form.price_company - 1)" style="width: 30px; height: 30px; padding: 0;">-</button>
+            <button type="button" @click="add_form.price_company = add_form.price_company + 1" style="width: 30px; height: 30px; padding: 0;">+</button>
           </div>
           <div style="display: flex; gap: 10px">
-            <label style="width: 150px">企业扩展授权价格</label>
-            <input v-model="add_form.price_extend" type="number" />
-          </div>
-          <div style="display: flex; gap: 10px">
-            <label style="width: 150px">面片数</label>
-            <select v-model="add_form.area_unit" style="width: 150px;">
-              <option value="5k以下">5k以下</option>
-              <option value="5k-10k">5k-10k</option>
-              <option value="10k-50k">10k-50k</option>
-              <option value="50k以上">50k以上</option>
-            </select>
-          </div>
-          <div style="display: flex; gap: 10px">
-            <label style="width: 150px">布线</label>
-            <select v-model="add_form.wiring" style="width: 150px;">
-              <option value="三角形">三角形</option>
-              <option value="四边形">四边形</option>
-              <option value="混合">混合</option>
-            </select>
+            <label style="width: 150px">企业扩展价格</label>
+            <input v-model="add_form.price_extend" type="number" style="width: 100px;" />
+            <button type="button" @click="add_form.price_extend = Math.max(0, add_form.price_extend - 1)" style="width: 30px; height: 30px; padding: 0;">-</button>
+            <button type="button" @click="add_form.price_extend = add_form.price_extend + 1" style="width: 30px; height: 30px; padding: 0;">+</button>
           </div>
           <div style="display: flex; gap: 10px">
             <label style="width: 150px">是否公开</label>
-            <select v-model="add_form.is_public" style="width: 150px;">
-              <option :value="true">公开</option>
-              <option :value="false">私有</option>
-            </select>
+            <div style="display: flex; gap: 10px;">
+              <label><input type="radio" v-model="add_form.is_public" :value="true" /> 公开</label>
+              <label><input type="radio" v-model="add_form.is_public" :value="false" /> 私有</label>
+            </div>
           </div>
           <div style="display: flex; gap: 10px">
             <label style="width: 150px">模型属性</label>
@@ -245,10 +234,33 @@
               <label><input type="checkbox" v-model="add_form.is_no_collapse" /> 未塌陷</label>
             </div>
           </div>
-          <div class="">
-            <button @click="create_demo">添加</button>
-            <button @click="close_add_modal">取消</button>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">面片数</label>
+            <select v-model="add_form.area_unit" style="width: 150px;">
+              <option value="5k以下">5k以下</option>
+              <option value="5k-10k">5k-10k</option>
+              <option value="10k-50k">10k-50k</option>
+              <option value="50k以上">50k以上</option>
+            </select>
           </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">布线方式</label>
+            <select v-model="add_form.wiring" style="width: 150px;">
+              <option value="三角形">三角形</option>
+              <option value="四边形">四边形</option>
+              <option value="混合">混合</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">商品分类</label>
+            <select style="width: 150px;">
+              <option>请选择分类</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal_actions">
+          <button @click="create_demo">添加</button>
+          <button @click="close_add_modal">取消</button>
         </div>
       </div>
     </div>
@@ -256,55 +268,44 @@
     <!-- 编辑弹窗 -->
     <div v-if="show_edit_modal" class="modal_overlay" @click="close_edit_modal">
       <div class="modal_content" @click.stop>
-        <h3>编辑</h3>
-        <div>
-          <div>
-            <label>标题</label>
-            <input v-model="edit_form.title" />
+        <h3>编辑3D模型</h3>
+        <div class="modal_form_content">
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">模型标题</label>
+            <input v-model="edit_form.title" placeholder="请输入模型标题" />
           </div>
-          <div>
-            <label>描述</label>
-            <input v-model="edit_form.remark" />
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">模型描述</label>
+            <textarea v-model="edit_form.remark" placeholder="请输入模型描述" style="width: 200px; height: 60px; resize: vertical;"></textarea>
           </div>
-          <div>
-            <label>个人授权价格</label>
-            <input v-model="edit_form.price_personal" type="number" />
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">个人价格</label>
+            <input v-model="edit_form.price_personal" type="number" style="width: 100px;" />
+            <button type="button" @click="edit_form.price_personal = Math.max(0, edit_form.price_personal - 1)" style="width: 30px; height: 30px; padding: 0;">-</button>
+            <button type="button" @click="edit_form.price_personal = edit_form.price_personal + 1" style="width: 30px; height: 30px; padding: 0;">+</button>
           </div>
-          <div>
-            <label>企业授权价格</label>
-            <input v-model="edit_form.price_company" type="number" />
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">企业价格</label>
+            <input v-model="edit_form.price_company" type="number" style="width: 100px;" />
+            <button type="button" @click="edit_form.price_company = Math.max(0, edit_form.price_company - 1)" style="width: 30px; height: 30px; padding: 0;">-</button>
+            <button type="button" @click="edit_form.price_company = edit_form.price_company + 1" style="width: 30px; height: 30px; padding: 0;">+</button>
           </div>
-          <div>
-            <label>企业扩展授权价格</label>
-            <input v-model="edit_form.price_extend" type="number" />
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">企业扩展价格</label>
+            <input v-model="edit_form.price_extend" type="number" style="width: 100px;" />
+            <button type="button" @click="edit_form.price_extend = Math.max(0, edit_form.price_extend - 1)" style="width: 30px; height: 30px; padding: 0;">-</button>
+            <button type="button" @click="edit_form.price_extend = edit_form.price_extend + 1" style="width: 30px; height: 30px; padding: 0;">+</button>
           </div>
-          <div>
-            <label>面片数</label>
-            <select v-model="edit_form.area_unit">
-              <option value="5k以下">5k以下</option>
-              <option value="5k-10k">5k-10k</option>
-              <option value="10k-50k">10k-50k</option>
-              <option value="50k以上">50k以上</option>
-            </select>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">是否公开</label>
+            <div style="display: flex; gap: 10px;">
+              <label><input type="radio" v-model="edit_form.is_public" :value="true" /> 公开</label>
+              <label><input type="radio" v-model="edit_form.is_public" :value="false" /> 私有</label>
+            </div>
           </div>
-          <div>
-            <label>布线</label>
-            <select v-model="edit_form.wiring">
-              <option value="三角形">三角形</option>
-              <option value="四边形">四边形</option>
-              <option value="混合">混合</option>
-            </select>
-          </div>
-          <div>
-            <label>是否公开</label>
-            <select v-model="edit_form.is_public">
-              <option :value="true">公开</option>
-              <option :value="false">私有</option>
-            </select>
-          </div>
-          <div>
-            <label>模型属性</label>
-            <div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">模型属性</label>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
               <label><input type="checkbox" v-model="edit_form.is_skeleton" /> 有骨骼</label>
               <label><input type="checkbox" v-model="edit_form.is_animation" /> 有动画</label>
               <label><input type="checkbox" v-model="edit_form.is_business" /> 商用</label>
@@ -312,10 +313,33 @@
               <label><input type="checkbox" v-model="edit_form.is_no_collapse" /> 未塌陷</label>
             </div>
           </div>
-          <div class="modal_actions">
-            <button @click="update_demo">保存</button>
-            <button @click="close_edit_modal">取消</button>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">面片数</label>
+            <select v-model="edit_form.area_unit" style="width: 150px;">
+              <option value="5k以下">5k以下</option>
+              <option value="5k-10k">5k-10k</option>
+              <option value="10k-50k">10k-50k</option>
+              <option value="50k以上">50k以上</option>
+            </select>
           </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">布线方式</label>
+            <select v-model="edit_form.wiring" style="width: 150px;">
+              <option value="三角形">三角形</option>
+              <option value="四边形">四边形</option>
+              <option value="混合">混合</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">商品分类</label>
+            <select style="width: 150px;">
+              <option>请选择分类</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal_actions">
+          <button @click="update_demo">保存</button>
+          <button @click="close_edit_modal">取消</button>
         </div>
       </div>
     </div>
@@ -323,83 +347,83 @@
     <!-- 详情弹窗 -->
     <div v-if="show_detail_modal" class="modal_overlay" @click="close_detail_modal">
       <div class="modal_content" @click.stop>
-        <h3>详情</h3>
-        <div v-if="selected_product">
-          <div>
-            <span>ID:</span>
+        <h3>3D模型详情</h3>
+        <div class="modal_form_content" v-if="selected_product">
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">ID:</label>
             <span>{{ selected_product.id }}</span>
           </div>
-          <div>
-            <span>标题:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">模型标题:</label>
             <span>{{ selected_product.title }}</span>
           </div>
-          <div>
-            <span>描述:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">模型描述:</label>
             <span>{{ selected_product.remark || '暂无描述' }}</span>
           </div>
-          <div>
-            <span>个人授权价格:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">个人授权价格:</label>
             <span>¥{{ selected_product.price_personal }}</span>
           </div>
-          <div>
-            <span>企业授权价格:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">企业授权价格:</label>
             <span>¥{{ selected_product.price_company }}</span>
           </div>
-          <div>
-            <span>企业扩展授权价格:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">企业扩展授权价格:</label>
             <span>¥{{ selected_product.price_extend }}</span>
           </div>
-          <div>
-            <span>面片数:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">面片数:</label>
             <span>{{ selected_product.area_unit }}</span>
           </div>
-          <div>
-            <span>布线:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">布线方式:</label>
             <span>{{ selected_product.wiring }}</span>
           </div>
-          <div>
-            <span>公开状态:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">公开状态:</label>
             <span>{{ selected_product.is_public ? '公开' : '私有' }}</span>
           </div>
-          <div>
-            <span>审核状态:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">审核状态:</label>
             <span>{{ selected_product.is_check ? '已审核' : '未审核' }}</span>
           </div>
-          <div>
-            <span>商用状态:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">商用状态:</label>
             <span>{{ selected_product.is_business ? '商用' : '非商用' }}</span>
           </div>
-          <div>
-            <span>有骨骼:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">有骨骼:</label>
             <span>{{ selected_product.is_skeleton ? '是' : '否' }}</span>
           </div>
-          <div>
-            <span>有动画:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">有动画:</label>
             <span>{{ selected_product.is_animation ? '是' : '否' }}</span>
           </div>
-          <div>
-            <span>可打印:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">可打印:</label>
             <span>{{ selected_product.is_print ? '是' : '否' }}</span>
           </div>
-          <div>
-            <span>未塌陷:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">未塌陷:</label>
             <span>{{ selected_product.is_no_collapse ? '是' : '否' }}</span>
           </div>
-          <div>
-            <span>收藏数:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">收藏数:</label>
             <span>{{ selected_product.count_collect }}</span>
           </div>
-          <div>
-            <span>下载数:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">下载数:</label>
             <span>{{ selected_product.count_download }}</span>
           </div>
-          <div>
-            <span>点赞数:</span>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">点赞数:</label>
             <span>{{ selected_product.count_like }}</span>
           </div>
         </div>
-        <div>
-          <button @click="close_detail_modal" class="close_btn">关闭</button>
+        <div class="modal_actions">
+          <button @click="close_detail_modal">关闭</button>
         </div>
       </div>
     </div>
@@ -767,12 +791,36 @@
     /* 统一弹窗样式 */
     .modal_content {
       background: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
       width: 90%;
-      max-width: 500px;
-      max-height: 80vh;
+      max-width: 600px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 弹窗表单内容区域 */
+    .modal_form_content {
+      flex: 1;
       overflow-y: auto;
+      overflow-x: hidden;
+      padding: 10px 0;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* 弹窗操作按钮区域 */
+    .modal_actions {
+      border-top: 1px solid #e1e5e9;
+      padding-top: 15px;
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
     }
 
     /* 统一消息提示样式 */

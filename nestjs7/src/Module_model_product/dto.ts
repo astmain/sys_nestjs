@@ -39,6 +39,7 @@ export class tb_model_product {
 
   @ApiProperty({ description: 'is_public(是否公开)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_public: boolean
 
   @ApiProperty({ description: 'list_img(图片列表)', example: [{ url: 'https://www.baidu.com/img/flexible/logo/pc/result.png' }] })
@@ -63,6 +64,7 @@ export class tb_model_product {
 
   @ApiProperty({ description: 'is_check(是否审核)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_check: boolean 
 
   @ApiProperty({ description: 'is_check_remark(审核备注)', example: '审核通过' })
@@ -71,26 +73,32 @@ export class tb_model_product {
 
   @ApiProperty({ description: 'is_business(是否商用)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_business: boolean 
 
   @ApiProperty({ description: 'is_skeleton(是否有骨骼)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_skeleton: boolean 
 
   @ApiProperty({ description: 'is_animation(是否有动画)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_animation: boolean 
 
   @ApiProperty({ description: 'is_print(是否可打印)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_print: boolean 
 
   @ApiProperty({ description: 'is_deleted(是否删除)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_deleted: boolean 
 
   @ApiProperty({ description: 'is_no_collapse(未塌陷)', example: true })
   @IsBoolean()
+  @Type(() => Boolean)
   is_no_collapse: boolean 
 
   @ApiProperty({ description: 'model_format(模型格式)', example: '.stl' })
@@ -107,17 +115,25 @@ export class tb_model_product {
 
   @ApiProperty({ description: 'count_collect(收藏数)', example: 0 })
   @IsNumber()
-  count_collect
+  @Type(() => Number)
+  count_collect: number
 
   @ApiProperty({ description: 'count_download(下载数)', example: 0 })
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
-  count_download
+  count_download: number
 
   @ApiProperty({ description: 'count_like(点赞数)', example: 0 })
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
-  count_like
+  count_like: number
+
+  @ApiProperty({ description: '分类ID列表', example: [1, 2, 3], required: false })
+  @IsArray()
+  @IsOptional()
+  kind_ids?: number[]
 }
 
 // 搜索list的dto  is_deleted is_check is_business is_skeleton is_animation is_print is_no_collapse  wiring
@@ -212,6 +228,11 @@ export class find_list_model_product  {
   @IsString()
   @IsOptional()
   area_unit: string
+
+  @ApiProperty({ description: '分类ID列表', example: [1, 2, 3], required: false })
+  @IsArray()
+  @IsOptional()
+  kind_ids?: number[]
 
 }
 
