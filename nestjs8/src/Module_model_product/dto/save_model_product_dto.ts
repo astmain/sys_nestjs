@@ -4,7 +4,7 @@ import { IsString, IsOptional } from 'class-validator'
 import { tb_model_product } from './dto'
 
 // 更新的dto
-export class dto_update_model_product extends PickType(tb_model_product, [
+export class save_model_product_dto extends PickType(tb_model_product, [
   // 'id', //id
   // 数据库可以修改的参数
   'title', //标题

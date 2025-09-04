@@ -9,16 +9,16 @@ import { Dec_public } from '@src/AppAuthorized'
 // 自定义dto
 // dto  * as dto 统一到处方便使用
 import * as dto from './dto/dto'
-import { dto_update_model_product } from './dto/dto_update_model_product'
+import { save_model_product_dto } from './dto/save_model_product_dto'
 import { admin_save_model_product_dto } from './dto/admin_save_model_product_dto'
 
 @ApiTags('模型商品')
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class model_product extends AppController {
-  @ApiPost('admin_save_model_product', '保存-管理员-模型商品')
-  async admin_save_model_product_dto(@Body() body: admin_save_model_product_dto, @Req() req: any) {
-    console.log('save_admin_model_product---body:', body)
-    console.log('save_admin_model_product---user_id:', req.user_id)
+  @ApiPost('save_update_model_product', '更新-模型商品')
+  async save_model_product(@Body() body: save_model_product_dto, @Req() req: any) {
+    console.log('save_update_model_product---body:', body)
+    console.log('save_save_update_model_productmodel_product---user_id:', req.user_id)
     const { id, kind_ids, ...createData } = body
 
     // 如果有id且不为空，则更新；否则创建新记录
@@ -30,11 +30,7 @@ export class model_product extends AppController {
           ...createData,
           user_id: req.user_id,
           // 更新分类关联
-          tb_model_kind: kind_ids
-            ? {
-                set: kind_ids.map((kindId) => ({ id: kindId })),
-              }
-            : undefined,
+          tb_model_kind: kind_ids ? { set: kind_ids.map((kindId) => ({ id: kindId })) } : undefined,
         },
         include: {
           tb_model_kind: true,
@@ -48,64 +44,13 @@ export class model_product extends AppController {
           ...createData,
           user_id: req.user_id,
           // 创建分类关联
-          tb_model_kind: kind_ids
-            ? {
-                connect: kind_ids.map((kindId) => ({ id: kindId })),
-              }
-            : undefined,
+          tb_model_kind: kind_ids ? { connect: kind_ids.map((kindId) => ({ id: kindId })) } : undefined,
         },
         include: {
           tb_model_kind: true,
         },
       })
-      return { code: 200, msg: '成功:创建-模型商品', result: data }
-    }
-  }
-
-  @ApiPost('update_model_product', '更新-模型商品')
-  async update_model_product(@Body() body: dto_update_model_product, @Req() req: any) {
-    console.log('save_model_product---body:', body)
-    console.log('save_model_product---user_id:', req.user_id)
-    const { id, kind_ids, ...createData } = body
-
-    // 如果有id且不为空，则更新；否则创建新记录
-    if (id && id.trim() !== '') {
-      // 更新现有记录
-      const data = await this.db.tb_model_product.update({
-        where: { id },
-        data: {
-          ...createData,
-          user_id: req.user_id,
-          // 更新分类关联
-          tb_model_kind: kind_ids
-            ? {
-                set: kind_ids.map((kindId) => ({ id: kindId })),
-              }
-            : undefined,
-        },
-        include: {
-          tb_model_kind: true,
-        },
-      })
-      return { code: 200, msg: '成功:更新-模型商品', result: data }
-    } else {
-      // 创建新记录
-      const data = await this.db.tb_model_product.create({
-        data: {
-          ...createData,
-          user_id: req.user_id,
-          // 创建分类关联
-          tb_model_kind: kind_ids
-            ? {
-                connect: kind_ids.map((kindId) => ({ id: kindId })),
-              }
-            : undefined,
-        },
-        include: {
-          tb_model_kind: true,
-        },
-      })
-      return { code: 200, msg: '成功:创建-模型商品', result: data }
+      return { code: 200, msg: '成功:新增-模型商品', result: data }
     }
   }
 
@@ -217,6 +162,54 @@ export class model_product extends AppController {
     const tree_data = build_tree(all_kinds)
     console.log('get_kind_tree---tree_data:', JSON.stringify(tree_data, null, 2))
     return { code: 200, msg: '成功:获取分类树', result: tree_data }
+  }
+
+  // ================================ 管理员接口 ================================
+  @ApiPost('admin_save_model_product', '保存-(admin)-模型商品')
+  async admin_save_model_product_dto(@Body() body: admin_save_model_product_dto, @Req() req: any) {
+    console.log('save_admin_model_product---body:', body)
+    console.log('save_admin_model_product---user_id:', req.user_id)
+    const { id, kind_ids, ...createData } = body
+
+    // 如果有id且不为空，则更新；否则创建新记录
+    if (id && id.trim() !== '') {
+      // 更新现有记录
+      const data = await this.db.tb_model_product.update({
+        where: { id },
+        data: {
+          ...createData,
+          user_id: req.user_id,
+          // 更新分类关联
+          tb_model_kind: kind_ids
+            ? {
+                set: kind_ids.map((kindId) => ({ id: kindId })),
+              }
+            : undefined,
+        },
+        include: {
+          tb_model_kind: true,
+        },
+      })
+      return { code: 200, msg: '成功:更新(admin)模型商品', result: data }
+    } else {
+      // 创建新记录
+      const data = await this.db.tb_model_product.create({
+        data: {
+          ...createData,
+          user_id: req.user_id,
+          // 创建分类关联
+          tb_model_kind: kind_ids
+            ? {
+                connect: kind_ids.map((kindId) => ({ id: kindId })),
+              }
+            : undefined,
+        },
+        include: {
+          tb_model_kind: true,
+        },
+      })
+      return { code: 200, msg: '成功:新增(admin)模型商品', result: data }
+    }
   }
 }
 

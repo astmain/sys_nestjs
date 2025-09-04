@@ -2,7 +2,7 @@ import { ApiProperty, OmitType, PickType } from '@nestjs/swagger'
 import { IsNumber, IsString, IsNotEmpty, IsOptional, IsBoolean, IsArray, ValidateIf, IsIn } from 'class-validator'
 import { Type } from 'class-transformer'
 
-import { dto_update_model_product } from './dto_update_model_product'
+import { dto_update_model_product } from './save_model_product_dto'
 
 
 // 基础dto
