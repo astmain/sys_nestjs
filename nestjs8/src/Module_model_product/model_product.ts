@@ -7,22 +7,21 @@ import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Bo
 import { Dec_public } from '@src/AppAuthorized'
 
 // 自定义dto
-// dto  * as dto 统一到处方便使用
-import * as dto from './dto/dto'
-import { save_model_product_dto } from './dto/save_model_product_dto'
-import { admin_save_model_product_dto } from './dto/admin_save_model_product_dto'
+import { save_model_product } from './dto/save_model_product'
+import { admin_save_model_product } from './dto/admin_save_model_product'
+import { find_list_model_product } from './dto/find_list_model_product'
+import { find_info_model_product } from './dto/find_info_model_product'
 
 @ApiTags('模型商品')
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class model_product extends AppController {
-
-
   // ================================ 用户接口 ================================
   @ApiPost('save_model_product', '更新-模型商品')
-  async save_model_product(@Body() body: save_model_product_dto, @Req() req: any) {
-    console.log('save_update_model_product---body:', body)
-    console.log('save_save_update_model_productmodel_product---user_id:', req.user_id)
+  async save_model_product(@Body() body: save_model_product, @Req() req: any) {
+    // console.log('save_update_model_product---body:', body)
+    // console.log('save_save_update_model_productmodel_product---user_id:', req.user_id)
     const { id, kind_ids, ...createData } = body
+    console.log(`111---kind_idskind_ids:`, kind_ids)
 
     // 如果有id且不为空，则更新；否则创建新记录
     if (id && id.trim() !== '') {
@@ -32,7 +31,7 @@ export class model_product extends AppController {
         data: {
           ...createData,
           user_id: req.user_id,
-     
+
           // 更新分类关联
           tb_model_kind: kind_ids ? { set: kind_ids.map((kindId) => ({ id: kindId })) } : undefined,
         },
@@ -47,7 +46,7 @@ export class model_product extends AppController {
         data: {
           ...createData,
           user_id: req.user_id,
-          is_check: true,// todo 先开始默认审核通过
+          is_check: true, // todo 先开始默认审核通过
           // 创建分类关联
           tb_model_kind: kind_ids ? { connect: kind_ids.map((kindId) => ({ id: kindId })) } : undefined,
         },
@@ -60,8 +59,10 @@ export class model_product extends AppController {
   }
 
   @ApiPost('find_list_model_product', '查询-模型商品-列表')
-  async find_list_model_product(@Body() body: dto.find_list_model_product) {
-    console.log('find_list_model_product---body:', body)
+  async find_list_model_product(@Body() body: find_list_model_product) {
+    // console.log('find_list_model_product---body:', body)
+
+    // console.log(`111--- body.kind_ids:`,  body.kind_ids)
 
     // 模糊字段搜索条件
     const where: any = {
@@ -129,7 +130,7 @@ export class model_product extends AppController {
   }
 
   @ApiPost('find_info_model_product', '查询-模型商品-详情')
-  async find_info_model_product(@Body() body: dto.find_info_model_product) {
+  async find_info_model_product(@Body() body: find_info_model_product) {
     console.log('find_info_model_product---body:', body)
     const data = await this.db.tb_model_product.findFirst({
       where: { id: body.id, is_deleted: false },
@@ -171,7 +172,7 @@ export class model_product extends AppController {
 
   // ================================ 管理员接口 ================================
   @ApiPost('admin_save_model_product', '保存-(admin)-模型商品')
-  async admin_save_model_product_dto(@Body() body: admin_save_model_product_dto, @Req() req: any) {
+  async admin_save_model_product(@Body() body: admin_save_model_product, @Req() req: any) {
     console.log('save_admin_model_product---body:', body)
     console.log('save_admin_model_product---user_id:', req.user_id)
     const { id, kind_ids, ...createData } = body

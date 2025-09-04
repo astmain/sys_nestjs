@@ -1,10 +1,10 @@
 import { PickType, ApiProperty } from '@nestjs/swagger'
 import { IsString, IsOptional } from 'class-validator'
 
-import { tb_model_product } from './dto'
+import { tb_model_product } from './tb_model_product'
 
 // 更新的dto
-export class save_model_product_dto extends PickType(tb_model_product, [
+export class save_model_product extends PickType(tb_model_product, [
   // 'id', //id
   // 数据库可以修改的参数
   'title', //标题

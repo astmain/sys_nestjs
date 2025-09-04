@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
-import { IsString, IsOptional } from 'class-validator'
+import { IsString, IsOptional, IsNumber, Min } from 'class-validator'
 import { tb_model_cart } from './tb_model_cart'
 
 // save_model_card命名规范和接口的函数名统一一致性,方便阅读
@@ -9,4 +9,8 @@ export class save_model_card extends PickType(tb_model_cart, ['product_id', 'use
   @IsString({ message: 'id必须为字符串' })
   @IsOptional()
   id?: string
+  @ApiProperty({ description: 'count(数量)', example: 1, required: false })
+  @IsNumber()
+  @Min(0, { message: 'count必须大于等于0' })
+  count: number
 }

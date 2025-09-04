@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/swagger'
-import { tb_model_product } from './dto'
+import { tb_model_product } from './tb_model_product'
 
 // 更新的dto
 export class dto_create_model_product extends PickType(tb_model_product, [
