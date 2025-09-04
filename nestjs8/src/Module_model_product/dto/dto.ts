@@ -2,17 +2,15 @@ import { ApiProperty, OmitType, PickType } from '@nestjs/swagger'
 import { IsNumber, IsString, IsNotEmpty, IsOptional, IsBoolean, IsArray, ValidateIf, IsIn } from 'class-validator'
 import { Type } from 'class-transformer'
 
+import { dto_update_model_product } from './dto_update_model_product'
+
+
 // 基础dto
 export class tb_model_product {
   @ApiProperty({ description: 'id', example: 'cuid_string' })
   @IsString({ message: 'id必须为字符串' })
   @IsNotEmpty({ message: 'id不能为空' })
   id: string
-
-  // @ApiProperty({ description: 'user_id(用户id)', example: 1 })
-  // @IsNumber()
-  // @IsNotEmpty({ message: 'user_id不能为空' })
-  // user_id: number
 
   @ApiProperty({ description: 'title(标题)', example: '商品标题' })
   @IsString({ message: 'title必须为字符串' })
@@ -220,3 +218,5 @@ export class save_model_product extends OmitType(tb_model_product, ['id']) {
   @IsOptional()
   id?: string
 }
+
+

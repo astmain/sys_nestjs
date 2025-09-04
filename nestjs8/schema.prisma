@@ -11,10 +11,9 @@ datasource db {
 }
 
 enum enum_order_status {
-  PAYING //待支付
-  PAYED //已支付
-  SHIPPED //已发货
-  CANCELLED //已取消
+  model_pendingPayment //待支付
+  model_purchased  //已购买
+  model_canceled //已取消
 }
 
 // 模型商品表,模型购物车表,模型订单列表,模型订单详情表
@@ -30,19 +29,24 @@ model tb_model_product {
   price_company  Int @default(0) //企业价格
   price_extend   Int @default(0) //企业扩展价格
 
-  list_img        Json    @default("[]") //图片
-  list_file       Json    @default("[]") //文件
-  list_video      Json    @default("[]") //视频
-  list_extend     Json    @default("[]") //附件
-  list_texture    Json    @default("[]") //贴图
-  count_collect   Int     @default(0) //收藏数
-  count_download  Int     @default(0) //下载数
-  count_like      Int     @default(0) //点赞数
+  list_img     Json @default("[]") //图片
+  list_file    Json @default("[]") //文件
+  list_video   Json @default("[]") //视频
+  list_extend  Json @default("[]") //附件
+  list_texture Json @default("[]") //贴图
+
+  // 普通客户才能设置
+  count_collect  Int @default(0) //收藏数
+  count_download Int @default(0) //下载数
+  count_like     Int @default(0) //点赞数
+
+  // 管理员才能设置
   is_check_remark String  @default("") //审核备注
   is_check        Boolean @default(false) //是否审核
-  is_public       Boolean @default(true) //是否公开
-  is_deleted      Boolean @default(false) //逻辑删除
-  model_format    String  @default(".stl") //模型格式
+
+  is_public    Boolean @default(true) //是否公开
+  is_deleted   Boolean @default(false) //逻辑删除
+  model_format String  @default(".stl") //模型格式
 
   is_business Boolean @default(false) //是否商用
 
