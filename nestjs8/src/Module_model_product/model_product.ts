@@ -15,7 +15,10 @@ import { admin_save_model_product_dto } from './dto/admin_save_model_product_dto
 @ApiTags('模型商品')
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class model_product extends AppController {
-  @ApiPost('save_update_model_product', '更新-模型商品')
+
+
+  // ================================ 用户接口 ================================
+  @ApiPost('save_model_product', '更新-模型商品')
   async save_model_product(@Body() body: save_model_product_dto, @Req() req: any) {
     console.log('save_update_model_product---body:', body)
     console.log('save_save_update_model_productmodel_product---user_id:', req.user_id)
@@ -29,6 +32,7 @@ export class model_product extends AppController {
         data: {
           ...createData,
           user_id: req.user_id,
+     
           // 更新分类关联
           tb_model_kind: kind_ids ? { set: kind_ids.map((kindId) => ({ id: kindId })) } : undefined,
         },
@@ -43,6 +47,7 @@ export class model_product extends AppController {
         data: {
           ...createData,
           user_id: req.user_id,
+          is_check: true,// todo 先开始默认审核通过
           // 创建分类关联
           tb_model_kind: kind_ids ? { connect: kind_ids.map((kindId) => ({ id: kindId })) } : undefined,
         },
