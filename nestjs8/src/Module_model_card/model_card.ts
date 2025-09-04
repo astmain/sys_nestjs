@@ -9,16 +9,17 @@ import { Dec_public } from '@src/AppAuthorized'
 // 自定义dto
 // dto  * as dto 统一到处方便使用
 import * as dto from './dto'
+import { save_model_card } from './dto/save_model_card'
 
 @ApiTags('模型购物车')
 @Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
 export class model_card extends AppController {
+
+  // ================================ 用户接口 ================================
   @ApiPost('save_model_card', '保存-模型购物车')
-  async save_model_card(@Body() body: dto.save_model_card, @Req() req: any) {
+  async save_model_card(@Body() body: save_model_card, @Req() req: any) {
     console.log('save_model_card---body:', body)
-    
     const { id, ...createData } = body
-    
     // 如果有id且不为空，则更新；否则创建新记录
     if (id && id.trim() !== '') {
       // 更新现有记录
