@@ -1,16 +1,11 @@
 // 基础包
-// 通常要使用的包(已经封装置AppController中,可以直接使用,减少import的容易引入)
 import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, ParseIntPipe, Req } from '@src/Plugins/AppController'
-
-// 开放接口
-// 装饰器,开放接口,不需要验证
-import { Dec_public } from '@src/AppAuthorized'
-
+// dto
 import { create_model_order } from './dto/create_model_order'
 import { find_list_model_order } from './dto/find_list_model_order'
 
 @ApiTags('模型订单')
-@Controller() //控制器层,定义接口,直接写业务代码,省略service层,更方便开发
+@Controller()
 export class model_order extends AppController {
   @ApiPost('create_model_order', '新增-模型订单')
   async create_model_order(@Body() body: create_model_order, @Req() req: any) {
@@ -89,9 +84,7 @@ export class model_order extends AppController {
     const list = await this.db.tb_order_list.findMany({
       // where: { user_id: body.user_id, order_number: { contains: body.order_number }, status: { contains: body.status } },
       where: { user_id: body.user_id, order_number: { contains: body.order_number }, is_deleted: false },
-      include: {
-        tb_model_history_order: true,
-      },
+      include: { tb_model_history_order: true },
       skip: (body.page_index - 1) * body.page_size,
       take: body.page_size,
       orderBy: { [body.order_by]: body.order_type } as any,
@@ -100,20 +93,15 @@ export class model_order extends AppController {
   }
 
   // 删除
-
   @ApiGet('delete_model_order', '删除-模型订单')
   @ApiQuery({ name: 'order_number', description: '删除-order_number', required: true, type: String, example: 'cuid_string' })
   async delete_model_order(@Query('order_number') order_number: string, @Req() req: any) {
     console.log('delete_model_card---id:', order_number, typeof order_number)
-    const data = await this.db.tb_order_list.update({
-      where: { order_number },
-      data: { is_deleted: true },
-    })
+    const data = await this.db.tb_order_list.update({ where: { order_number }, data: { is_deleted: true } })
     return { code: 200, msg: '成功:删除-模型订单-id', result: data }
   }
 }
 
-// 模块层直接写在当前文件中,导入控制器层,方便其他模块导入使用
 @Module({
   controllers: [model_order],
   providers: [],

@@ -5,6 +5,4 @@ import { Type } from 'class-transformer'
 
 import { tb_model_product } from './tb_model_product'
 
-
-// 搜索info的dto
 export class find_info_model_product extends PickType(tb_model_product, ['id']) {}
