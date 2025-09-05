@@ -8,7 +8,7 @@ import { find_list_model_product } from './dto/find_list_model_product'
 import { find_info_model_product } from './dto/find_info_model_product'
 
 @ApiTags('模型商品')
-@Controller('api_model')
+@Controller('model_api')
 export class model_product extends AppController {
   // ================================ 用户接口 ================================
   @ApiPost('save_model_product', '更新-模型商品')

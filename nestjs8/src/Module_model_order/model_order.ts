@@ -5,7 +5,7 @@ import { create_model_order } from './dto/create_model_order'
 import { find_list_model_order } from './dto/find_list_model_order'
 
 @ApiTags('模型订单')
-@Controller("api_model")
+@Controller("model_api")
 export class model_order extends AppController {
   @ApiPost('create_model_order', '新增-模型订单')
   async create_model_order(@Body() body: create_model_order, @Req() req: any) {

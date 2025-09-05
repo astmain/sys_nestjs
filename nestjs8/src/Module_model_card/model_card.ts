@@ -2,7 +2,7 @@
 import { AppController, ApiGet, ApiPost, ApiQuery, Controller, Module, Query, Body, ApiTags, ParseIntPipe, Req } from '@src/Plugins/AppController'
 
 // 开放接口
-import { Dec_public } from '@src/AppAuthorized'
+
 import { permiss_check_user_id } from '@src/Plugins/permiss_check_user_id'
 
 // 自定义dto
@@ -10,7 +10,7 @@ import { save_model_card } from './dto/save_model_card'
 import { find_list_model_card } from './dto/find_list_model_card'
 
 @ApiTags('模型购物车')
-@Controller("api_model") 
+@Controller("model_api") 
 export class model_card extends AppController {
   // ================================ 用户接口 ================================
   @ApiPost('save_model_card', '保存-模型购物车')

@@ -16,7 +16,6 @@ export async function swagger_Knife4j(app) {
   // 生产swagger文档
   const config = new DocumentBuilder()
     .setTitle(name)
-    .setDescription('文档描述:测试使用')
     .setVersion(version)
     .setDescription(description)
     .addServer('1111', 'Local environment')
