@@ -10,7 +10,7 @@ import { save_model_card } from './dto/save_model_card'
 import { find_list_model_card } from './dto/find_list_model_card'
 
 @ApiTags('模型购物车')
-@Controller() 
+@Controller("api_model") 
 export class model_card extends AppController {
   // ================================ 用户接口 ================================
   @ApiPost('save_model_card', '保存-模型购物车')

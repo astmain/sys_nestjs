@@ -1,5 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
-import { IsNumber, IsString, IsNotEmpty } from 'class-validator'
+import { IsNumber, IsString, IsNotEmpty, IsIn } from 'class-validator'
+import { enum_order_status } from '@prisma/client'
 
 export class find_list_model_order {
   @ApiProperty({ description: 'user_id(用户id)', example: 1 })
@@ -13,6 +14,7 @@ export class find_list_model_order {
 
   @ApiProperty({ description: '订单状态', example: '' })
   @IsString()
+  @IsIn([...Object.values(enum_order_status), ''], { message: 'status必须是有效的订单状态或空字符串' })
   status: string
 
   @ApiProperty({ description: '页码', example: 1 })

@@ -5,7 +5,7 @@ import { create_model_order } from './dto/create_model_order'
 import { find_list_model_order } from './dto/find_list_model_order'
 
 @ApiTags('模型订单')
-@Controller()
+@Controller("api_model")
 export class model_order extends AppController {
   @ApiPost('create_model_order', '新增-模型订单')
   async create_model_order(@Body() body: create_model_order, @Req() req: any) {
@@ -38,7 +38,7 @@ export class model_order extends AppController {
     price_pay = price_order - price_sub //减去优惠的价格,得到实际支付的价格
 
     // 创建订单
-    const order = await this.db.tb_order_list.create({
+    const order = await this.db.tb_model_order_list.create({
       data: {
         order_number,
         user_id: body.user_id,
@@ -50,9 +50,9 @@ export class model_order extends AppController {
       },
     })
 
-    // 创建 tb_model_history_order 存储数据
+    // 创建 tb_model_order_history 存储数据
     const history_order_promises = cart_items.map(async (cart) => {
-      return await this.db.tb_model_history_order.create({
+      return await this.db.tb_model_order_history.create({
         data: {
           is_deleted: false,
           cart_history: cart, // 购物车历史,记录购物车历史(包含商品,数量,价格类型)
@@ -81,10 +81,10 @@ export class model_order extends AppController {
   @ApiPost('find_list_model_order', '查询-模型订单-列表')
   async find_list_model_order(@Body() body: find_list_model_order, @Req() req: any) {
     console.log('find_list_model_order---body:', body)
-    const list = await this.db.tb_order_list.findMany({
+    const list = await this.db.tb_model_order_list.findMany({
       // where: { user_id: body.user_id, order_number: { contains: body.order_number }, status: { contains: body.status } },
       where: { user_id: body.user_id, order_number: { contains: body.order_number }, is_deleted: false },
-      include: { tb_model_history_order: true },
+      include: { tb_model_order_history: true },
       skip: (body.page_index - 1) * body.page_size,
       take: body.page_size,
       orderBy: { [body.order_by]: body.order_type } as any,
@@ -97,7 +97,7 @@ export class model_order extends AppController {
   @ApiQuery({ name: 'order_number', description: '删除-order_number', required: true, type: String, example: 'cuid_string' })
   async delete_model_order(@Query('order_number') order_number: string, @Req() req: any) {
     console.log('delete_model_card---id:', order_number, typeof order_number)
-    const data = await this.db.tb_order_list.update({ where: { order_number }, data: { is_deleted: true } })
+    const data = await this.db.tb_model_order_list.update({ where: { order_number }, data: { is_deleted: true } })
     return { code: 200, msg: '成功:删除-模型订单-id', result: data }
   }
 }

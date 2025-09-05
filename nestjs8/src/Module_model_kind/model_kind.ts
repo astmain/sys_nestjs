@@ -4,7 +4,7 @@ import { create_model_kind } from './dto/create_model_kind'
 import { update_model_kind } from './dto/update_model_kind'
 
 @ApiTags('模型分类')
-@Controller()
+@Controller("api_model") 
 export class model_kind extends AppController {
   @ApiPost('create_model_kind', '新增-模型分类')
   async create_model_kind(@Body() body: create_model_kind) {
