@@ -123,6 +123,8 @@ model tb_model_history_order {
   // tb_order_list tb_order_list @relation(fields: [order_number], references: [order_number], onDelete: NoAction, onUpdate: Cascade) //订单
 }
 
+
+// 模型分类表
 model tb_model_kind {
   id               Int                @id @default(autoincrement())
   name             String //名称
