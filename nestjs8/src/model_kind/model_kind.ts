@@ -110,4 +110,4 @@ export class model_kind extends AppController {
   controllers: [model_kind],
   providers: [],
 })
-export class Module_model_kind {}
+export class model_kind_Module {}

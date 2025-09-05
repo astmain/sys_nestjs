@@ -132,4 +132,4 @@ export class model_product extends AppController {
   controllers: [model_product],
   providers: [],
 })
-export class Module_model_product {}
+export class model_product_Module {}

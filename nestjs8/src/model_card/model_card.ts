@@ -63,4 +63,4 @@ export class model_card extends AppController {
   controllers: [model_card],
   providers: [],
 })
-export class Module_model_card {}
+export class model_card_Module {}

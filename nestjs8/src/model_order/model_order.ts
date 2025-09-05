@@ -106,4 +106,4 @@ export class model_order extends AppController {
   controllers: [model_order],
   providers: [],
 })
-export class Module_model_order {}
+export class model_order_Module {}
