@@ -103,7 +103,7 @@ export class test extends AppController {
     // const token = my_jwt_service.sign(payload, { secret: process.env.VITE_jwt_secret })
     // return { code: 200, msg: '', result: { VITE_jwt_secret: process.env.VITE_jwt_secret, token, payload, iat, exp, iat_time, exp_time } }
 
-    const payload={
+    const payload1 = {
       username: body.username,
       phone: body.phone,
       id: body.id,
@@ -114,9 +114,27 @@ export class test extends AppController {
       exp_time: this.dayjs(this.dayjs().add(9999, 'day').unix() * 1000).format('YYYY-MM-DD HH:mm:ss'),
     }
 
+    const payload2 = {
+      // 上传基础
+      username: '15160315110',
+      phone: '15160315110',
+      id: 1,
+      user_id: 1,
+      roleIds: [],
+      department: [{ id: 2 }],
+      iat: this.dayjs().unix(),
+      exp: this.dayjs().add(9999, 'day').unix(),
+      roles: [],
+      extra: { checked: true },
+      // 额外
+
+      iat_time: this.dayjs(this.dayjs().unix() * 1000).format('YYYY-MM-DD HH:mm:ss'),
+      exp_time: this.dayjs(this.dayjs().add(9999, 'day').unix() * 1000).format('YYYY-MM-DD HH:mm:ss'),
+    }
+
     const my_jwt_service = new JwtService()
-    const token = my_jwt_service.sign(payload, { secret: process.env.VITE_jwt_secret })
-    return { code: 200, msg: '', result: { VITE_jwt_secret: process.env.VITE_jwt_secret, token, payload } }
+    const token = my_jwt_service.sign(payload2, { secret: process.env.VITE_jwt_secret })
+    return { code: 200, msg: 'payload2:目前固定写数据', result: { VITE_jwt_secret: process.env.VITE_jwt_secret, token, payload2 } }
 
     // return { code: 200, msg: '', result: body }
   }
