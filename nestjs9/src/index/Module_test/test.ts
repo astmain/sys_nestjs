@@ -6,6 +6,9 @@ import { JwtService } from '@nestjs/jwt'
 import { AppController, Query, ApiTags, ApiPost, Controller, Module, ApiBody, Req, ApiConsumes, Body, ApiParam, ApiQuery, ApiProperty } from '@src/Plugins/AppController'
 import * as path from 'path'
 
+
+import { test_token_generate_dto } from './dto/token_generate'
+
 // 自定义包
 import { Dec_public } from '@src/AppAuthorized'
 
@@ -25,31 +28,6 @@ class test_token_dto {
   token: string
 }
 
-class test_token_generate_dto {
-  @ApiProperty({ description: 'username字符', example: '15160315110' })
-  @IsString()
-  username: string
-
-  @ApiProperty({ description: 'phone字符', example: '15160315110' })
-  @IsString()
-  phone: string
-
-  @ApiProperty({ description: 'id字符', example: 1 })
-  @IsNumber()
-  id: number
-
-  @ApiProperty({ description: 'roleIds字符', example: [] })
-  @IsArray()
-  roleIds: number[]
-
-  @ApiProperty({ description: 'iat_time字符', example: '2025-09-02 19:47:02' })
-  @IsString()
-  iat_time: string
-
-  @ApiProperty({ description: 'exp_time字符', example: '2053-01-17 19:47:02' })
-  @IsString()
-  exp_time: string
-}
 
 @ApiTags('测试')
 @Dec_public()
