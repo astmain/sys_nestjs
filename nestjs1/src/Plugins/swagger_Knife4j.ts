@@ -7,15 +7,15 @@ import { knife4jSetup } from 'nest-knife4j'
 
 export async function swagger_Knife4j(app) {
   // 参数
-  const name = process.env.PROJECT_name + '(文档)'
-  const token = process.env.JWT_token_swagger
-  const version = process.env.ENV_path + ''
-  const description = process.env.PROJECT_remark + ''
+  const version = process.env.VITE_env_path + ''
+  const name = process.env.VITE_project_name + `(文档)${version}`
+  const token = process.env.VITE_jwt_token_swagger
+
+  const description = process.env.VITE_project_remark + ''
 
   // 生产swagger文档
   const config = new DocumentBuilder()
     .setTitle(name)
-    .setDescription('文档描述:测试使用')
     .setVersion(version)
     .setDescription(description)
     .addServer('1111', 'Local environment')

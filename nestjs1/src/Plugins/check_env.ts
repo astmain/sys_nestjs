@@ -1,76 +1,66 @@
-/**
- * @description 检查环境变量是否正确
- * @param 无
- * @returns {env_curr:当前环境变量,env_curr_description:当前环境变量描述}
- */
+import * as _ from 'lodash'
+let rule_env = [
+  { name: '项目环境变量路径', value: '', doc: false, key: 'VITE_env_path' },
+  { name: '项目名称', value: '', doc: false, key: 'VITE_project_name' },
+  { name: '项目备注', value: '', doc: false, key: 'VITE_project_remark' },
+  { name: '数据pg链接', value: '', doc_url: '', doc: false, key: 'VITE_url_db_pg' },
+  { name: '项目端口号', value: '', doc_url: '', doc: false, key: 'VITE_port' },
+  { name: '正在运行', value: '', doc_url: '', doc: true, key: 'VITE_url_app_run' },
+  { name: '应用开发', value: '', doc_url: '', doc: true, key: 'VITE_url_app_dev' },
+  { name: '应用内网', value: '', doc: true, key: 'VITE_url_app_inner' },
+  { name: '应用容器', value: '', doc: true, key: 'VITE_url_app_docker' },
+  { name: '应用正式发布', value: '', doc: true, key: 'VITE_url_app_prod' },
+  { name: 'jwt密钥', value: '', doc: false, key: 'VITE_jwt_secret' },
+  { name: 'jwt过期时间', value: '', doc: false, key: 'VITE_jwt_time_exp' },
+  { name: 'jwttoken方便swagger调试', value: '', doc: false, key: 'VITE_jwt_token_swagger' },
+]
+
 export function check_env() {
-  // 进程中的全部环境变量
-  const env = process.env
-  //   console.log('check_env---检查环境变量是否正确', env)
+  let env_err_list: any[] = []
+  let env_curr = {}
+  let env_info_list: any[] = []
+  let env_curr_web_description = {}
 
-  // 检查环境变量是否存在,如果不存在,则抛出错误
-  if (!env.PROJECT_name) throw new Error('PROJECT_name 环境变量不存在')
-  if (!env.PROJECT_remark) throw new Error('PROJECT_remark 环境变量不存在')
-  if (!env.ENV_path) throw new Error('ENV_path 环境变量不存在')
-  if (!env.PORT) throw new Error('PORT 环境变量不存在')
-  if (!env.URL_app) throw new Error('URL_app 环境变量不存在')
-  if (!env.URL_ip) throw new Error('URL_ip 环境变量不存在')
-  if (!env.URL_domain) throw new Error('URL_domain 环境变量不存在')
-  if (!env.URL_db) throw new Error('URL_db 环境变量不存在')
-  if (!env.JWT_secret) throw new Error('JWT_secret 环境变量不存在')
-  if (!env.JWT_time_exp) throw new Error('JWT_time_exp 环境变量不存在')
-  if (!env.JWT_token_swagger) throw new Error('JWT_token_swagger 环境变量不存在')
+  let rule_keys = rule_env.map((o) => o.key)
 
-  // 当前环境变量
-  const env_curr = {
-    PROJECT_name: env.PROJECT_name,
-    ENV_path: env.ENV_path,
-    PORT: env.PORT,
-    URL_app: env.URL_app,
-    URL_ip: env.URL_ip,
-    URL_domain: env.URL_domain,
-    URL_db: env.URL_db,
-    JWT_secret: env.JWT_secret,
-    JWT_time_exp: env.JWT_time_exp,
-    JWT_token_swagger: env.JWT_token_swagger,
-  }
-
-  //   const env_curr_description = [
-  //     { name: '环境文件路径', key: 'ENV_path', value: env.ENV_path },
-  //     { name: '端口号', key: 'PORT', value: env.PORT },
-  //     { name: 'url本地', key: 'URL_app', value: env.URL_app },
-  //     { name: 'url域名', key: 'URL_ip', value: env.URL_ip },
-  //     { name: 'url域名', key: 'URL_domain', value: env.URL_domain },
-  //     { name: 'url数据库', key: 'URL_db', value: env.URL_db },
-  //     { name: 'JWT密钥', key: 'JWT_secret', value: env.JWT_secret },
-  //     { name: 'JWT过期时间', key: 'JWT_time_exp', value: env.JWT_time_exp },
-  //     { name: 'JWT方便swagger文档调试使用', key: 'JWT_token_swagger', value: env.JWT_token_swagger },
-  //   ]
-
-  // 当前环境变量描述
-  const env_curr_description = {
-    项目介绍: {
-      项目名称: env.PROJECT_name,
-      项目备注: env.PROJECT_remark,
-    },
-    本地: {
-      首页: process.env.URL_app,
-      文档: process.env.URL_app + '/doc.html',
-    },
-    内网: {
-      首页: process.env.URL_ip,
-      文档: process.env.URL_ip + '/doc.html',
-    },
-    外网: {
-      首页: process.env.URL_domain,
-      文档: process.env.URL_domain + '/doc.html',
-    },
-    linux宝塔:{
-      首页: process.env.LINUX_bt_url,
-      账号: process.env.LINUX_bt_name,
-      密码: process.env.LINUX_bt_password,
+  for (let i = 0; i < rule_keys.length; i++) {
+    const key = rule_keys[i]
+    const is_exit = process.env.hasOwnProperty(key)
+    if (is_exit) {
+      const value = process.env[key]
+      env_curr[key] = value
+      let one = _.find(rule_env, { key })
+      env_info_list.push({ ...one, value })
+    } else {
+      let one = _.find(rule_env, { key })
+      env_err_list.push({ ...one, value: '' })
     }
   }
 
-  return { env_curr, env_curr_description }
+  if (env_err_list.length > 0) {
+    const msg_err = `缺少环境变量---请检查项目文件夹[.env]---env_err_list`
+    console.log(msg_err, '\n', env_err_list)
+    throw new Error(msg_err)
+  }
+
+  // 当前环境变量描述
+  for (let i = 0; i < env_info_list.length; i++) {
+    const one = env_info_list[i]
+    if (one.doc) {
+      env_curr_web_description[one.name] = {
+        ['首页']: one.value,
+        ['文档']: one.value + '/doc.html',
+      }
+    }
+  }
+
+  const env_curr_back_description = { 当前数据库: process.env.VITE_url_db_pg, ...env_curr_web_description }
+
+  return {
+    env_curr: env_curr,
+    env_info_list: env_info_list,
+    env_curr_web_description: env_curr_web_description,
+    env_curr_back_description: env_curr_back_description,
+    env_err_list: env_err_list,
+  }
 }

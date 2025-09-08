@@ -50,7 +50,7 @@ export class AppAuthorized implements CanActivate {
 
     // 解析token得到user信息
     try {
-      let payload = await this.jwt_service.verifyAsync(token, { secret: process.env.jwt_secret })
+      let payload = await this.jwt_service.verifyAsync(token, { secret: process.env.VITE_jwt_secret })
       // console.log(`AppAuthorized---444---payload:`, payload)
       // 请求全局参数   @Req() request   调用   request["user"]
       request['user'] = payload

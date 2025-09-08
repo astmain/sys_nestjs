@@ -2,6 +2,7 @@ import { Module, Global, DynamicModule } from '@nestjs/common'
 import { PrismaClient } from '@prisma/client'
 
 export const prisma_instance = new PrismaClient()
+export const db = new PrismaClient()
 
 interface Opt {
   path: string
@@ -15,7 +16,8 @@ interface Opt {
 })
 export class my_prisma {
   static make_path(opt: Opt): DynamicModule {
-    let result = {
+    // console.log('my_prisma---opt:', opt)
+    const result = {
       module: my_prisma,
       providers: [{ provide: 'my_prisma', useValue: prisma_instance }],
     }

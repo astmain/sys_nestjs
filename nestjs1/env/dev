@@ -1,0 +1,28 @@
+  # 🚀 项目描述________________________________________________________________
+VITE_env_path ="env/dev"
+VITE_project_name ="我的nestjs2"
+VITE_project_remark ="使用nestjs封装,通过jwt验证身份"
+
+
+# 🚀 数据库相关配置_________________________________________________________
+VITE_url_db_pg="postgresql://root:123456@103.119.2.223:2001/back?schema=public"   #数据库连接服务器上要使用容器名称
+; VITE_url_db_pg="postgresql://root:123456@192.168.0.250:60000/back?schema=public"   #数据库连接服务器上要使用容器名称
+
+# 🚀 url相关配置____________________________________________________________
+VITE_port           = 3001                           #服务端口号
+VITE_url_app_run    = http://127.0.0.1:3000           #正在运行url
+VITE_url_app_dev    = http://127.0.0.1:3000          #开发url
+VITE_url_app_inner  = http://192.168.0.250:60001     #内网url
+VITE_url_app_docker = https://server.oss.yun3d.com   #容器url(必须https)
+VITE_url_app_prod   = https://server.oss.yun3d.com   #正式环境url(必须https)
+
+
+# 🚀 JWT相关配置____________________________________________________________
+# JWT密钥
+VITE_jwt_secret ="xzz2021"
+# JWT过期时间 1d(1天), 7d(7天)
+VITE_jwt_time_exp   ="1d"
+# JWT方便swagger文档调试使用
+VITE_jwt_token_swagger ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjE1MTYwMzE1MTEwIiwicGhvbmUiOiIxNTE2MDMxNTExMCIsImlkIjoxLCJyb2xlSWRzIjpbXSwiaWF0IjoxNzU2ODEzODM5LCJleHAiOjI2MjA3Mjc0MzksImlhdF90aW1lIjoiMjAyNS0wOS0wMiAxOTo1MDozOSIsImV4cF90aW1lIjoiMjA1My0wMS0xNyAxOTo1MDozOSJ9.ms6AOMGE_UYaAS3ilcdEdK6R2FGKGUVKVDBzAB_XP40"
+  
+  

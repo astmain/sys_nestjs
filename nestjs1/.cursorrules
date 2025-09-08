@@ -26,3 +26,9 @@
 
 # css/tailwindcss 使用规范:
 - 简洁的样式,不要使用阴影,不要使用动画
+
+
+
+# nestjs项目规范
+- 写代码时,参考src/index/Module_demo/demo.ts文件的写法
+- 写代码时,dto参考index/Module_demo/dto.ts

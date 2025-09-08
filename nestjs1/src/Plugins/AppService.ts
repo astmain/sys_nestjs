@@ -28,7 +28,6 @@ import {
 import { redis_service } from './redis_config'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as db_prisma from './db_prisma'
 import { PrismaClient } from '@prisma/client'
 import { JwtService } from '@nestjs/jwt'
 
@@ -42,7 +41,6 @@ export class AppController {
   public redis_get = redis_service.redis_get
   public my_jwt = new JwtService()
   constructor(
-    // @Inject(db_prisma.service) public db: db_prisma.service, //prisma
     @Inject('my_prisma') public db: PrismaClient, //注入全局数据库
   ) {}
 }
