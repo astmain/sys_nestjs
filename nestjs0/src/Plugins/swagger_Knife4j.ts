@@ -1,5 +1,8 @@
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger' //怎么设置addGlobalParameters
 import { knife4jSetup } from 'nest-knife4j'
+import { ResponseVo } from '@src/index/Module_test/aaa_dto/ResponseVo'
+import { PageVo } from '@src/index/Module_test/aaa_dto/PageVo'
+import { UserResponseDto } from '@src/index/Module_test/aaa_dto/UserResponseDto'
 
 // 自定义
 
@@ -32,7 +35,7 @@ export async function swagger_Knife4j(app) {
     })
     .build()
 
-  const document = SwaggerModule.createDocument(app, config, {})
+  const document = SwaggerModule.createDocument(app, config, {extraModels: [ResponseVo, PageVo, UserResponseDto]})
   SwaggerModule.setup('/api/swagger', app, document)
   knife4jSetup(app, [
     {

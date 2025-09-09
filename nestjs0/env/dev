@@ -1,6 +1,6 @@
   # 🚀 项目描述________________________________________________________________
 VITE_env_path ="env/dev"
-VITE_project_name ="我的nestjs2"
+VITE_project_name ="我的nestjs0"
 VITE_project_remark ="使用nestjs封装,通过jwt验证身份"
 
 

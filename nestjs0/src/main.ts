@@ -14,7 +14,7 @@ async function bootstrap() {
   await Plugins.filter_dto(app) // 配置dto验证
   await Plugins.swagger_Knife4j(app) // 配置swagger
   await app.listen(Number(process.env.VITE_port))
-  console.log('启动成功:', env_curr_back_description)
+  console.log('启动成功:',process.env.VITE_port, env_curr_back_description)
 }
 
 bootstrap()
