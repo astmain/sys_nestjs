@@ -1,0 +1,39 @@
+
+
+// {
+//   "compilerOptions": {
+//     "module": "commonjs", // Node.js 的模块系统
+//     "declaration": true, // 声明文件
+//     "removeComments": true, // 移除注释
+//     "emitDecoratorMetadata": true, // 装饰器元数据
+//     "experimentalDecorators": true, // 实验性装饰器
+//     "allowSyntheticDefaultImports": true, // 允许合成默认导入
+//     "target": "ES2020", // 目标 ES 版本
+//     "sourceMap": true, // 源码映射
+//     "outDir": "./dist", // 打包输出目录
+//     "baseUrl": "./", // 基础路径
+//     "incremental": true, // 增量编译(true|false)
+//     "skipLibCheck": true, // 跳过库检查
+//     "strictNullChecks": true, // 严格检查 null 和 undefined
+//     "noImplicitAny": true, // 禁用隐式的 any 类型
+//     "strictBindCallApply": true, // 严格绑定调用和应用
+//     "forceConsistentCasingInFileNames": true, // 强制一致的文件名大小写
+//     "noFallthroughCasesInSwitch": true, // 禁用 switch 语句的 fallthrough 检查
+//     "noEmitOnError": true, // 禁用编译错误时生成文件
+//     "exactOptionalPropertyTypes": true, // 精确的可选属性类型
+//     "noImplicitReturns": true, // 检查函数是否有隐式返回
+//     "noUnusedLocals": true, // 检查未使用的局部变量
+//     "noUnusedParameters": true, // 检查未使用的参数
+//     "strict": true, // 启用所有严格类型检查选项
+//     "noImplicitThis": true, // 禁止隐式 any 类型的 this
+//     "alwaysStrict": true, // 以严格模式解析并为每个源文件添加 "use strict"
+//     "noImplicitOverride": true, // 确保重写成员标记为 override
+//     "noPropertyAccessFromIndexSignature": true, // 禁止通过索引签名访问属性
+//     "noUncheckedIndexedAccess": true, // 在索引签名结果中包含 undefined
+
+//     // 路径别名
+//     "paths": {
+//       "@src/*": ["./src/*"]
+//     }
+//   }
+// }
