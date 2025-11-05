@@ -1,0 +1,88 @@
+//  prisma使用规范
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" //  使用sqlite时无法用JSON{},只能使用JSON[]
+  url      = "file:./sqlite.db" //  E:/AAA/dayu_sys/dayu_sys02/demo5/make_orm_prisma/sqlite.db
+
+  // provider = "postgresql"
+  // url      = env("VITE_url_db_pg")
+}
+
+// 测试表
+model tb_demo {
+  id             Int      @id @default(autoincrement())
+  name           String   @default("")
+  remark         String   @default("")
+  is_deleted     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  price_personal Int      @default(0)
+  price_company  Int      @default(0)
+  price_extend   Int      @default(0)
+  list_img       Json     @default("[]")
+}
+
+// 模型商品表
+model tb_model_good {
+  id              Int      @id @default(autoincrement())
+  model_id        String
+  title           String   @default("")
+  description     String   @default("")
+  author_name     String   @default("")
+  author_id       String   @default("")
+  count_collect   Int      @default(0)
+  count_download  Int      @default(0)
+  price_personal  Int      @default(0)
+  price_company   Int      @default(0)
+  price_extend    Int      @default(0)
+  is_deleted      Boolean  @default(false)
+  is_published    Boolean  @default(false)
+  is_check        Boolean  @default(false)
+  is_check_remark String   @default("")
+  // 新增字段
+  is_free         Boolean  @default(true)
+  is_business     Boolean  @default(false)
+  is_skeleton     Boolean  @default(false)
+  is_animation    Boolean  @default(false)
+  model_format    String   @default(".stl")
+  model_texture   Json     @default("[]")
+  area_unit       String   @default("5k以下")
+  wiring          String   @default("三角形")
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
+// 模型购物车
+model tb_model_card {
+  id           Int      @id @default(autoincrement())
+  user_id      String   @default("")
+  model_id     String   @default("")
+  model_title  String   @default("")
+  model_price  Int      @default(0)
+  model_format String   @default("")
+  is_deleted   Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+// 模型订单表
+model tb_model_order {
+  id             Int      @id @default(autoincrement())
+  model_order_id String
+  status         String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
+
+// 模型分类表
+model tb_model_kind {
+  id        Int             @id @default(autoincrement())
+  name      String
+  parent_id Int?
+  // 自关联
+  parent    tb_model_kind?  @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children  tb_model_kind[] @relation("re_tb_model_kind")
+}

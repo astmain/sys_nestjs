@@ -1,0 +1,48 @@
+//  prisma使用规范
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" //  使用sqlite时无法用JSON{},只能使用JSON[]
+  url      = "file:./sqlite.db" //  E:/AAA/dayu_sys/dayu_sys02/demo5/make_orm_prisma/sqlite.db
+
+  // provider = "postgresql"
+  // url      = env("VITE_url_db_pg")
+}
+
+// 测试表
+model tb_test {
+  id   Int    @id @default(autoincrement())
+  name String
+  age  Int
+}
+
+// 模型商品表
+model tb_model_good {
+  id              Int      @id @default(autoincrement())
+  model_id        String
+  title           String
+  description     String
+  author_name     String
+  author_id       String
+  count_collect   Int      @default(0)
+  count_download  Int      @default(0)
+  price_30        Float
+  price_all       Float
+  is_deleted      Boolean  @default(false)
+  is_published    Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
+// 模型订单表
+model tb_model_order {
+  id              Int      @id @default(autoincrement())
+  model_order_id  String
+  status          String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}
+
+

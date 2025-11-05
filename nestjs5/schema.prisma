@@ -1,0 +1,97 @@
+//  prisma使用规范
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" //  使用sqlite时无法用JSON{},只能使用JSON[]
+  url      = "file:./sqlite.db" //  E:/AAA/dayu_sys/dayu_sys02/demo5/make_orm_prisma/sqlite.db
+
+  // provider = "postgresql"
+  // url      = env("VITE_url_db_pg")
+}
+
+enum enum_order_status {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// 测试表
+model tb_demo {
+  id             Int      @id @default(autoincrement())
+  name           String   @default("")
+  remark         String   @default("")
+  is_deleted     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  price_personal Int      @default(0)
+  price_company  Int      @default(0)
+  price_extend   Int      @default(0)
+  list_img       Json     @default("[]")
+}
+
+model tb_model_kind {
+  id        Int             @id @default(autoincrement())
+  name      String
+  parent_id Int?
+  // 自关联
+  parent    tb_model_kind?  @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children  tb_model_kind[] @relation("re_tb_model_kind")
+}
+
+// 模型商品表,模型购物车表,模型订单列表,模型订单详情表
+
+// 模型商品表
+model tb_model_product {
+  id             String          @id @default(cuid())
+  title          String //标题
+  remark         String          @default("") //备注
+  price          Int //价格
+  // count_store              Int                       @default(999999)// 库存
+  is_public      Boolean         @default(true) //是否公开
+  tb_model_cart  tb_model_cart[] //购物车
+  tb_order_infos tb_order_info[] //订单明细
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+}
+
+// 模型购物车表
+model tb_model_cart {
+  id         String           @id @default(cuid())
+  user_id    Int //用户id
+  product_id String //商品id
+  product    tb_model_product @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Cascade) //商品
+  updated_at DateTime         @updatedAt
+  created_at DateTime         @default(now())
+
+  @@unique([user_id, product_id])
+}
+
+// 模型订单列表
+model tb_order_list {
+  id            String            @id @default(cuid())
+  order_number  String            @unique
+  user_id       Int //用户id
+  price_sub     Int //减去价格
+  price_order   Int //订单价格
+  price_pay     Int //支付价格
+  pay_time      DateTime? //支付时间
+  tb_order_info tb_order_info[] //订单详情
+  status        enum_order_status @default(PENDING) // 订单状态
+  updated_at    DateTime          @updatedAt
+  created_at    DateTime          @default(now())
+}
+
+// 模型订单详情表
+model tb_order_info {
+  id               String           @id @default(cuid())
+  order_number     String //订单id
+  product_id       String //商品id
+  price_one        Int //单价
+  count            Int              @default(1) //数量
+  tb_order_list    tb_order_list    @relation(fields: [order_number], references: [order_number], onDelete: NoAction, onUpdate: Cascade) //订单
+  tb_model_product tb_model_product @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: Cascade) //商品
+}

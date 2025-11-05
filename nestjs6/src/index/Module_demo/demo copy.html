@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="zh-CN" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px">
+  <head>
+    <title>demo</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.13/dayjs.min.js"></script>
+  </head>
+  <!-- 这一份html的规范:
+   1:style标签已经定义 button,input,.message,.modal_overlay,.modal_content标签的样式,不要在额外添加其他样式了
+   2:整体的代码是简洁的,style样式和css样式是简洁的,不要使用阴影,不要使用动画尽量用h5标签,不要使用padding,margin
+   3:methods方法名称 尽量和接口是同名的
+  
+  -->
+
+  <main id="app" style="display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 1400px; padding: 20px; margin: 0 auto; background: white; border-radius: 15px">
+    <!-- 搜索区域 -->
+    <div>
+      <input v-model="search_form.name" />
+      <button @click="find_list_demo">搜索</button>
+    </div>
+
+    <!-- 管理区域 -->
+    <div>
+      <h2>管理</h2>
+      <button @click="open_add_modal">添加</button>
+      <button @click="init_demo">初始化测试数据</button>
+    </div>
+
+    <!-- 列表显示 -->
+    <div>
+      <h2>列表 /共 {{ total_count }} 数据</h2>
+      <div v-if="product_list.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px">
+        <div v-for="product in product_list" :key="product.id">
+          <div>
+            <h4>{{ product.name }}</h4>
+            <p>{{ product.remark }}</p>
+            <div>个人授权:{{ product.price_personal }}</div>
+            <div>企业授权:{{ product.price_company }}</div>
+            <div>扩展授权:{{ product.price_extend }}</div>
+          </div>
+
+          <div>
+            <button @click="edit_product(product)">编辑</button>
+            <button @click="view_product_detail(product)">详情</button>
+            <button @click="delete_demo(product.id)">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分页控制 -->
+    <div class="pagination_section">
+      <div class="pagination">
+        <button @click="go_to_page(pagination.page_index - 1)" :disabled="pagination.page_index <= 1" class="page_btn">上一页</button>
+        <span class="page_info">第 {{ pagination.page_index }} 页 / 共 {{ pagination.page_total }} 页</span>
+        <button @click="go_to_page(pagination.page_index + 1)" :disabled="pagination.page_index >= pagination.page_total" class="page_btn">下一页</button>
+      </div>
+    </div>
+
+    <!-- 添加弹窗 -->
+    <div v-if="show_add_modal" class="modal_overlay">
+      <div class="modal_content" @click.stop>
+        <h3>添加新</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">名称</label>
+            <input v-model="add_form.name" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">描述</label>
+            <input v-model="add_form.remark" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">个人授权价格</label>
+            <input v-model="add_form.price_personal" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">企业授权价格</label>
+            <input v-model="add_form.price_company" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">企业扩展授权价格</label>
+            <input v-model="add_form.price_extend" />
+          </div>
+          <div class="">
+            <button @click="create_demo">添加</button>
+            <button @click="close_add_modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑弹窗 -->
+    <div v-if="show_edit_modal" class="modal_overlay" @click="close_edit_modal">
+      <div class="modal_content" @click.stop>
+        <h3>编辑</h3>
+        <div>
+          <div>
+            <label>名称</label>
+            <input v-model="edit_form.name" />
+          </div>
+          <div>
+            <label>描述</label>
+            <input v-model="edit_form.remark" />
+          </div>
+          <div>
+            <label>个人授权价格</label>
+            <input v-model="edit_form.price_personal" />
+          </div>
+          <div>
+            <label>企业授权价格</label>
+            <input v-model="edit_form.price_company" />
+          </div>
+          <div>
+            <label>企业扩展授权价格</label>
+            <input v-model="edit_form.price_extend" />
+          </div>
+          <div class="modal_actions">
+            <button @click="update_demo">保存</button>
+            <button @click="close_edit_modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div v-if="show_detail_modal" class="modal_overlay" @click="close_detail_modal">
+      <div class="modal_content" @click.stop>
+        <h3>详情</h3>
+        <div v-if="selected_product">
+          <div>
+            <span>ID:</span>
+            <span>{{ selected_product.id }}</span>
+          </div>
+          <div>
+            <span>名称:</span>
+            <span>{{ selected_product.name }}</span>
+          </div>
+          <div>
+            <span>描述:</span>
+            <span>{{ selected_product.remark }}</span>
+          </div>
+          <div>
+            <span>个人授权价格:</span>
+            <span>¥{{ selected_product.price_personal }}</span>
+          </div>
+          <div>
+            <span>企业授权价格:</span>
+            <span>¥{{ selected_product.price_company }}</span>
+          </div>
+          <div>
+            <span>企业扩展授权价格:</span>
+            <span>¥{{ selected_product.price_extend }}</span>
+          </div>
+        </div>
+        <div>
+          <button @click="close_detail_modal" class="close_btn">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div v-if="message" class="message" :class="message_type">{{ message }}</div>
+  </main>
+
+  <script>
+    Vue.prototype.axios = axios
+    Vue.prototype.window = window
+    Vue.prototype.document = window.document
+
+    window.app = new Vue({
+      el: '#app',
+      data: {
+        VITE_url_app_run: 'http://127.0.0.1:3000',
+
+        // 搜索表单
+        search_form: {
+          name: '',
+          page_index: 1,
+          page_size: 5,
+          order_by: 'id',
+          order_type: 'desc',
+        },
+
+        // 添加表单
+        add_form: {
+          name: '',
+          remark: '',
+          price_personal: 0,
+          price_company: 0,
+          price_extend: 0,
+        },
+
+        // 编辑表单
+        edit_form: {
+          id: null,
+          name: '',
+          remark: '',
+          price_personal: 0,
+          price_company: 0,
+          price_extend: 0,
+        },
+
+        // 列表
+        product_list: [],
+
+        // 分页信息
+        pagination: {
+          page_index: 1,
+          page_size: 12,
+          count_total: 0,
+          page_total: 0,
+        },
+
+        // 总数量
+        total_count: 0,
+
+        // 弹窗控制
+        show_add_modal: false,
+        show_edit_modal: false,
+        show_detail_modal: false,
+        selected_product: null,
+
+        // 消息提示
+        message: '',
+        message_type: 'success',
+      },
+
+      methods: {
+        // 显示消息
+        show_message(text, type = 'success') {
+          this.message = text
+          this.message_type = type
+          setTimeout(() => (this.message = ''), 3000)
+        },
+
+        // 打开添加弹窗
+        open_add_modal() {
+          this.show_add_modal = true
+        },
+
+        // 关闭添加弹窗
+        close_add_modal() {
+          this.show_add_modal = false
+          this.add_form = {
+            name: '',
+            remark: '',
+            price_personal: 0,
+            price_company: 0,
+            price_extend: 0,
+          }
+        },
+
+        // 搜索
+        async find_list_demo() {
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/find_list_demo`, this.search_form)
+            if (response.data.code === 200) {
+              this.product_list = response.data.result.list
+              this.pagination = response.data.result.pagination
+              this.total_count = response.data.result.pagination.count_total
+              this.show_message('搜索完成')
+            } else {
+              this.show_message('搜索失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('搜索出错: ' + error.message, 'error')
+          }
+        },
+
+        // 添加
+        async create_demo() {
+          if (!this.add_form.name.trim()) {
+            this.show_message('请输入名称', 'error')
+            return
+          }
+
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/create_demo`, this.add_form)
+            if (response.data.code === 200) {
+              this.show_message('添加成功')
+              this.close_add_modal()
+              this.find_list_demo()
+            } else {
+              this.show_message('添加失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('添加出错: ' + error.message, 'error')
+          }
+        },
+
+        // 编辑
+        edit_product(product) {
+          this.edit_form = {
+            id: product.id,
+            name: product.name,
+            remark: product.remark,
+            price_personal: product.price_personal,
+            price_company: product.price_company,
+            price_extend: product.price_extend,
+          }
+          this.show_edit_modal = true
+        },
+
+        // 保存编辑
+        async update_demo() {
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/update_demo`, this.edit_form)
+            if (response.data.code === 200) {
+              this.show_message('更新成功')
+              this.close_edit_modal()
+              this.find_list_demo()
+            } else {
+              this.show_message('更新失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('更新出错: ' + error.message, 'error')
+          }
+        },
+
+        // 关闭编辑弹窗
+        close_edit_modal() {
+          this.show_edit_modal = false
+          this.edit_form = {
+            id: null,
+            name: '',
+            remark: '',
+            price_personal: 0,
+            price_company: 0,
+            price_extend: 0,
+          }
+        },
+
+        // 查看详情
+        view_product_detail(product) {
+          this.selected_product = product
+          this.show_detail_modal = true
+        },
+
+        // 关闭详情弹窗
+        close_detail_modal() {
+          this.show_detail_modal = false
+          this.selected_product = null
+        },
+
+        // 删除
+        async delete_demo(id) {
+          if (!confirm('确定要删除这个吗？')) {
+            return
+          }
+
+          try {
+            const response = await this.axios.get(`${this.VITE_url_app_run}/delete_demo?id=${id}`)
+            if (response.data.code === 200) {
+              this.show_message('删除成功')
+              this.find_list_demo()
+            } else {
+              this.show_message('删除失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('删除出错: ' + error.message, 'error')
+          }
+        },
+
+        // 初始化测试数据
+        async init_demo() {
+          if (!confirm('确定要初始化测试数据吗？这将清空现有数据！')) {
+            return
+          }
+
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/init_demo?password=123456`)
+            if (response.data.code === 200) {
+              this.show_message('测试数据初始化成功')
+              this.find_list_demo()
+            } else {
+              this.show_message('初始化失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('初始化出错: ' + error.message, 'error')
+          }
+        },
+
+        // 分页跳转
+        go_to_page(page) {
+          if (page >= 1 && page <= this.pagination.page_total) {
+            this.search_form.page_index = page
+            this.find_list_demo()
+          }
+        },
+      },
+
+      mounted() {
+        // 页面加载时自动搜索
+        this.find_list_demo()
+      },
+    })
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* 统一按钮样式 */
+    button {
+      color: white;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 25px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-size: 12px;
+    }
+
+    /* 统一输入框样式 */
+    input {
+      max-width: 120px;
+      padding: 4px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+    }
+
+    /* 统一弹窗遮罩样式 */
+    .modal_overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* 统一弹窗样式 */
+    .modal_content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    /* 统一消息提示样式 */
+    .message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      color: white;
+      font-size: 14px;
+      z-index: 1001;
+    }
+
+    .message.success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+
+    .message.error {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+  </style>
+</html>

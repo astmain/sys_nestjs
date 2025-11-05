@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./sqlite.db"
+}
+
+model tb_test1 {
+  id          Int      @id @default(autoincrement())
+  phone       String   @unique
+  password    String
+  is_delete   Boolean  @default(false)
+  is_check    Boolean  @default(true)
+  is_active   Boolean  @default(true)
+  is_public   Boolean  @default(true)
+  list_file   Json     @default("[]")
+  list_img    Json     @default("[]")
+  list_extend Json     @default("[]")
+  type_format String   @default(".png")
+  type_area   String   @default("三角")
+  type_point  String   @default("3k以下")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model tb_user {
+  id         Int      @id @default(autoincrement())
+  phone      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

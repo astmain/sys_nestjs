@@ -1,0 +1,132 @@
+//  prisma使用规范
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // provider = "sqlite" //  使用sqlite时无法用JSON{},只能使用JSON[]
+  // url      = "file:./sqlite.db" //  E:/AAA/dayu_sys/dayu_sys02/demo5/make_orm_prisma/sqlite.db
+  provider = "postgresql"
+  url      = env("VITE_url_db_pg")
+}
+
+enum enum_order_status {
+  PAYING //待支付
+  PAYED //已支付
+  SHIPPED //已发货
+  CANCELLED //已取消
+}
+
+// 模型商品表,模型购物车表,模型订单列表,模型订单详情表
+
+// 模型商品表
+model tb_model_product {
+  id      String @id @default(cuid())
+  user_id Int //用户id
+  title   String //标题
+  remark  String @default("") //备注
+
+  price_personal Int @default(0) //个人价格
+  price_company  Int @default(0) //企业价格
+  price_extend   Int @default(0) //企业扩展价格
+
+  list_img        Json    @default("[]") //图片
+  list_file       Json    @default("[]") //文件
+  list_video      Json    @default("[]") //视频
+  list_extend     Json    @default("[]") //附件
+  list_texture    Json    @default("[]") //贴图
+  count_collect   Int     @default(0) //收藏数
+  count_download  Int     @default(0) //下载数
+  count_like      Int     @default(0) //点赞数
+  is_check_remark String  @default("") //审核备注
+  is_check        Boolean @default(false) //是否审核
+  is_public       Boolean @default(true) //是否公开
+  is_deleted      Boolean @default(false) //逻辑删除
+  model_format    String  @default(".stl") //模型格式
+
+  is_business Boolean @default(false) //是否商用
+
+  is_skeleton    Boolean @default(false) //是否有骨骼
+  is_animation   Boolean @default(false) //是否有动画
+  is_print       Boolean @default(true) //是否可打印
+  is_no_collapse Boolean @default(true) //未塌陷
+
+  area_unit String @default("5k以下") //面片数
+  wiring    String @default("三角形") //布线
+
+  // count_store              Int                       @default(999999)// 库存
+  tb_model_cart  tb_model_cart[] //购物车
+  tb_order_infos tb_order_info[] //订单明细
+  tb_model_kind  tb_model_kind[] //分类
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+// 模型购物车表
+model tb_model_cart {
+  id         String  @id @default(cuid())
+  user_id    Int //用户id
+  product_id String //商品id
+  price      Int //价格
+  price_type String //价格类型
+  is_deleted Boolean @default(false) //逻辑删除
+
+  product    tb_model_product @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Cascade) //商品
+  updated_at DateTime         @updatedAt
+  created_at DateTime         @default(now())
+
+  // @@unique([user_id, product_id])
+}
+
+// 模型订单列表
+model tb_order_list {
+  id            String            @id @default(cuid())
+  order_number  String            @unique
+  user_id       Int //用户id
+  price_sub     Int //减去价格
+  price_order   Int //订单价格
+  price_pay     Int //支付价格
+  pay_time      DateTime? //支付时间
+  tb_order_info tb_order_info[] //订单详情
+  is_deleted    Boolean           @default(false) //逻辑删除
+  status        enum_order_status @default(PAYING) // 订单状态
+  updated_at    DateTime          @updatedAt
+  created_at    DateTime          @default(now())
+}
+
+// 模型订单详情表
+model tb_order_info {
+  id               String           @id @default(cuid())
+  order_number     String //订单id
+  product_id       String //商品id
+  price_one        Int //单价
+  is_deleted       Boolean          @default(false) //逻辑删除
+  count            Int              @default(1) //数量
+  tb_order_list    tb_order_list    @relation(fields: [order_number], references: [order_number], onDelete: NoAction, onUpdate: Cascade) //订单
+  tb_model_product tb_model_product @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: Cascade) //商品
+}
+
+// 测试表
+model tb_demo {
+  id             Int      @id @default(autoincrement())
+  name           String   @default("")
+  remark         String   @default("")
+  is_deleted     Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  price_personal Int      @default(0)
+  price_company  Int      @default(0)
+  price_extend   Int      @default(0)
+  list_img       Json     @default("[]")
+}
+
+model tb_model_kind {
+  id               Int                @id @default(autoincrement())
+  name             String //名称
+  is_deleted       Boolean            @default(false) //逻辑删除
+  parent_id        Int? //父级id//  // 自关联
+  parent           tb_model_kind?     @relation("re_tb_model_kind", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children         tb_model_kind[]    @relation("re_tb_model_kind")
+  tb_model_product tb_model_product[] //商品
+}

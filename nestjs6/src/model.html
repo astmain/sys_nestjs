@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="zh-CN" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px">
+  <head>
+    <title>商品购物车订单管理系统</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.13/dayjs.min.js"></script>
+  </head>
+
+  <main id="app" style="display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 1400px; padding: 20px; margin: 0 auto; background: white; border-radius: 15px">
+    <!-- 导航标签 -->
+    <div style="display: flex; gap: 10px; border-bottom: 2px solid #e1e5e9; padding-bottom: 10px">
+      <button @click="current_tab = 'product'" :class="{ active: current_tab === 'product' }" class="tab_btn">商品管理</button>
+      <button @click="current_tab = 'cart'" :class="{ active: current_tab === 'cart' }" class="tab_btn">购物车</button>
+      <button @click="current_tab = 'order'" :class="{ active: current_tab === 'order' }" class="tab_btn">订单管理</button>
+    </div>
+
+    <!-- 商品管理页面 -->
+    <div v-if="current_tab === 'product'">
+      <!-- 搜索区域 -->
+      <div>
+        <input v-model="product_search_form.title" placeholder="搜索商品标题" />
+        <button @click="find_list_model_product">搜索</button>
+      </div>
+
+      <!-- 管理区域 -->
+      <div>
+        <h2>商品管理</h2>
+        <button @click="open_add_product_modal">添加商品</button>
+      </div>
+
+      <!-- 商品列表 -->
+      <div>
+        <h2>商品列表 /共 {{ product_total_count }} 个商品</h2>
+        <div v-if="product_list.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px">
+          <div v-for="product in product_list" :key="product.id" class="product_card">
+            <div>
+              <h4>{{ product.title }}</h4>
+              <p>{{ product.remark }}</p>
+              <div>价格: ¥{{ product.price }}</div>
+              <div>状态: {{ product.is_public ? '公开' : '私有' }}</div>
+            </div>
+            <div>
+              <button @click="edit_product(product)">编辑</button>
+              <button @click="view_product_detail(product)">详情</button>
+              <button @click="add_to_cart(product)">加入购物车</button>
+              <button @click="delete_model_product(product.id)">删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 商品分页 -->
+      <div class="pagination_section">
+        <div class="pagination">
+          <button @click="go_to_product_page(product_pagination.page_index - 1)" :disabled="product_pagination.page_index <= 1" class="page_btn">上一页</button>
+          <span class="page_info">第 {{ product_pagination.page_index }} 页 / 共 {{ product_pagination.page_total }} 页</span>
+          <button @click="go_to_product_page(product_pagination.page_index + 1)" :disabled="product_pagination.page_index >= product_pagination.page_total" class="page_btn">下一页</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 购物车页面 -->
+    <div v-if="current_tab === 'cart'">
+      <!-- 用户选择 -->
+      <div>
+        <label>用户ID: </label>
+        <input v-model="cart_user_id" type="number" placeholder="输入用户ID" />
+        <button @click="find_list_model_card">查看购物车</button>
+        <button @click="clear_model_card" v-if="cart_list.length > 0">清空购物车</button>
+      </div>
+
+      <!-- 购物车列表 -->
+      <div>
+        <h2>购物车 /共 {{ cart_total_count }} 个商品</h2>
+        <div v-if="cart_list.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px">
+          <div v-for="cart_item in cart_list" :key="cart_item.id" class="cart_card">
+            <div>
+              <h4>{{ cart_item.product.title }}</h4>
+              <p>{{ cart_item.product.remark }}</p>
+              <div>价格: ¥{{ cart_item.product.price }}</div>
+            </div>
+            <div>
+              <button @click="view_cart_detail(cart_item)">详情</button>
+              <button @click="delete_model_card(cart_item.id)">移除</button>
+            </div>
+          </div>
+        </div>
+        <div v-if="cart_list.length > 0" style="margin-top: 20px">
+          <button @click="create_order_from_cart" class="checkout_btn">结算购物车</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 订单管理页面 -->
+    <div v-if="current_tab === 'order'">
+      <!-- 搜索区域 -->
+      <div>
+        <input v-model="order_search_form.order_number" placeholder="搜索订单号" />
+        <select v-model="order_search_form.status">
+          <!-- <option value="">全部状态</option>
+          <option value="PAYING">待处理</option>
+          <option value="PROCESSING">处理中</option>
+          <option value="SHIPPED">已发货</option>
+          <option value="DELIVERED">已送达</option>
+          <option value="CANCELLED">已取消</option> -->
+          <option value="">全部状态</option>
+          <option value="PAYING">待支付</option>
+          <option value="PAYED">已支付</option>
+          <option value="CANCELLED">已取消</option>
+        </select>
+        <button @click="find_list_model_order">搜索</button>
+      </div>
+
+      <!-- 订单列表 -->
+      <div>
+        <h2>订单列表 /共 {{ order_total_count }} 个订单</h2>
+        <div v-if="order_list.length > 0" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px">
+          <div v-for="order in order_list" :key="order.id" class="order_card">
+            <div>
+              <h4>订单号: {{ order.order_number }}</h4>
+              <div>用户ID: {{ order.user_id }}</div>
+              <div>订单价格: ¥{{ order.price_order }}</div>
+              <div>支付价格: ¥{{ order.price_pay }}</div>
+              <div>状态: {{ get_order_status_text(order.status) }}</div>
+              <div>创建时间: {{ format_date(order.created_at) }}</div>
+            </div>
+            <div>
+              <button @click="view_order_detail(order)">详情</button>
+              <button @click="update_order_status(order)" v-if="order.status !== 'PAYED' && order.status !== 'CANCELLED'">更新状态</button>
+              <button @click="delete_model_order(order.order_number)">删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 订单分页 -->
+      <div class="pagination_section">
+        <div class="pagination">
+          <button @click="go_to_order_page(order_pagination.page_index - 1)" :disabled="order_pagination.page_index <= 1" class="page_btn">上一页</button>
+          <span class="page_info">第 {{ order_pagination.page_index }} 页 / 共 {{ order_pagination.page_total }} 页</span>
+          <button @click="go_to_order_page(order_pagination.page_index + 1)" :disabled="order_pagination.page_index >= order_pagination.page_total" class="page_btn">下一页</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 添加商品弹窗 -->
+    <div v-if="show_add_product_modal" class="modal_overlay">
+      <div class="modal_content" @click.stop>
+        <h3>添加商品</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">商品标题</label>
+            <input v-model="add_product_form.title" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">商品备注</label>
+            <input v-model="add_product_form.remark" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">价格</label>
+            <input v-model="add_product_form.price" type="number" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">是否公开</label>
+            <select v-model="add_product_form.is_public">
+              <option :value="true">公开</option>
+              <option :value="false">私有</option>
+            </select>
+          </div>
+          <div>
+            <button @click="create_model_product">添加</button>
+            <button @click="close_add_product_modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 编辑商品弹窗 -->
+    <div v-if="show_edit_product_modal" class="modal_overlay" @click="close_edit_product_modal">
+      <div class="modal_content" @click.stop>
+        <h3>编辑商品</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">商品标题</label>
+            <input v-model="edit_product_form.title" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">商品备注</label>
+            <input v-model="edit_product_form.remark" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">价格</label>
+            <input v-model="edit_product_form.price" type="number" />
+          </div>
+          <div style="display: flex; gap: 10px">
+            <label style="width: 150px">是否公开</label>
+            <select v-model="edit_product_form.is_public">
+              <option :value="true">公开</option>
+              <option :value="false">私有</option>
+            </select>
+          </div>
+          <div>
+            <button @click="update_model_product">保存</button>
+            <button @click="close_edit_product_modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 商品详情弹窗 -->
+    <div v-if="show_product_detail_modal" class="modal_overlay" @click="close_product_detail_modal">
+      <div class="modal_content" @click.stop>
+        <h3>商品详情</h3>
+        <div v-if="selected_product">
+          <div>
+            <span>ID:</span>
+            <span>{{ selected_product.id }}</span>
+          </div>
+          <div>
+            <span>标题:</span>
+            <span>{{ selected_product.title }}</span>
+          </div>
+          <div>
+            <span>备注:</span>
+            <span>{{ selected_product.remark }}</span>
+          </div>
+          <div>
+            <span>价格:</span>
+            <span>¥{{ selected_product.price }}</span>
+          </div>
+          <div>
+            <span>状态:</span>
+            <span>{{ selected_product.is_public ? '公开' : '私有' }}</span>
+          </div>
+        </div>
+        <div>
+          <button @click="close_product_detail_modal">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 购物车详情弹窗 -->
+    <div v-if="show_cart_detail_modal" class="modal_overlay" @click="close_cart_detail_modal">
+      <div class="modal_content" @click.stop>
+        <h3>购物车详情</h3>
+        <div v-if="selected_cart_item">
+          <div>
+            <span>购物车ID:</span>
+            <span>{{ selected_cart_item.id }}</span>
+          </div>
+          <div>
+            <span>用户ID:</span>
+            <span>{{ selected_cart_item.user_id }}</span>
+          </div>
+          <div>
+            <span>商品标题:</span>
+            <span>{{ selected_cart_item.product.title }}</span>
+          </div>
+          <div>
+            <span>商品价格:</span>
+            <span>¥{{ selected_cart_item.product.price }}</span>
+          </div>
+        </div>
+        <div>
+          <button @click="close_cart_detail_modal">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 订单详情弹窗 -->
+    <div v-if="show_order_detail_modal" class="modal_overlay" @click="close_order_detail_modal">
+      <div class="modal_content" @click.stop>
+        <h3>订单详情</h3>
+        <div v-if="selected_order">
+          <div>
+            <span>订单号:</span>
+            <span>{{ selected_order.order_number }}</span>
+          </div>
+          <div>
+            <span>用户ID:</span>
+            <span>{{ selected_order.user_id }}</span>
+          </div>
+          <div>
+            <span>订单价格:</span>
+            <span>¥{{ selected_order.price_order }}</span>
+          </div>
+          <div>
+            <span>支付价格:</span>
+            <span>¥{{ selected_order.price_pay }}</span>
+          </div>
+          <div>
+            <span>状态:</span>
+            <span>{{ get_order_status_text(selected_order.status) }}</span>
+          </div>
+          <div v-if="selected_order.tb_order_info && selected_order.tb_order_info.length > 0">
+            <h4>订单商品:</h4>
+            <div v-for="item in selected_order.tb_order_info" :key="item.id">
+              <div>{{ item.tb_model_product.title }} - ¥{{ item.price_one }} x {{ item.count }}</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button @click="close_order_detail_modal">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 更新订单状态弹窗 -->
+    <div v-if="show_update_status_modal" class="modal_overlay" @click="close_update_status_modal">
+      <div class="modal_content" @click.stop>
+        <h3>更新订单状态</h3>
+        <div v-if="selected_order">
+          <div>
+            <span>订单号:</span>
+            <span>{{ selected_order.order_number }}</span>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 10px">
+            <label style="width: 150px">新状态</label>
+            <select v-model="new_order_status">
+              <option value="PAYING">待支付</option>
+              <option value="PAYED">已支付</option>
+              <option value="CANCELLED">已取消</option>
+   
+            </select>
+          </div>
+          <div style="margin-top: 20px">
+            <button @click="confirm_update_order_status">确认更新</button>
+            <button @click="close_update_status_modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 消息提示 -->
+    <div v-if="message" class="message" :class="message_type">{{ message }}</div>
+  </main>
+
+  <script>
+    Vue.prototype.axios = axios
+    Vue.prototype.window = window
+    Vue.prototype.document = window.document
+
+    window.app = new Vue({
+      el: '#app',
+      data: {
+        VITE_url_app_run: 'http://127.0.0.1:3000',
+        current_tab: 'product',
+
+        // 商品相关数据
+        product_search_form: {
+          title: '',
+          page_index: 1,
+          page_size: 10,
+          order_by: 'created_at',
+          order_type: 'desc',
+        },
+        add_product_form: {
+          title: '',
+          remark: '',
+          price: 0,
+          is_public: true,
+        },
+        edit_product_form: {
+          id: null,
+          title: '',
+          remark: '',
+          price: 0,
+          is_public: true,
+        },
+        product_list: [],
+        product_pagination: {
+          page_index: 1,
+          page_size: 10,
+          count_total: 0,
+          page_total: 0,
+        },
+        product_total_count: 0,
+
+        // 购物车相关数据
+        cart_user_id: 1,
+        cart_list: [],
+        cart_total_count: 0,
+
+        // 订单相关数据
+        order_search_form: {
+          user_id: null,
+          order_number: '',
+          status: '',
+          page_index: 1,
+          page_size: 10,
+          order_by: 'created_at',
+          order_type: 'desc',
+        },
+        order_list: [],
+        order_pagination: {
+          page_index: 1,
+          page_size: 10,
+          count_total: 0,
+          page_total: 0,
+        },
+        order_total_count: 0,
+
+        // 弹窗控制
+        show_add_product_modal: false,
+        show_edit_product_modal: false,
+        show_product_detail_modal: false,
+        show_cart_detail_modal: false,
+        show_order_detail_modal: false,
+        show_update_status_modal: false,
+        selected_product: null,
+        selected_cart_item: null,
+        selected_order: null,
+        new_order_status: 'PAYING',
+
+        // 消息提示
+        message: '',
+        message_type: 'success',
+      },
+
+      methods: {
+        // 显示消息
+        show_message(text, type = 'success') {
+          this.message = text
+          this.message_type = type
+          setTimeout(() => (this.message = ''), 3000)
+        },
+
+        // 格式化日期
+        format_date(date) {
+          return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+        },
+
+        // 获取订单状态文本
+        get_order_status_text(status) {
+          const status_map = {
+            PAYING: '待处理',
+            PROCESSING: '处理中',
+            SHIPPED: '已发货',
+            DELIVERED: '已送达',
+            CANCELLED: '已取消',
+          }
+          return status_map[status] || status
+        },
+
+        // ========== 商品管理方法 ==========
+        // 搜索商品
+        async find_list_model_product() {
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/find_list_model_product`, this.product_search_form)
+            if (response.data.code === 200) {
+              this.product_list = response.data.result.list
+              this.product_pagination = response.data.result.pagination
+              this.product_total_count = response.data.result.pagination.count_total
+              this.show_message('搜索完成')
+            } else {
+              this.show_message('搜索失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('搜索出错: ' + error.message, 'error')
+          }
+        },
+
+        // 打开添加商品弹窗
+        open_add_product_modal() {
+          this.show_add_product_modal = true
+        },
+
+        // 关闭添加商品弹窗
+        close_add_product_modal() {
+          this.show_add_product_modal = false
+          this.add_product_form = {
+            title: '',
+            remark: '',
+            price: 0,
+            is_public: true,
+          }
+        },
+
+        // 添加商品
+        async create_model_product() {
+          if (!this.add_product_form.title.trim()) {
+            this.show_message('请输入商品标题', 'error')
+            return
+          }
+          if (this.add_product_form.price <= 0) {
+            this.show_message('请输入有效价格', 'error')
+            return
+          }
+
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/create_model_product`, this.add_product_form)
+            if (response.data.code === 200) {
+              this.show_message('添加成功')
+              this.close_add_product_modal()
+              this.find_list_model_product()
+            } else {
+              this.show_message('添加失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('添加出错: ' + error.message, 'error')
+          }
+        },
+
+        // 编辑商品
+        edit_product(product) {
+          this.edit_product_form = {
+            id: product.id,
+            title: product.title,
+            remark: product.remark,
+            price: product.price,
+            is_public: product.is_public,
+          }
+          this.show_edit_product_modal = true
+        },
+
+        // 保存编辑
+        async update_model_product() {
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/update_model_product`, this.edit_product_form)
+            if (response.data.code === 200) {
+              this.show_message('更新成功')
+              this.close_edit_product_modal()
+              this.find_list_model_product()
+            } else {
+              this.show_message('更新失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('更新出错: ' + error.message, 'error')
+          }
+        },
+
+        // 关闭编辑弹窗
+        close_edit_product_modal() {
+          this.show_edit_product_modal = false
+          this.edit_product_form = {
+            id: null,
+            title: '',
+            remark: '',
+            price: 0,
+            is_public: true,
+          }
+        },
+
+        // 查看商品详情
+        view_product_detail(product) {
+          this.selected_product = product
+          this.show_product_detail_modal = true
+        },
+
+        // 关闭商品详情弹窗
+        close_product_detail_modal() {
+          this.show_product_detail_modal = false
+          this.selected_product = null
+        },
+
+        // 删除商品
+        async delete_model_product(id) {
+          if (!confirm('确定要删除这个商品吗？')) {
+            return
+          }
+
+          try {
+            const response = await this.axios.get(`${this.VITE_url_app_run}/delete_model_product?id=${id}`)
+            if (response.data.code === 200) {
+              this.show_message('删除成功')
+              this.find_list_model_product()
+            } else {
+              this.show_message('删除失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('删除出错: ' + error.message, 'error')
+          }
+        },
+
+        // 加入购物车
+        async add_to_cart(product) {
+          if (!this.cart_user_id) {
+            this.show_message('请先输入用户ID', 'error')
+            return
+          }
+
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/create_model_card`, {
+              user_id: this.cart_user_id,
+              product_id: product.id,
+            })
+            if (response.data.code === 200) {
+              this.show_message('已加入购物车')
+            } else {
+              this.show_message('加入购物车失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('加入购物车出错: ' + error.message, 'error')
+          }
+        },
+
+        // 商品分页跳转
+        go_to_product_page(page) {
+          if (page >= 1 && page <= this.product_pagination.page_total) {
+            this.product_search_form.page_index = page
+            this.find_list_model_product()
+          }
+        },
+
+        // ========== 购物车管理方法 ==========
+        // 查看购物车
+        async find_list_model_card() {
+          if (!this.cart_user_id) {
+            this.show_message('请输入用户ID', 'error')
+            return
+          }
+
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/find_list_model_card`, {
+              user_id: this.cart_user_id,
+              page_index: 1,
+              page_size: 100,
+              order_by: 'created_at',
+              order_type: 'desc',
+            })
+            if (response.data.code === 200) {
+              this.cart_list = response.data.result.list
+              this.cart_total_count = response.data.result.pagination.count_total
+              this.show_message('购物车加载完成')
+            } else {
+              this.show_message('加载购物车失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('加载购物车出错: ' + error.message, 'error')
+          }
+        },
+
+        // 查看购物车详情
+        view_cart_detail(cart_item) {
+          this.selected_cart_item = cart_item
+          this.show_cart_detail_modal = true
+        },
+
+        // 关闭购物车详情弹窗
+        close_cart_detail_modal() {
+          this.show_cart_detail_modal = false
+          this.selected_cart_item = null
+        },
+
+        // 删除购物车商品
+        async delete_model_card(id) {
+          if (!confirm('确定要从购物车中移除这个商品吗？')) {
+            return
+          }
+
+          try {
+            const response = await this.axios.get(`${this.VITE_url_app_run}/delete_model_card?id=${id}`)
+            if (response.data.code === 200) {
+              this.show_message('移除成功')
+              this.find_list_model_card()
+            } else {
+              this.show_message('移除失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('移除出错: ' + error.message, 'error')
+          }
+        },
+
+        // 清空购物车
+        async clear_model_card() {
+          if (!confirm('确定要清空购物车吗？')) {
+            return
+          }
+
+          try {
+            const response = await this.axios.get(`${this.VITE_url_app_run}/clear_model_card?user_id=${this.cart_user_id}`)
+            if (response.data.code === 200) {
+              this.show_message('购物车已清空')
+              this.find_list_model_card()
+            } else {
+              this.show_message('清空失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('清空出错: ' + error.message, 'error')
+          }
+        },
+
+        // 从购物车创建订单
+        async create_order_from_cart() {
+          if (!this.cart_user_id) {
+            this.show_message('请输入用户ID', 'error')
+            return
+          }
+
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/create_order_from_cart`, {
+              user_id: this.cart_user_id,
+              price_sub: 0,
+            })
+            if (response.data.code === 200) {
+              this.show_message('订单创建成功')
+              this.find_list_model_card()
+              this.current_tab = 'order'
+              this.find_list_model_order()
+            } else {
+              this.show_message('创建订单失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('创建订单出错: ' + error.message, 'error')
+          }
+        },
+
+        // ========== 订单管理方法 ==========
+        // 搜索订单
+        async find_list_model_order() {
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/find_list_model_order`, this.order_search_form)
+            if (response.data.code === 200) {
+              this.order_list = response.data.result.list
+              this.order_pagination = response.data.result.pagination
+              this.order_total_count = response.data.result.pagination.count_total
+              this.show_message('搜索完成')
+            } else {
+              this.show_message('搜索失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('搜索出错: ' + error.message, 'error')
+          }
+        },
+
+        // 查看订单详情
+        view_order_detail(order) {
+          this.selected_order = order
+          this.show_order_detail_modal = true
+        },
+
+        // 关闭订单详情弹窗
+        close_order_detail_modal() {
+          this.show_order_detail_modal = false
+          this.selected_order = null
+        },
+
+        // 更新订单状态
+        update_order_status(order) {
+          this.selected_order = order
+          this.new_order_status = order.status
+          this.show_update_status_modal = true
+        },
+
+        // 确认更新订单状态
+        async confirm_update_order_status() {
+          try {
+            const response = await this.axios.post(`${this.VITE_url_app_run}/update_model_order_status`, {
+              order_number: this.selected_order.order_number,
+              status: this.new_order_status,
+            })
+            if (response.data.code === 200) {
+              this.show_message('订单状态更新成功')
+              this.close_update_status_modal()
+              this.find_list_model_order()
+            } else {
+              this.show_message('更新失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('更新出错: ' + error.message, 'error')
+          }
+        },
+
+        // 关闭更新状态弹窗
+        close_update_status_modal() {
+          this.show_update_status_modal = false
+          this.selected_order = null
+          this.new_order_status = 'PAYING'
+        },
+
+        // 删除订单
+        async delete_model_order(order_number) {
+          if (!confirm('确定要删除这个订单吗？')) {
+            return
+          }
+
+          try {
+            const response = await this.axios.get(`${this.VITE_url_app_run}/delete_model_order?order_number=${order_number}`)
+            if (response.data.code === 200) {
+              this.show_message('删除成功')
+              this.find_list_model_order()
+            } else {
+              this.show_message('删除失败: ' + response.data.msg, 'error')
+            }
+          } catch (error) {
+            this.show_message('删除出错: ' + error.message, 'error')
+          }
+        },
+
+        // 订单分页跳转
+        go_to_order_page(page) {
+          if (page >= 1 && page <= this.order_pagination.page_total) {
+            this.order_search_form.page_index = page
+            this.find_list_model_order()
+          }
+        },
+      },
+
+      mounted() {
+        // 页面加载时自动加载商品列表
+        this.find_list_model_product()
+      },
+    })
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* 统一按钮样式 */
+    button {
+      color: white;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 25px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-size: 12px;
+    }
+
+    /* 标签按钮样式 */
+    .tab_btn {
+      background: #e1e5e9;
+      color: #333;
+    }
+
+    .tab_btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    /* 结算按钮样式 */
+    .checkout_btn {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      padding: 8px 20px;
+      font-size: 14px;
+    }
+
+    /* 统一输入框样式 */
+    input,
+    select {
+      max-width: 120px;
+      padding: 4px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+    }
+
+    /* 卡片样式 */
+    .product_card,
+    .cart_card,
+    .order_card {
+      border: 1px solid #e1e5e9;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f8f9fa;
+    }
+
+    /* 统一弹窗遮罩样式 */
+    .modal_overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    /* 统一弹窗样式 */
+    .modal_content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    /* 统一消息提示样式 */
+    .message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      color: white;
+      font-size: 14px;
+      z-index: 1001;
+    }
+
+    .message.success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+
+    .message.error {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+
+    /* 分页样式 */
+    .pagination_section {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page_btn {
+      padding: 6px 12px;
+    }
+
+    .page_btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .page_info {
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</html>
